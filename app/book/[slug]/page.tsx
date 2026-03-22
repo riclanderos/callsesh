@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
 import BookingForm, { type DaySlots } from './booking-form'
 
@@ -26,7 +27,9 @@ export default async function BookingPage({
     )
   }
 
-  // Fetch coach's active availability rules and timezone in parallel
+  // Fetch availability rules (anon client, public RLS policy) and coach
+  // timezone (service client — profiles has no public SELECT policy) in parallel.
+  const serviceClient = createServiceClient()
   const [{ data: availability }, { data: profile }] = await Promise.all([
     supabase
       .from('availability_rules')
@@ -35,7 +38,7 @@ export default async function BookingPage({
       .eq('is_active', true)
       .order('day_of_week', { ascending: true })
       .order('start_time', { ascending: true }),
-    supabase
+    serviceClient
       .from('profiles')
       .select('timezone')
       .eq('id', session.coach_id)

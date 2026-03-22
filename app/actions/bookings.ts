@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
 import { stripe } from '@/lib/stripe'
 import { revalidatePath } from 'next/cache'
@@ -75,8 +76,9 @@ export async function startCheckout(
 
   if (!sessionType) return { ok: false, error: 'Session not found.' }
 
-  // Fetch the coach's timezone so nextOccurrence uses the right calendar date.
-  const { data: profile } = await supabase
+  // Fetch the coach's timezone via the service client — profiles has no public
+  // SELECT policy; this action runs server-side only so the service key is safe.
+  const { data: profile } = await createServiceClient()
     .from('profiles')
     .select('timezone')
     .eq('id', sessionType.coach_id)

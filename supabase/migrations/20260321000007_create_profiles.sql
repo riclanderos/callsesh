@@ -22,8 +22,5 @@ create policy "coaches_update_own"
   on profiles for update
   using (auth.uid() = id);
 
--- Guests (anon) need the coach timezone to label the public booking page.
--- Timezone is not sensitive data.
-create policy "public_read_timezone"
-  on profiles for select
-  using (true);
+-- No public SELECT policy. The public booking page and server actions
+-- read coach timezone via the service-role client (server-side only).
