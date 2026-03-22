@@ -1,0 +1,192 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { generateSlots } from '@/lib/slots'
+import { stripe } from '@/lib/stripe'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+
+export type CheckoutState =
+  | null
+  | { ok: true; checkoutUrl: string }
+  | { ok: false; error: string }
+
+/**
+ * Returns the next occurrence of dayOfWeek (0=Sun…6=Sat) starting from
+ * tomorrow (in the coach's timezone), as a "YYYY-MM-DD" string.
+ */
+function nextOccurrence(dayOfWeek: number, timezone: string): string {
+  // Resolve today's calendar date in the coach's timezone so that coaches in
+  // non-UTC zones don't see their next slot land on the wrong day.
+  const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date())
+  const [y, mo, d] = todayStr.split('-').map(Number)
+  const today = new Date(y, mo - 1, d) // midnight local (server) — only the date part matters
+
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const daysUntil = (dayOfWeek - tomorrow.getDay() + 7) % 7
+  const target = new Date(tomorrow)
+  target.setDate(tomorrow.getDate() + daysUntil)
+
+  const ty = target.getFullYear()
+  const tm = String(target.getMonth() + 1).padStart(2, '0')
+  const td = String(target.getDate()).padStart(2, '0')
+  return `${ty}-${tm}-${td}`
+}
+
+/** Adds minutes to a "HH:MM" string and returns a "HH:MM" string. */
+function addMinutes(time: string, minutes: number): string {
+  const [h, m] = time.split(':').map(Number)
+  const total = h * 60 + m + minutes
+  const hh = String(Math.floor(total / 60) % 24).padStart(2, '0')
+  const mm = String(total % 60).padStart(2, '0')
+  return `${hh}:${mm}`
+}
+
+export async function startCheckout(
+  _prevState: CheckoutState,
+  formData: FormData
+): Promise<CheckoutState> {
+  const sessionTypeId = formData.get('session_type_id') as string
+  const dayOfWeekRaw = formData.get('day_of_week') as string
+  const startTime = (formData.get('start_time') as string).trim()
+  const guestName = (formData.get('guest_name') as string).trim()
+  const guestEmail = (formData.get('guest_email') as string).trim().toLowerCase()
+
+  if (!guestName) return { ok: false, error: 'Name is required.' }
+  if (!guestEmail || !guestEmail.includes('@'))
+    return { ok: false, error: 'A valid email is required.' }
+
+  const dayOfWeek = parseInt(dayOfWeekRaw, 10)
+  if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6)
+    return { ok: false, error: 'Invalid day selected.' }
+
+  const supabase = await createClient()
+
+  // Re-fetch session type server-side — never trust client-supplied values.
+  const { data: sessionType } = await supabase
+    .from('session_types')
+    .select('id, coach_id, title, duration_minutes, price_cents, slug')
+    .eq('id', sessionTypeId)
+    .eq('is_active', true)
+    .single()
+
+  if (!sessionType) return { ok: false, error: 'Session not found.' }
+
+  // Fetch the coach's timezone so nextOccurrence uses the right calendar date.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('timezone')
+    .eq('id', sessionType.coach_id)
+    .single()
+
+  const coachTimezone = profile?.timezone ?? 'UTC'
+
+  // Validate that the submitted start_time is a real slot for this coach/day.
+  const { data: rules } = await supabase
+    .from('availability_rules')
+    .select('start_time, end_time')
+    .eq('coach_id', sessionType.coach_id)
+    .eq('day_of_week', dayOfWeek)
+    .eq('is_active', true)
+
+  const validSlots = (rules ?? []).flatMap((r) =>
+    generateSlots(r.start_time, r.end_time, sessionType.duration_minutes)
+  )
+
+  if (!validSlots.includes(startTime))
+    return { ok: false, error: 'Selected time is no longer available.' }
+
+  const bookingDate = nextOccurrence(dayOfWeek, coachTimezone)
+  const endTime = addMinutes(startTime, sessionType.duration_minutes)
+
+  // Conflict check — early fast-fail before touching Stripe.
+  // Note: a second conflict check happens in the webhook at booking creation
+  // time, but the window between checkout initiation and payment completion
+  // is not protected (see race-condition notes in README).
+  const { data: isTaken, error: conflictError } = await supabase.rpc(
+    'is_slot_taken',
+    {
+      p_coach_id:     sessionType.coach_id,
+      p_booking_date: bookingDate,
+      p_start_time:   startTime,
+      p_end_time:     endTime,
+    }
+  )
+
+  if (conflictError)
+    return { ok: false, error: 'Could not verify slot availability. Please try again.' }
+  if (isTaken)
+    return { ok: false, error: 'This time was just booked. Please choose another slot.' }
+
+  // Build the absolute base URL from the incoming request host.
+  const headersList = await headers()
+  const host = headersList.get('host') ?? 'localhost:3000'
+  const proto =
+    host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https'
+  const appUrl = `${proto}://${host}`
+
+  // Create the Stripe Checkout session.
+  // All booking data is passed as metadata so the webhook can create the
+  // booking row after payment completes — without trusting the client.
+  const checkoutSession = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    customer_email: guestEmail,
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: sessionType.price_cents,
+          product_data: {
+            name: sessionType.title,
+            description: `${sessionType.duration_minutes} min session`,
+          },
+        },
+      },
+    ],
+    metadata: {
+      coach_id:        sessionType.coach_id,
+      session_type_id: sessionType.id,
+      guest_name:      guestName,
+      guest_email:     guestEmail,
+      booking_date:    bookingDate,
+      start_time:      startTime,
+      end_time:        endTime,
+    },
+    success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url:  `${appUrl}/book/${sessionType.slug}`,
+  })
+
+  if (!checkoutSession.url) {
+    return { ok: false, error: 'Could not create checkout session. Please try again.' }
+  }
+
+  return { ok: true, checkoutUrl: checkoutSession.url }
+}
+
+export async function cancelBooking(formData: FormData): Promise<void> {
+  const bookingId = formData.get('booking_id') as string
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const { data, error } = await supabase
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+    .select('id')
+
+  if (error) throw new Error(`Cancellation failed: ${error.message}`)
+  if (!data || data.length === 0)
+    throw new Error('Booking not found or you are not authorised to cancel it.')
+
+  revalidatePath('/dashboard/bookings')
+}
