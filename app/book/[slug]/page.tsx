@@ -9,15 +9,19 @@ export default async function BookingPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  console.log('[book] slug:', slug)
+
   const supabase = await createClient()
 
   // Fetch active session type by slug
-  const { data: session } = await supabase
+  const { data: session, error: sessionError } = await supabase
     .from('session_types')
     .select('id, coach_id, title, description, duration_minutes, price_cents')
     .eq('slug', slug)
     .eq('is_active', true)
     .single()
+
+  console.log('[book] session_types result:', { data: session, error: sessionError })
 
   if (!session) {
     return (
