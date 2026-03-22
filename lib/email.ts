@@ -9,6 +9,8 @@ export interface BookingEmailParams {
   guestEmail: string
   coachEmail: string
   coachTimezone: string // IANA timezone name, e.g. "America/New_York"
+  guestSessionUrl: string
+  guestCancelUrl: string
 }
 
 function formatDate(d: string): string {
@@ -38,6 +40,8 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
     guestEmail,
     coachEmail,
     coachTimezone,
+    guestSessionUrl,
+    guestCancelUrl,
   } = params
 
   await resend.emails.send({
@@ -54,7 +58,48 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
       `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
       `Coach:    ${coachEmail}`,
       '',
+      'Join your session here:',
+      guestSessionUrl,
+      '',
+      'Need to cancel? Use this link:',
+      guestCancelUrl,
+      '',
       'See you then!',
+      '— CallSesh',
+    ].join('\n'),
+  })
+}
+
+export async function sendGuestReminder(
+  params: BookingEmailParams,
+  reminderType: '24h' | '1h'
+): Promise<void> {
+  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachTimezone, guestSessionUrl } = params
+
+  const subject = reminderType === '24h'
+    ? `Reminder: your session is tomorrow — ${sessionTitle}`
+    : `Your session starts in 1 hour — ${sessionTitle}`
+
+  const opening = reminderType === '24h'
+    ? 'This is a reminder that your session is tomorrow.'
+    : 'Your session starts in approximately 1 hour.'
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
+    to: guestEmail,
+    subject,
+    text: [
+      `Hi ${guestName},`,
+      '',
+      opening,
+      '',
+      `Session:  ${sessionTitle}`,
+      `Date:     ${formatDate(bookingDate)}`,
+      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
+      '',
+      'Join your session here:',
+      guestSessionUrl,
+      '',
       '— CallSesh',
     ].join('\n'),
   })

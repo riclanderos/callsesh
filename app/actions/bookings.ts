@@ -1,5 +1,6 @@
 'use server'
 
+import { timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
@@ -167,6 +168,53 @@ export async function startCheckout(
   }
 
   return { ok: true, checkoutUrl: checkoutSession.url }
+}
+
+/**
+ * Cancels a booking on behalf of an unauthenticated guest.
+ * Authorization is via constant-time comparison of the guest_access_token
+ * stored on the booking — no auth session required.
+ */
+export async function cancelBookingAsGuest(formData: FormData): Promise<void> {
+  const bookingId  = formData.get('booking_id')  as string
+  const guestToken = formData.get('guest_token') as string
+
+  if (!bookingId || !guestToken) throw new Error('Invalid request.')
+
+  const serviceClient = createServiceClient()
+  const { data: booking } = await serviceClient
+    .from('bookings')
+    .select('id, status, guest_access_token')
+    .eq('id', bookingId)
+    .single()
+
+  if (!booking || !booking.guest_access_token) throw new Error('Booking not found.')
+
+  // Constant-time token comparison — identical to the pattern in session-auth.ts.
+  let tokenValid = false
+  try {
+    const provided = Buffer.from(guestToken, 'hex')
+    const stored   = Buffer.from(booking.guest_access_token as string, 'hex')
+    if (provided.length === stored.length) {
+      tokenValid = timingSafeEqual(provided, stored)
+    }
+  } catch {
+    // Malformed hex — treat as mismatch.
+  }
+
+  if (!tokenValid) throw new Error('Invalid token.')
+
+  // If already cancelled, redirect to success — idempotent outcome.
+  if (booking.status === 'cancelled') redirect('/cancel/confirmed')
+
+  const { error } = await serviceClient
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .eq('id', bookingId)
+
+  if (error) throw new Error(`Cancellation failed: ${error.message}`)
+
+  redirect('/cancel/confirmed')
 }
 
 export async function cancelBooking(formData: FormData): Promise<void> {

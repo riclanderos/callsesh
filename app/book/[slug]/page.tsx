@@ -21,8 +21,11 @@ export default async function BookingPage({
 
   if (!session) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-zinc-500">This session is not available.</p>
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-8">
+        <div className="text-center space-y-2">
+          <p className="text-lg font-medium">Session not available</p>
+          <p className="text-sm text-zinc-500">This booking link is no longer active.</p>
+        </div>
       </div>
     )
   }
@@ -63,26 +66,34 @@ export default async function BookingPage({
     .sort(([a], [b]) => a - b)
     .map(([day, slots]) => ({ day, slots: slots.sort() }))
 
+  const priceFormatted = `$${(session.price_cents / 100).toFixed(2)}`
+
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen bg-zinc-50 py-12 px-4">
       <div className="mx-auto max-w-xl space-y-8">
 
-        {/* Session details */}
-        <div className="space-y-3">
-          <h1 className="text-2xl font-semibold">{session.title}</h1>
-          {session.description && (
-            <p className="text-zinc-500">{session.description}</p>
-          )}
-          <div className="flex items-center gap-2 text-sm text-zinc-500">
-            <span>{session.duration_minutes} min</span>
-            <span>&middot;</span>
-            <span>${(session.price_cents / 100).toFixed(2)}</span>
+        {/* Session header */}
+        <div className="rounded-xl border bg-white p-6 space-y-4 shadow-sm">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">{session.title}</h1>
+            {session.description && (
+              <p className="text-sm text-zinc-500 leading-relaxed">{session.description}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-3 pt-1">
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
+              {session.duration_minutes} min
+            </span>
+            <span className="text-xl font-semibold">{priceFormatted}</span>
           </div>
         </div>
 
         {/* Slot picker + booking form */}
-        <div className="space-y-4">
-          <h2 className="font-medium">Select a time</h2>
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-400 px-1">
+            Choose a time
+          </h2>
+
           {daySlots.length > 0 ? (
             <BookingForm
               sessionTypeId={session.id}
@@ -90,9 +101,12 @@ export default async function BookingPage({
               coachTimezone={coachTimezone}
             />
           ) : (
-            <p className="text-sm text-zinc-400">
-              No availability set for this coach.
-            </p>
+            <div className="rounded-xl border bg-white p-6 shadow-sm text-center space-y-1">
+              <p className="text-sm font-medium text-zinc-700">No availability yet</p>
+              <p className="text-xs text-zinc-400">
+                This coach hasn&apos;t set up their schedule. Check back soon.
+              </p>
+            </div>
           )}
         </div>
 

@@ -1,0 +1,49 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { getSessionAccess } from '@/lib/session-auth'
+import { createDailyMeetingToken } from '@/lib/daily'
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ bookingId: string }> }
+): Promise<NextResponse> {
+  const { bookingId } = await params
+
+  // ── 1. Auth ───────────────────────────────────────────────────────────────
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Parse optional guestToken from the JSON body.
+  let guestToken: string | null = null
+  try {
+    const body = await req.json() as { guestToken?: string }
+    guestToken = body.guestToken ?? null
+  } catch {
+    // No body or non-JSON body — fine, guestToken stays null.
+  }
+
+  // ── 2–4. Booking fetch + access check ────────────────────────────────────
+  const access = await getSessionAccess(bookingId, user, guestToken)
+  if (!access) {
+    return NextResponse.json({ error: 'Not found.' }, { status: 404 })
+  }
+
+  // ── 5. Room must be provisioned ───────────────────────────────────────────
+  // Deliberately opaque 404 — no information leakage.
+  if (!access.booking.daily_room_name) {
+    return NextResponse.json({ error: 'Not found.' }, { status: 404 })
+  }
+
+  // ── 6. Issue token ────────────────────────────────────────────────────────
+  let token: string
+  try {
+    token = await createDailyMeetingToken(access.booking.daily_room_name, access.isCoach)
+  } catch (e) {
+    console.error('Failed to create Daily meeting token for booking', bookingId, e)
+    return NextResponse.json({ error: 'Could not create session token.' }, { status: 500 })
+  }
+
+  return NextResponse.json({ token, roomUrl: access.booking.daily_room_url })
+}

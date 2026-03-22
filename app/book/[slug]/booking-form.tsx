@@ -53,9 +53,11 @@ export default function BookingForm({
   // ── Redirecting screen ───────────────────────────────────────────────────
   if (state?.ok) {
     return (
-      <div className="rounded-lg border p-6 space-y-2">
+      <div className="rounded-xl border bg-white p-8 shadow-sm text-center space-y-2">
         <p className="font-medium">Redirecting to payment…</p>
-        <p className="text-sm text-zinc-500">You will be taken to Stripe to complete your booking.</p>
+        <p className="text-sm text-zinc-400">
+          You&apos;re being taken to Stripe to complete your booking.
+        </p>
       </div>
     )
   }
@@ -64,27 +66,31 @@ export default function BookingForm({
 
   if (!hasAnySlots) {
     return (
-      <p className="text-sm text-zinc-400">
-        No time slots available for this session length.
-      </p>
+      <div className="rounded-xl border bg-white p-6 shadow-sm text-center">
+        <p className="text-sm text-zinc-400">
+          No time slots available for this session length.
+        </p>
+      </div>
     )
   }
 
   // ── Main view ────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
 
       {/* Timezone label */}
-      <p className="text-xs text-zinc-400">All times in {coachTimezone}</p>
+      <p className="text-xs text-zinc-400 px-1">All times in {coachTimezone}</p>
 
       {/* Slot grid */}
-      <div className="space-y-6">
+      <div className="rounded-xl border bg-white p-6 shadow-sm space-y-6">
         {daySlots.map(({ day, slots }) => {
           if (slots.length === 0) return null
 
           return (
-            <div key={day} className="space-y-2">
-              <h3 className="text-sm font-medium">{DAYS[day]}</h3>
+            <div key={day} className="space-y-2.5">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                {DAYS[day]}
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {slots.map((slot) => {
                   const isSelected =
@@ -97,10 +103,10 @@ export default function BookingForm({
                       onClick={() =>
                         setSelected(isSelected ? null : { day, time: slot })
                       }
-                      className={`rounded border px-3 py-1.5 text-sm transition-colors ${
+                      className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                         isSelected
                           ? 'border-black bg-black text-white'
-                          : 'hover:border-zinc-400'
+                          : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50'
                       }`}
                     >
                       {formatTime(slot)}
@@ -121,49 +127,58 @@ export default function BookingForm({
           <input type="hidden" name="day_of_week" value={selected.day} />
           <input type="hidden" name="start_time" value={selected.time} />
 
-          <div className="rounded-lg border p-5 space-y-4">
-            <p className="text-sm text-zinc-500">
-              {DAYS[selected.day]} at {formatTime(selected.time)}
-            </p>
-
-            <div className="space-y-1">
-              <label htmlFor="guest_name" className="text-sm font-medium">
-                Your name
-              </label>
-              <input
-                id="guest_name"
-                name="guest_name"
-                type="text"
-                required
-                autoComplete="name"
-                className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
-              />
+          <div className="rounded-xl border bg-white p-6 shadow-sm space-y-5">
+            <div className="pb-1 border-b border-zinc-100">
+              <p className="text-sm font-medium">
+                {DAYS[selected.day]} at {formatTime(selected.time)}
+              </p>
+              <p className="text-xs text-zinc-400 mt-0.5">Enter your details to continue</p>
             </div>
 
-            <div className="space-y-1">
-              <label htmlFor="guest_email" className="text-sm font-medium">
-                Your email
-              </label>
-              <input
-                id="guest_email"
-                name="guest_email"
-                type="email"
-                required
-                autoComplete="email"
-                className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
-              />
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label htmlFor="guest_name" className="text-sm font-medium text-zinc-700">
+                  Your name
+                </label>
+                <input
+                  id="guest_name"
+                  name="guest_name"
+                  type="text"
+                  required
+                  autoComplete="name"
+                  placeholder="Jane Smith"
+                  className="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 placeholder:text-zinc-300"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="guest_email" className="text-sm font-medium text-zinc-700">
+                  Your email
+                </label>
+                <input
+                  id="guest_email"
+                  name="guest_email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="jane@example.com"
+                  className="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 placeholder:text-zinc-300"
+                />
+              </div>
             </div>
 
             {state?.ok === false && (
-              <p className="text-sm text-red-600">{state.error}</p>
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+                {state.error}
+              </p>
             )}
 
             <button
               type="submit"
               disabled={pending}
-              className="w-full rounded bg-black py-2 text-sm font-medium text-white disabled:opacity-50"
+              className="w-full rounded-lg bg-black py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors"
             >
-              {pending ? 'Redirecting…' : 'Proceed to payment'}
+              {pending ? 'Redirecting…' : 'Proceed to payment →'}
             </button>
           </div>
         </form>
