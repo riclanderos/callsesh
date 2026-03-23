@@ -3,7 +3,6 @@
 import { useActionState } from 'react'
 import { updateTimezone } from '@/app/actions/profile'
 
-// Curated list of common IANA timezone names.
 const TIMEZONES = [
   'Pacific/Honolulu',
   'America/Anchorage',
@@ -34,33 +33,34 @@ export default function TimezoneForm({ currentTimezone }: { currentTimezone: str
 
   return (
     <form action={action} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="timezone" className="text-sm font-medium">
+      <div className="space-y-1.5">
+        <label htmlFor="timezone" className="text-xs font-medium uppercase tracking-wider text-zinc-300">
           Your timezone
         </label>
         <select
           id="timezone"
           name="timezone"
           defaultValue={currentTimezone}
-          className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
         >
           {TIMEZONES.map((tz) => (
-            <option key={tz} value={tz}>
+            <option key={tz} value={tz} className="bg-zinc-800 text-zinc-100">
               {tz}
             </option>
           ))}
         </select>
-        <p className="text-xs text-zinc-400">
-          All your availability times and bookings are shown in this timezone.
-        </p>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-400">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={pending}
-        className="rounded bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 transition-colors"
       >
         {pending ? 'Saving…' : 'Save timezone'}
       </button>

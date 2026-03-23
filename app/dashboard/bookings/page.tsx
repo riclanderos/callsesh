@@ -36,14 +36,14 @@ function formatTime(t: string): string {
 
 function statusBadge(status: string) {
   const styles: Record<string, string> = {
-    confirmed: 'bg-green-50 text-green-700',
-    cancelled: 'bg-zinc-100 text-zinc-400',
-    completed: 'bg-blue-50 text-blue-700',
+    confirmed: 'bg-green-950 text-green-400 border border-green-900',
+    cancelled: 'bg-zinc-800 text-zinc-500 border border-zinc-700',
+    completed: 'bg-blue-950 text-blue-400 border border-blue-900',
   }
   return (
     <span
       className={`rounded px-1.5 py-0.5 text-xs font-medium capitalize ${
-        styles[status] ?? 'bg-zinc-100 text-zinc-500'
+        styles[status] ?? 'bg-zinc-800 text-zinc-400 border border-zinc-700'
       }`}
     >
       {status}
@@ -73,7 +73,6 @@ export default async function BookingsPage() {
 
   const coachTimezone = profile?.timezone ?? 'UTC'
 
-  // Normalise the session_types join (Supabase may return object or array).
   const bookings: Booking[] = (rawData ?? []).map((row) => {
     const st = row.session_types as { title: string } | { title: string }[] | null
     const sessionTitle = Array.isArray(st)
@@ -82,47 +81,41 @@ export default async function BookingsPage() {
     return { ...row, sessionTitle }
   })
 
-  // Split at today's date string so the list re-sorts correctly after midnight
-  // without a server restart. booking_date is compared lexicographically, which
-  // works correctly for ISO "YYYY-MM-DD" strings.
   const today = new Date().toISOString().split('T')[0]
   const upcoming = bookings.filter((b) => b.booking_date >= today)
-  const past = bookings
-    .filter((b) => b.booking_date < today)
-    .reverse() // most recent past booking first
+  const past = bookings.filter((b) => b.booking_date < today).reverse()
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="mx-auto max-w-3xl space-y-8">
+    <div className="min-h-screen px-6 py-10">
+      <div className="mx-auto max-w-4xl space-y-8">
 
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Bookings</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              Your upcoming and past sessions &middot;{' '}
-              <span className="font-mono">{coachTimezone}</span>
+          <div className="space-y-0.5">
+            <h1 className="text-2xl font-semibold text-zinc-100">Bookings</h1>
+            <p className="text-sm text-zinc-500">
+              {coachTimezone}
             </p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-black"
+            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
         </div>
 
         {bookings.length === 0 && (
-          <p className="text-sm text-zinc-400">No bookings yet.</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-10 text-center">
+            <p className="text-sm text-zinc-500">No bookings yet.</p>
+          </div>
         )}
 
         {/* Upcoming */}
         {upcoming.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
-              Upcoming
-            </h2>
-            <div className="space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Upcoming</p>
+            <div className="space-y-2">
               {upcoming.map((b) => (
                 <BookingRow key={b.id} booking={b} />
               ))}
@@ -133,10 +126,8 @@ export default async function BookingsPage() {
         {/* Past */}
         {past.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
-              Past
-            </h2>
-            <div className="space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Past</p>
+            <div className="space-y-2">
               {past.map((b) => (
                 <BookingRow key={b.id} booking={b} />
               ))}
@@ -153,17 +144,16 @@ function BookingRow({ booking: b }: { booking: Booking }) {
   const isCancellable = b.status !== 'cancelled'
 
   return (
-    <div className="flex items-start justify-between rounded-lg border p-4">
+    <div className="flex items-start justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{b.guest_name}</span>
+          <span className="font-medium text-zinc-100">{b.guest_name}</span>
           {statusBadge(b.status)}
         </div>
+        <p className="text-sm text-zinc-400">{b.sessionTitle}</p>
         <p className="text-sm text-zinc-500">{b.guest_email}</p>
-        <p className="text-sm text-zinc-500">{b.sessionTitle}</p>
-        <p className="text-sm text-zinc-400">
-          {formatDate(b.booking_date)} &middot;{' '}
-          {formatTime(b.start_time)} – {formatTime(b.end_time)}
+        <p className="text-xs text-zinc-600 font-mono">
+          {formatDate(b.booking_date)} · {formatTime(b.start_time)} – {formatTime(b.end_time)}
         </p>
       </div>
 

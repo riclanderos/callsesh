@@ -18,8 +18,8 @@ export default function CreateAvailabilityRuleForm() {
 
   return (
     <form action={action} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="day_of_week" className="text-sm font-medium">
+      <div className="space-y-1.5">
+        <label htmlFor="day_of_week" className="text-xs font-medium uppercase tracking-wider text-zinc-300">
           Day of week
         </label>
         <select
@@ -27,13 +27,13 @@ export default function CreateAvailabilityRuleForm() {
           name="day_of_week"
           required
           defaultValue=""
-          className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
         >
-          <option value="" disabled>
+          <option value="" disabled className="text-zinc-500">
             Select a day
           </option>
           {DAYS.map((day, i) => (
-            <option key={day} value={i}>
+            <option key={day} value={i} className="bg-zinc-800 text-zinc-100">
               {day}
             </option>
           ))}
@@ -41,8 +41,8 @@ export default function CreateAvailabilityRuleForm() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <label htmlFor="start_time" className="text-sm font-medium">
+        <div className="space-y-1.5">
+          <label htmlFor="start_time" className="text-xs font-medium uppercase tracking-wider text-zinc-300">
             Start time
           </label>
           <input
@@ -50,12 +50,12 @@ export default function CreateAvailabilityRuleForm() {
             name="start_time"
             type="time"
             required
-            className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
           />
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor="end_time" className="text-sm font-medium">
+        <div className="space-y-1.5">
+          <label htmlFor="end_time" className="text-xs font-medium uppercase tracking-wider text-zinc-300">
             End time
           </label>
           <input
@@ -63,7 +63,7 @@ export default function CreateAvailabilityRuleForm() {
             name="end_time"
             type="time"
             required
-            className="w-full rounded border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
           />
         </div>
       </div>
@@ -74,19 +74,23 @@ export default function CreateAvailabilityRuleForm() {
           name="is_active"
           type="checkbox"
           defaultChecked
-          className="rounded"
+          className="rounded border-zinc-700 bg-zinc-800"
         />
-        <label htmlFor="is_active" className="text-sm">
-          Active
+        <label htmlFor="is_active" className="text-sm text-zinc-400">
+          Active immediately
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-400">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={pending}
-        className="rounded bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 transition-colors"
       >
         {pending ? 'Saving…' : 'Add availability'}
       </button>

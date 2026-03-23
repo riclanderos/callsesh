@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import CreateSessionTypeForm from './create-form'
+import DeleteSessionTypeButton from './delete-button'
 
 type SessionType = {
   id: string
@@ -37,20 +38,18 @@ export default async function SessionTypesPage() {
   if (error) throw new Error(error.message)
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="mx-auto max-w-3xl space-y-8">
+    <div className="min-h-screen px-6 py-10">
+      <div className="mx-auto max-w-4xl space-y-8">
 
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Session Types</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              Define the coaching sessions you offer.
-            </p>
+          <div className="space-y-0.5">
+            <h1 className="text-2xl font-semibold text-zinc-100">Session Types</h1>
+            <p className="text-sm text-zinc-500">Define the coaching sessions you offer.</p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-black"
+            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
@@ -58,52 +57,60 @@ export default async function SessionTypesPage() {
 
         {/* Existing session types */}
         {sessionTypes && sessionTypes.length > 0 ? (
-          <div className="space-y-3">
-            {(sessionTypes as SessionType[]).map((st) => (
-              <div
-                key={st.id}
-                className="flex items-start justify-between rounded-lg border p-4"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-medium">{st.title}</h2>
-                    {!st.is_active && (
-                      <span className="rounded border px-1.5 py-0.5 text-xs text-zinc-400">
-                        Inactive
-                      </span>
-                    )}
+          <section className="space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Your sessions</p>
+            <div className="space-y-2">
+              {(sessionTypes as SessionType[]).map((st) => (
+                <div
+                  key={st.id}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1.5 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-medium text-zinc-100">{st.title}</h2>
+                        {!st.is_active && (
+                          <span className="rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-500">
+                            Inactive
+                          </span>
+                        )}
+                      </div>
+                      {st.description && (
+                        <p className="text-sm text-zinc-400">{st.description}</p>
+                      )}
+                      <p className="text-sm text-zinc-500">
+                        {st.duration_minutes} min &middot; ${(st.price_cents / 100).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-zinc-600 font-mono truncate">
+                        <Link
+                          href={`/book/${st.slug}`}
+                          target="_blank"
+                          className="hover:text-zinc-400 underline transition-colors"
+                        >
+                          {baseUrl}/book/{st.slug}
+                        </Link>
+                      </p>
+                    </div>
+                    <DeleteSessionTypeButton id={st.id} />
                   </div>
-                  {st.description && (
-                    <p className="text-sm text-zinc-500">{st.description}</p>
-                  )}
-                  <p className="text-sm text-zinc-400">
-                    {st.duration_minutes} min &middot;{' '}
-                    ${(st.price_cents / 100).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-zinc-400 font-mono">
-                    <Link
-                      href={`/book/${st.slug}`}
-                      target="_blank"
-                      className="hover:text-black underline"
-                    >
-                      {baseUrl}/book/{st.slug}
-                    </Link>
-                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
         ) : (
-          <p className="text-sm text-zinc-400">
-            No session types yet. Create your first one below.
-          </p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-8 text-center">
+            <p className="text-sm text-zinc-500">No session types yet. Create your first one below.</p>
+          </div>
         )}
 
         {/* Create form */}
-        <div className="space-y-4 rounded-lg border p-6">
-          <h2 className="font-medium">New Session Type</h2>
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
+          <div className="space-y-0.5">
+            <h2 className="font-medium text-zinc-100">New Session Type</h2>
+            <p className="text-xs text-zinc-500">Add a new session to your coaching offerings.</p>
+          </div>
           <CreateSessionTypeForm />
-        </div>
+        </section>
 
       </div>
     </div>

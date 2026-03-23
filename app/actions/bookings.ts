@@ -77,6 +77,17 @@ export async function startCheckout(
 
   if (!sessionType) return { ok: false, error: 'Session not found.' }
 
+  // Enforce free-tier session limit — count all non-cancelled bookings for this coach.
+  const SESSION_LIMIT = 10
+  const { count: usedCount } = await createServiceClient()
+    .from('bookings')
+    .select('id', { count: 'exact', head: true })
+    .eq('coach_id', sessionType.coach_id)
+    .neq('status', 'cancelled')
+
+  if ((usedCount ?? 0) >= SESSION_LIMIT)
+    return { ok: false, error: 'This coach has reached their free session limit and cannot accept new bookings at this time.' }
+
   // Fetch the coach's timezone via the service client — profiles has no public
   // SELECT policy; this action runs server-side only so the service key is safe.
   const { data: profile } = await createServiceClient()

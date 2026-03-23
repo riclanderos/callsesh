@@ -33,7 +33,6 @@ export default function JoinButton({
         roomUrl: string
       }
 
-      // Navigate to Daily Prebuilt with the meeting token.
       window.location.href = `${roomUrl}?t=${token}`
     } catch {
       setError('Could not start the session. Please try again.')
@@ -47,12 +46,12 @@ export default function JoinButton({
       <button
         onClick={handleJoin}
         disabled={loading}
-        className="w-full rounded-xl bg-black py-3.5 text-center text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full rounded-xl bg-white py-3.5 text-center text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? 'Starting session…' : 'Join session →'}
       </button>
       {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-center text-sm text-red-600">
+        <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-center text-sm text-red-400">
           {error}
         </p>
       )}

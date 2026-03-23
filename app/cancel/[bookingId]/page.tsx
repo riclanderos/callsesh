@@ -58,24 +58,23 @@ export default async function GuestCancelPage({
   const alreadyCancelled = booking.status === 'cancelled'
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-8">
-      <div className="mx-auto max-w-md w-full space-y-6">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-6">
 
-        {/* Header */}
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight">Cancel booking</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Cancel booking</h1>
           <p className="text-sm text-zinc-500">{sessionTitle}</p>
         </div>
 
         {/* Booking detail card */}
-        <div className="rounded-xl border bg-white shadow-sm divide-y divide-zinc-100">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 divide-y divide-zinc-800">
           <div className="px-5 py-4 space-y-0.5">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Guest</p>
-            <p className="text-sm font-medium text-zinc-900">{booking.guest_name}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Guest</p>
+            <p className="text-sm font-medium text-zinc-100">{booking.guest_name}</p>
           </div>
           <div className="px-5 py-4 space-y-0.5">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Scheduled</p>
-            <p className="text-sm text-zinc-900">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Scheduled</p>
+            <p className="text-sm text-zinc-200">
               {formatDate(booking.booking_date)} &middot;{' '}
               {formatTime(booking.start_time)} – {formatTime(booking.end_time)}
             </p>
@@ -83,13 +82,12 @@ export default async function GuestCancelPage({
         </div>
 
         {alreadyCancelled ? (
-          <div className="rounded-xl border bg-white px-5 py-4 shadow-sm">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4">
             <p className="text-sm text-zinc-500">This booking has already been cancelled.</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Warning note */}
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-zinc-500 leading-relaxed">
               Cancellation may be subject to the coach&apos;s refund policy. Once cancelled,
               this cannot be undone.
             </p>
@@ -98,7 +96,7 @@ export default async function GuestCancelPage({
               <input type="hidden" name="guest_token" value={guestToken} />
               <button
                 type="submit"
-                className="w-full rounded-xl bg-red-600 py-3 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                className="w-full rounded-xl border border-red-900 bg-red-950 py-3 text-sm font-semibold text-red-400 hover:bg-red-900 hover:text-red-200 transition-colors"
               >
                 Confirm cancellation
               </button>

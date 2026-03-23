@@ -3,6 +3,28 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
 import BookingForm, { type DaySlots } from './booking-form'
 
+/** Returns the next occurrence of dayOfWeek (0=Sun…6=Sat) starting from
+ *  tomorrow in the given timezone, as a "YYYY-MM-DD" string. */
+function nextOccurrenceDate(dayOfWeek: number, timezone: string): string {
+  const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date())
+  const [y, mo, d] = todayStr.split('-').map(Number)
+  const today = new Date(y, mo - 1, d)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+  const daysUntil = (dayOfWeek - tomorrow.getDay() + 7) % 7
+  const target = new Date(tomorrow)
+  target.setDate(tomorrow.getDate() + daysUntil)
+  const ty = target.getFullYear()
+  const tm = String(target.getMonth() + 1).padStart(2, '0')
+  const td = String(target.getDate()).padStart(2, '0')
+  return `${ty}-${tm}-${td}`
+}
+
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
 export default async function BookingPage({
   params,
 }: {
@@ -25,19 +47,18 @@ export default async function BookingPage({
 
   if (!session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-8">
+      <div className="flex min-h-screen items-center justify-center px-4">
         <div className="text-center space-y-2">
-          <p className="text-lg font-medium">Session not available</p>
+          <p className="text-base font-medium text-zinc-200">Session not available</p>
           <p className="text-sm text-zinc-500">This booking link is no longer active.</p>
         </div>
       </div>
     )
   }
 
-  // Fetch availability rules (anon client, public RLS policy) and coach
-  // timezone (service client — profiles has no public SELECT policy) in parallel.
+  const SESSION_LIMIT = 10
   const serviceClient = createServiceClient()
-  const [{ data: availability }, { data: profile }] = await Promise.all([
+  const [{ data: availability }, { data: profile }, { count: usedCount }] = await Promise.all([
     supabase
       .from('availability_rules')
       .select('day_of_week, start_time, end_time')
@@ -50,20 +71,69 @@ export default async function BookingPage({
       .select('timezone')
       .eq('id', session.coach_id)
       .single(),
+    serviceClient
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', session.coach_id)
+      .neq('status', 'cancelled'),
   ])
+
+  const atLimit = (usedCount ?? 0) >= SESSION_LIMIT
 
   const coachTimezone = profile?.timezone ?? 'UTC'
 
-  // Generate slots server-side and group by day
+  // Compute the concrete booking date for each active day of week.
+  const dayDates = new Map<number, string>()
+  for (const rule of availability ?? []) {
+    if (!dayDates.has(rule.day_of_week)) {
+      dayDates.set(rule.day_of_week, nextOccurrenceDate(rule.day_of_week, coachTimezone))
+    }
+  }
+
+  // Fetch active bookings on the exact dates we will display.
+  // Uses the service client (bypasses RLS — booking page is public/unauthenticated).
+  // Statuses 'confirmed' and 'completed' both block a slot; 'cancelled' does not.
+  const dates = Array.from(dayDates.values())
+  let existingBookings: { booking_date: string; start_time: string; end_time: string }[] = []
+  if (dates.length > 0) {
+    const { data, error } = await serviceClient
+      .from('bookings')
+      .select('booking_date, start_time, end_time')
+      .eq('coach_id', session.coach_id)
+      .in('booking_date', dates)
+      .in('status', ['confirmed', 'completed'])
+    if (error) {
+      console.error('[book] existingBookings query failed:', error.message)
+      // Fail safe: treat all slots as unavailable to avoid double-bookings.
+      existingBookings = []
+    } else {
+      existingBookings = data ?? []
+    }
+  }
+
+  // Build slot map, excluding any slot that overlaps an existing booking.
+  // Normalize booking_date to YYYY-MM-DD (slice(0,10)) to guard against
+  // any timestamp suffix in the PostgREST response.
   const slotMap = new Map<number, string[]>()
   for (const rule of availability ?? []) {
-    const slots = generateSlots(
-      rule.start_time,
-      rule.end_time,
-      session.duration_minutes
+    const date = dayDates.get(rule.day_of_week)!
+    const bookingsOnDate = existingBookings.filter(
+      (b) => String(b.booking_date).slice(0, 10) === date
     )
+
+    const slots = generateSlots(rule.start_time, rule.end_time, session.duration_minutes)
+    const available = slots.filter((slot) => {
+      const slotStart = timeToMinutes(slot)
+      const slotEnd = slotStart + session.duration_minutes
+      return !bookingsOnDate.some((b) => {
+        const bStart = timeToMinutes(b.start_time)
+        const bEnd = timeToMinutes(b.end_time)
+        return bStart < slotEnd && bEnd > slotStart
+      })
+    })
+
     const existing = slotMap.get(rule.day_of_week) ?? []
-    slotMap.set(rule.day_of_week, [...existing, ...slots])
+    slotMap.set(rule.day_of_week, [...existing, ...available])
   }
 
   const daySlots: DaySlots[] = Array.from(slotMap.entries())
@@ -73,44 +143,54 @@ export default async function BookingPage({
   const priceFormatted = `$${(session.price_cents / 100).toFixed(2)}`
 
   return (
-    <div className="min-h-screen bg-zinc-50 py-12 px-4">
-      <div className="mx-auto max-w-xl space-y-8">
+    <div className="min-h-screen bg-zinc-950 px-4 py-12">
+      <div className="mx-auto max-w-xl space-y-6">
 
-        {/* Session header */}
-        <div className="rounded-xl border bg-white p-6 space-y-4 shadow-sm">
+        {/* Session header card */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">{session.title}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">{session.title}</h1>
             {session.description && (
-              <p className="text-sm text-zinc-500 leading-relaxed">{session.description}</p>
+              <p className="text-sm text-zinc-100 leading-relaxed">{session.description}</p>
             )}
           </div>
           <div className="flex items-center gap-3 pt-1">
-            <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
+            <span className="inline-flex items-center rounded-full border border-zinc-600 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-100">
               {session.duration_minutes} min
             </span>
-            <span className="text-xl font-semibold">{priceFormatted}</span>
+            <span className="text-xl font-semibold text-zinc-100">{priceFormatted}</span>
           </div>
         </div>
 
         {/* Slot picker + booking form */}
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-400 px-1">
-            Choose a time
-          </h2>
-
-          {daySlots.length > 0 ? (
-            <BookingForm
-              sessionTypeId={session.id}
-              daySlots={daySlots}
-              coachTimezone={coachTimezone}
-            />
-          ) : (
-            <div className="rounded-xl border bg-white p-6 shadow-sm text-center space-y-1">
-              <p className="text-sm font-medium text-zinc-700">No availability yet</p>
-              <p className="text-xs text-zinc-400">
-                This coach hasn&apos;t set up their schedule. Check back soon.
+          {atLimit ? (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center space-y-1">
+              <p className="text-sm font-medium text-zinc-300">Bookings unavailable</p>
+              <p className="text-sm text-zinc-500">
+                This coach isn&apos;t accepting new bookings right now. Try contacting them directly.
               </p>
             </div>
+          ) : (
+            <>
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 px-1">
+                Choose a time
+              </p>
+              {daySlots.length > 0 ? (
+                <BookingForm
+                  sessionTypeId={session.id}
+                  daySlots={daySlots}
+                  coachTimezone={coachTimezone}
+                />
+              ) : (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center space-y-1">
+                  <p className="text-sm font-medium text-zinc-300">No availability yet</p>
+                  <p className="text-xs text-zinc-500">
+                    This coach hasn&apos;t set up their schedule. Check back soon.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
 

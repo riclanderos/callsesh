@@ -9,7 +9,7 @@ export default function CancelButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded border px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+      className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-red-400 hover:bg-zinc-800 hover:border-red-900 disabled:opacity-50 transition-colors"
     >
       {pending ? 'Cancelling…' : 'Cancel'}
     </button>

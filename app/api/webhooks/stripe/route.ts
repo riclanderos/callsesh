@@ -82,7 +82,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         // Room is missing (previous delivery crashed after insert).
         // Create it now; do not re-send emails.
-        await provisionDailyRoom(existing.id)
+        try {
+          await provisionDailyRoom(existing.id)
+        } catch (e) {
+          console.error('Daily room provisioning failed (retry path) for booking', existing.id, e)
+          return NextResponse.json({ error: 'Daily room provisioning failed.' }, { status: 500 })
+        }
         return NextResponse.json({ received: true })
       }
 

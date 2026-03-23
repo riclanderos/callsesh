@@ -41,6 +41,42 @@ export async function createAvailabilityRule(
   redirect('/dashboard/availability')
 }
 
+export async function createBulkAvailabilityRules(
+  _prevState: string | null,
+  formData: FormData
+): Promise<string | null> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const days = formData.getAll('days').map((d) => parseInt(d as string, 10))
+  const startTime = (formData.get('start_time') as string ?? '').trim()
+  const endTime   = (formData.get('end_time')   as string ?? '').trim()
+
+  if (days.length === 0) return 'Select at least one day.'
+  if (days.some((d) => isNaN(d) || d < 0 || d > 6)) return 'Invalid day selected.'
+  if (!startTime) return 'Start time is required.'
+  if (!endTime)   return 'End time is required.'
+  if (endTime <= startTime) return 'End time must be after start time.'
+
+  const rows = days.map((day) => ({
+    coach_id:    user.id,
+    day_of_week: day,
+    start_time:  startTime,
+    end_time:    endTime,
+    is_active:   true,
+  }))
+
+  const { error } = await supabase.from('availability_rules').insert(rows)
+
+  if (error) return error.message
+
+  redirect('/dashboard/availability')
+}
+
 export async function updateAvailabilityRule(formData: FormData): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

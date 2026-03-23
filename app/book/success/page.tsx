@@ -2,13 +2,12 @@ import Link from 'next/link'
 
 export default function BookingSuccessPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-8">
-      <div className="max-w-md w-full space-y-8 text-center">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-8 text-center">
 
-        {/* Checkmark */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-green-900 bg-green-950">
           <svg
-            className="h-8 w-8 text-green-600"
+            className="h-8 w-8 text-green-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -19,9 +18,9 @@ export default function BookingSuccessPage() {
           </svg>
         </div>
 
-        <div className="space-y-3">
-          <h1 className="text-2xl font-semibold tracking-tight">You&apos;re booked!</h1>
-          <p className="text-sm text-zinc-500 leading-relaxed">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">You&apos;re booked!</h1>
+          <p className="text-sm text-zinc-400 leading-relaxed">
             Payment confirmed. A confirmation email is on its way with your session
             details and a secure link to join the video call.
           </p>
@@ -29,7 +28,7 @@ export default function BookingSuccessPage() {
 
         <Link
           href="/"
-          className="inline-block text-sm text-zinc-400 hover:text-zinc-700 transition-colors"
+          className="inline-block text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
         >
           ← Back to home
         </Link>

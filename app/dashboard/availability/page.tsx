@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import CreateAvailabilityRuleForm from './create-form'
+import BulkAvailabilityForm from './bulk-form'
 import RuleList, { type Rule } from './rule-list'
 
 export default async function AvailabilityPage() {
@@ -22,33 +23,45 @@ export default async function AvailabilityPage() {
   if (error) throw new Error(error.message)
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="mx-auto max-w-3xl space-y-8">
+    <div className="min-h-screen px-6 py-10">
+      <div className="mx-auto max-w-4xl space-y-8">
 
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Availability</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              Set the days and times you&apos;re available for sessions.
-            </p>
+          <div className="space-y-0.5">
+            <h1 className="text-2xl font-semibold text-zinc-100">Availability</h1>
+            <p className="text-sm text-zinc-500">Set the days and times you&apos;re available.</p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-black"
+            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
         </div>
 
-        {/* Existing rules — edit / toggle / delete handled in RuleList */}
+        {/* Bulk setup */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
+          <div className="space-y-0.5">
+            <h2 className="font-medium text-zinc-100">Quick setup</h2>
+            <p className="text-xs text-zinc-500">
+              Apply the same hours to multiple days at once.
+            </p>
+          </div>
+          <BulkAvailabilityForm />
+        </section>
+
+        {/* Existing rules */}
         <RuleList rules={(rules ?? []) as Rule[]} />
 
-        {/* Create form */}
-        <div className="space-y-4 rounded-lg border p-6">
-          <h2 className="font-medium">Add availability</h2>
+        {/* Single-day form */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
+          <div className="space-y-0.5">
+            <h2 className="font-medium text-zinc-100">Add a specific day</h2>
+            <p className="text-xs text-zinc-500">Set different hours for one day.</p>
+          </div>
           <CreateAvailabilityRuleForm />
-        </div>
+        </section>
 
       </div>
     </div>
