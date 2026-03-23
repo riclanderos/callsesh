@@ -119,6 +119,8 @@ export default async function DashboardPage() {
               <p className="text-xs font-medium text-amber-400">
                 {remaining} session{remaining === 1 ? '' : 's'} remaining
               </p>
+            ) : planKey === 'pro' ? (
+              <p className="text-xs text-zinc-500">Unlimited sessions</p>
             ) : (
               <p className="text-xs text-zinc-500">
                 {used} of {sessionLimit} sessions used
