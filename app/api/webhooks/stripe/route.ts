@@ -6,6 +6,14 @@ import { sendGuestConfirmation, sendCoachNotification } from '@/lib/email'
 import { provisionDailyRoom } from '@/lib/daily'
 import Stripe from 'stripe'
 
+/** Maps the first price ID on a subscription to our internal plan key. */
+function planKeyFromSub(sub: Stripe.Subscription): 'starter' | 'pro' | 'free' {
+  const priceId = sub.items.data[0]?.price?.id
+  if (priceId && priceId === process.env.STRIPE_PRICE_STARTER) return 'starter'
+  if (priceId && priceId === process.env.STRIPE_PRICE_PRO)     return 'pro'
+  return 'free'
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.text()
   const sig = req.headers.get('stripe-signature') ?? ''
@@ -245,6 +253,40 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (error) console.error('[webhook] invoice subscription update error:', error.message)
       else console.log('[webhook] subscription renewed for sub:', subId)
     }
+
+    return NextResponse.json({ received: true })
+  }
+
+  if (
+    event.type === 'customer.subscription.updated' ||
+    event.type === 'customer.subscription.deleted'
+  ) {
+    const sub = event.data.object as Stripe.Subscription
+    const subId      = sub.id
+    const planKey    = planKeyFromSub(sub)
+    const periodEnd  = sub.items.data[0]?.current_period_end ?? null
+
+    console.log(`[webhook] ${event.type}`, {
+      event_id:        event.id,
+      subscription_id: subId,
+      customer_id:     sub.customer,
+      status:          sub.status,
+      plan_key:        planKey,
+      period_end:      periodEnd,
+    })
+
+    const { error } = await createServiceClient()
+      .from('subscriptions')
+      .update({
+        plan_key:           planKey,
+        status:             sub.status,
+        current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+        updated_at:         new Date().toISOString(),
+      })
+      .eq('stripe_subscription_id', subId)
+
+    if (error) console.error(`[webhook] ${event.type} update error:`, error.message)
+    else console.log(`[webhook] subscription updated for sub:`, subId)
 
     return NextResponse.json({ received: true })
   }

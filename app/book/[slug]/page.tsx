@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
+import { getUserPlan } from '@/lib/plan'
 import Link from 'next/link'
 import BookingForm, { type DaySlots } from './booking-form'
 
@@ -57,9 +58,8 @@ export default async function BookingPage({
     )
   }
 
-  const SESSION_LIMIT = 10
   const serviceClient = createServiceClient()
-  const [{ data: availability }, { data: profile }, { count: usedCount }] = await Promise.all([
+  const [{ data: availability }, { data: profile }, { count: usedCount }, { sessionLimit }] = await Promise.all([
     supabase
       .from('availability_rules')
       .select('day_of_week, start_time, end_time')
@@ -77,9 +77,13 @@ export default async function BookingPage({
       .select('id', { count: 'exact', head: true })
       .eq('coach_id', session.coach_id)
       .neq('status', 'cancelled'),
+    getUserPlan(session.coach_id),
   ])
 
-  const atLimit = (usedCount ?? 0) >= SESSION_LIMIT
+  const atLimit = (usedCount ?? 0) >= sessionLimit
+
+  const { data: { user: viewer } } = await supabase.auth.getUser()
+  const isCoachOwner = viewer?.id === session.coach_id
 
   const coachTimezone = profile?.timezone ?? 'UTC'
 
@@ -166,26 +170,33 @@ export default async function BookingPage({
         {/* Slot picker + booking form */}
         <div className="space-y-3">
           {atLimit ? (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-5">
-              <div className="space-y-2">
-                <p className="text-base font-semibold text-zinc-100">You&apos;ve reached your session limit</p>
-                <p className="text-sm text-zinc-400">Upgrade your plan to keep accepting bookings.</p>
+            isCoachOwner ? (
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-5">
+                <div className="space-y-2">
+                  <p className="text-base font-semibold text-zinc-100">You&apos;ve reached your session limit</p>
+                  <p className="text-sm text-zinc-400">Upgrade your plan to keep accepting bookings.</p>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Link
+                    href="/upgrade"
+                    className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors text-center"
+                  >
+                    See plans
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors text-center sm:text-left"
+                  >
+                    Back to dashboard
+                  </Link>
+                </div>
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link
-                  href="/upgrade"
-                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors text-center"
-                >
-                  See plans
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors text-center sm:text-left"
-                >
-                  Back to dashboard
-                </Link>
+            ) : (
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-2">
+                <p className="text-base font-semibold text-zinc-100">This coach is not accepting new bookings right now</p>
+                <p className="text-sm text-zinc-400">Please check back later or contact the coach directly.</p>
               </div>
-            </div>
+            )
           ) : (
             <>
               <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 px-1">

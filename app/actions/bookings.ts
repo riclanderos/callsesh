@@ -3,6 +3,7 @@
 import { timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { getUserPlan } from '@/lib/plan'
 import { generateSlots } from '@/lib/slots'
 import { stripe } from '@/lib/stripe'
 import { revalidatePath } from 'next/cache'
@@ -77,16 +78,18 @@ export async function startCheckout(
 
   if (!sessionType) return { ok: false, error: 'Session not found.' }
 
-  // Enforce free-tier session limit — count all non-cancelled bookings for this coach.
-  const SESSION_LIMIT = 10
-  const { count: usedCount } = await createServiceClient()
-    .from('bookings')
-    .select('id', { count: 'exact', head: true })
-    .eq('coach_id', sessionType.coach_id)
-    .neq('status', 'cancelled')
+  // Enforce plan session limit — resolve the coach's current plan then count usage.
+  const [{ sessionLimit }, { count: usedCount }] = await Promise.all([
+    getUserPlan(sessionType.coach_id),
+    createServiceClient()
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', sessionType.coach_id)
+      .neq('status', 'cancelled'),
+  ])
 
-  if ((usedCount ?? 0) >= SESSION_LIMIT)
-    return { ok: false, error: 'This coach has reached their free session limit and cannot accept new bookings at this time.' }
+  if ((usedCount ?? 0) >= sessionLimit)
+    return { ok: false, error: 'This coach has reached their session limit and cannot accept new bookings at this time.' }
 
   // Fetch the coach's timezone via the service client — profiles has no public
   // SELECT policy; this action runs server-side only so the service key is safe.
