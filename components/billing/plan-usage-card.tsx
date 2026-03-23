@@ -96,13 +96,6 @@ export default function PlanUsageCard({
           ) : (
             <PortalButton label={ctaLabel} variant="primary" />
           )}
-          {planKey === 'free' && (
-            <Link
-              href="/upgrade"
-              className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
-              View pricing
-            </Link>
-          )}
         </div>
       </div>
     );
@@ -132,13 +125,6 @@ export default function PlanUsageCard({
           ) : (
             <PortalButton label={ctaLabel} variant="primary" />
           )}
-          {planKey === 'free' && (
-            <Link
-              href="/upgrade"
-              className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
-              View pricing
-            </Link>
-          )}
         </div>
       </div>
     );
@@ -164,13 +150,6 @@ export default function PlanUsageCard({
           </Link>
         ) : (
           <PortalButton label={ctaLabel} />
-        )}
-        {planKey === 'free' && (
-          <Link
-            href="/upgrade"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-            View pricing
-          </Link>
         )}
       </div>
     </div>
