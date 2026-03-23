@@ -40,8 +40,6 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login');
 
-  console.log('[dashboard] user.id:', user.id);
-
   const headersList = await headers();
   const host = headersList.get('host') ?? 'localhost:3000';
   const proto =
@@ -80,8 +78,6 @@ export default async function DashboardPage() {
       .neq('status', 'cancelled'),
     getUserPlan(user.id),
   ]);
-
-  console.log('[dashboard] plan result:', { planKey, planName, sessionLimit });
 
   const used = usedCount ?? 0;
   const remaining = sessionLimit - used;

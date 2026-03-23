@@ -1,10 +1,40 @@
 import { createClient } from '@/lib/supabase/server'
+import { getUserPlan } from '@/lib/plan'
 import Link from 'next/link'
 import { startSubscription } from '@/app/actions/subscription'
 
-const SESSION_LIMIT = 10
+type CtaStyle = 'current' | 'primary' | 'secondary' | 'none'
 
-const plans = [
+function resolveCtaStyle(
+  cardPlanKey: string | null,
+  userPlanKey: string,
+): CtaStyle {
+  // Free card
+  if (cardPlanKey === null) {
+    return userPlanKey === 'free' ? 'current' : 'none'
+  }
+  // Starter card
+  if (cardPlanKey === 'starter') {
+    if (userPlanKey === 'free') return 'primary'
+    if (userPlanKey === 'starter') return 'current'
+    return 'none' // pro user — downgrade not supported
+  }
+  // Pro card
+  if (cardPlanKey === 'pro') {
+    if (userPlanKey === 'pro') return 'current'
+    return 'secondary' // free or starter user — upgrade option
+  }
+  return 'none'
+}
+
+function resolveCtaLabel(cardPlanKey: string | null, ctaStyle: CtaStyle): string {
+  if (ctaStyle === 'current') return 'Current plan'
+  if (cardPlanKey === 'starter') return 'Upgrade to Starter'
+  if (cardPlanKey === 'pro') return 'Upgrade to Pro'
+  return ''
+}
+
+const planDefs = [
   {
     name: 'Free',
     price: '$0',
@@ -18,9 +48,6 @@ const plans = [
       'Guest booking links',
     ],
     badge: null,
-    isCurrent: true,
-    ctaLabel: 'Current plan',
-    ctaStyle: 'current' as const,
     planKey: null,
     priceClass: 'text-zinc-100',
     sessionsClass: 'text-zinc-300',
@@ -38,9 +65,6 @@ const plans = [
       'Guest booking links',
     ],
     badge: 'Most popular',
-    isCurrent: false,
-    ctaLabel: 'Upgrade to Starter',
-    ctaStyle: 'primary' as const,
     planKey: 'starter',
     priceClass: 'text-zinc-100',
     sessionsClass: 'text-zinc-300',
@@ -58,9 +82,6 @@ const plans = [
       'Guest booking links',
     ],
     badge: null,
-    isCurrent: false,
-    ctaLabel: 'Upgrade to Pro',
-    ctaStyle: 'secondary' as const,
     planKey: 'pro',
     priceClass: 'text-zinc-300',
     sessionsClass: 'text-zinc-500',
@@ -73,7 +94,11 @@ export default async function UpgradePage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  let remaining = SESSION_LIMIT
+  const { planKey: userPlanKey, sessionLimit } = user
+    ? await getUserPlan(user.id)
+    : { planKey: 'free' as const, sessionLimit: 10 }
+
+  let remaining = sessionLimit
 
   if (user) {
     const { count } = await supabase
@@ -81,10 +106,17 @@ export default async function UpgradePage() {
       .select('id', { count: 'exact', head: true })
       .eq('coach_id', user.id)
       .neq('status', 'cancelled')
-    remaining = SESSION_LIMIT - (count ?? 0)
+    remaining = sessionLimit - (count ?? 0)
   }
 
   const isBlocked = remaining <= 0
+
+  const plans = planDefs.map((def) => {
+    const ctaStyle = resolveCtaStyle(def.planKey, userPlanKey)
+    const ctaLabel = resolveCtaLabel(def.planKey, ctaStyle)
+    const isCurrent = ctaStyle === 'current'
+    return { ...def, ctaStyle, ctaLabel, isCurrent }
+  })
 
   return (
     <div className="min-h-screen px-6 py-16">
@@ -111,7 +143,7 @@ export default async function UpgradePage() {
                   : 'border-zinc-800 bg-zinc-900'
               }`}
             >
-              {plan.badge && (
+              {plan.badge && !plan.isCurrent && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-indigo-700 bg-indigo-950 px-3 py-0.5 text-xs font-medium text-indigo-300">
                   {plan.badge}
                 </span>
@@ -182,6 +214,7 @@ export default async function UpgradePage() {
                   </button>
                 </form>
               )}
+              {/* ctaStyle === 'none': no CTA rendered */}
             </div>
           ))}
         </div>
