@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserPlan } from '@/lib/plan'
 import Link from 'next/link'
 import { startSubscription } from '@/app/actions/subscription'
+import ManageBillingButton from './manage-billing-button'
 
 type CtaStyle = 'current' | 'primary' | 'secondary' | 'none'
 
@@ -220,11 +221,16 @@ export default async function UpgradePage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-zinc-600">
-          <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-300 transition-colors">
-            Back to dashboard →
-          </Link>
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          {(userPlanKey === 'starter' || userPlanKey === 'pro') && (
+            <ManageBillingButton />
+          )}
+          <p className="text-xs text-zinc-600">
+            <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-300 transition-colors">
+              Back to dashboard →
+            </Link>
+          </p>
+        </div>
 
       </div>
     </div>
