@@ -24,6 +24,45 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
+
+    // Subscription checkout — upsert the user's subscription record.
+    if (session.mode === 'subscription') {
+      const userId       = session.client_reference_id ?? session.metadata?.user_id ?? null
+      const customerId   = typeof session.customer    === 'string' ? session.customer    : session.customer?.id    ?? null
+      const subId        = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id ?? null
+      const planKey      = session.metadata?.plan ?? 'free'
+
+      console.log('[webhook] subscription checkout.session.completed', {
+        event_id: event.id, checkout_session_id: session.id,
+        user_id: userId, customer_id: customerId,
+        subscription_id: subId, plan: planKey,
+        customer_email: session.customer_details?.email ?? null,
+      })
+
+      if (userId && customerId && subId) {
+        const sub = await stripe.subscriptions.retrieve(subId)
+        const periodEnd = sub.items.data[0]?.current_period_end ?? null
+        const { error } = await createServiceClient()
+          .from('subscriptions')
+          .upsert({
+            user_id:                userId,
+            stripe_customer_id:     customerId,
+            stripe_subscription_id: subId,
+            plan_key:               planKey,
+            status:                 sub.status,
+            current_period_end:     periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+            updated_at:             new Date().toISOString(),
+          }, { onConflict: 'user_id' })
+        if (error) console.error('[webhook] subscription upsert error:', error.message)
+        else console.log('[webhook] subscription upserted for user:', userId)
+      } else {
+        console.error('[webhook] subscription checkout missing ids — skipping upsert', { userId, customerId, subId })
+      }
+
+      return NextResponse.json({ received: true })
+    }
+
+    // One-time payment checkout (booking flow) — original handling below.
     const m = session.metadata
 
     if (
@@ -170,6 +209,44 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } else {
       console.error('Could not resolve coach email for booking notification:', m.coach_id)
     }
+  }
+
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object as Stripe.Invoice
+    const subDetails = invoice.parent?.type === 'subscription_details'
+      ? invoice.parent.subscription_details
+      : null
+    const subIdRaw = subDetails?.subscription ?? null
+    const subId    = typeof subIdRaw === 'string' ? subIdRaw : subIdRaw?.id ?? null
+    const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id ?? null
+
+    console.log('[webhook] invoice.payment_succeeded', {
+      event_id:        event.id,
+      invoice_id:      invoice.id,
+      subscription_id: subId,
+      customer_id:     customerId,
+      customer_email:  invoice.customer_email ?? null,
+      amount_paid:     invoice.amount_paid,
+      currency:        invoice.currency,
+      billing_reason:  invoice.billing_reason,
+    })
+
+    if (subId) {
+      const sub = await stripe.subscriptions.retrieve(subId)
+      const periodEnd = sub.items.data[0]?.current_period_end ?? null
+      const { error } = await createServiceClient()
+        .from('subscriptions')
+        .update({
+          status:             sub.status,
+          current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+          updated_at:         new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', subId)
+      if (error) console.error('[webhook] invoice subscription update error:', error.message)
+      else console.log('[webhook] subscription renewed for sub:', subId)
+    }
+
+    return NextResponse.json({ received: true })
   }
 
   return NextResponse.json({ received: true })
