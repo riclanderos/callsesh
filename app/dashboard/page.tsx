@@ -103,7 +103,7 @@ export default async function DashboardPage() {
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <h1 className="text-2xl font-semibold text-zinc-100">
-              Welcome back
+              Your dashboard
             </h1>
             <p className="text-sm text-zinc-500">{user.email}</p>
             {remaining <= 0 ? (
