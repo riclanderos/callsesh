@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { logout } from '@/app/actions/auth'
 import CopyButton from './copy-button'
 import RelativeTime from './relative-time'
+import PlanUsageCard from '@/components/billing/plan-usage-card'
 
 function toTitleCase(name: string): string {
   return name
@@ -237,6 +238,23 @@ export default async function DashboardPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* Plan & usage */}
+        <section className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Your plan</p>
+          {remaining >= 1 && remaining <= 3 && (
+            <p className="text-xs text-amber-400 px-1">
+              You have {remaining} session{remaining === 1 ? '' : 's'} remaining before you hit your limit.{' '}
+              <Link
+                href="/upgrade"
+                className="font-medium underline underline-offset-2 hover:text-amber-300 transition-colors"
+              >
+                Upgrade
+              </Link>
+            </p>
+          )}
+          <PlanUsageCard sessionsUsed={used} sessionLimit={SESSION_LIMIT} />
         </section>
 
       </div>

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { generateSlots } from '@/lib/slots'
+import Link from 'next/link'
 import BookingForm, { type DaySlots } from './booking-form'
 
 /** Returns the next occurrence of dayOfWeek (0=Sun…6=Sat) starting from
@@ -165,11 +166,25 @@ export default async function BookingPage({
         {/* Slot picker + booking form */}
         <div className="space-y-3">
           {atLimit ? (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center space-y-1">
-              <p className="text-sm font-medium text-zinc-300">Bookings unavailable</p>
-              <p className="text-sm text-zinc-500">
-                This coach isn&apos;t accepting new bookings right now. Try contacting them directly.
-              </p>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-5">
+              <div className="space-y-2">
+                <p className="text-base font-semibold text-zinc-100">You&apos;ve reached your session limit</p>
+                <p className="text-sm text-zinc-400">Upgrade your plan to keep accepting bookings.</p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  href="/upgrade"
+                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors text-center"
+                >
+                  See plans
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors text-center sm:text-left"
+                >
+                  Back to dashboard
+                </Link>
+              </div>
             </div>
           ) : (
             <>
