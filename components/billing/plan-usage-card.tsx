@@ -29,11 +29,6 @@ export default function PlanUsageCard({
             className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-zinc-100 transition-colors">
             {ctaLabel}
           </Link>
-          <Link
-            href="/upgrade"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-            View pricing
-          </Link>
         </div>
       </div>
     );
@@ -60,11 +55,13 @@ export default function PlanUsageCard({
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
             {ctaLabel}
           </Link>
-          <Link
-            href="/upgrade"
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
-            View pricing
-          </Link>
+          {planKey === 'free' && (
+            <Link
+              href="/upgrade"
+              className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+              View pricing
+            </Link>
+          )}
         </div>
       </div>
     );
@@ -90,11 +87,13 @@ export default function PlanUsageCard({
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
             {ctaLabel}
           </Link>
-          <Link
-            href="/upgrade"
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
-            View pricing
-          </Link>
+          {planKey === 'free' && (
+            <Link
+              href="/upgrade"
+              className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+              View pricing
+            </Link>
+          )}
         </div>
       </div>
     );
@@ -117,11 +116,13 @@ export default function PlanUsageCard({
           className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-zinc-100 transition-colors">
           {ctaLabel}
         </Link>
-        <Link
-          href="/upgrade"
-          className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-          View pricing
-        </Link>
+        {planKey === 'free' && (
+          <Link
+            href="/upgrade"
+            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+            View pricing
+          </Link>
+        )}
       </div>
     </div>
   );
