@@ -4,13 +4,13 @@ import Link from 'next/link'
 import { startSubscription } from '@/app/actions/subscription'
 import ManageBillingButton from './manage-billing-button'
 
-type CtaStyle = 'current' | 'primary' | 'secondary' | 'none'
+type CtaStyle = 'current' | 'primary' | 'secondary' | 'portal' | 'none'
 
 function resolveCtaStyle(
   cardPlanKey: string | null,
   userPlanKey: string,
 ): CtaStyle {
-  // Free card
+  // Free card — founder intro only, never a downgrade target
   if (cardPlanKey === null) {
     return userPlanKey === 'free' ? 'current' : 'none'
   }
@@ -18,18 +18,21 @@ function resolveCtaStyle(
   if (cardPlanKey === 'starter') {
     if (userPlanKey === 'free') return 'primary'
     if (userPlanKey === 'starter') return 'current'
-    return 'none' // pro user — downgrade not supported
+    if (userPlanKey === 'pro') return 'portal' // downgrade via billing portal
+    return 'none'
   }
   // Pro card
   if (cardPlanKey === 'pro') {
     if (userPlanKey === 'pro') return 'current'
-    return 'secondary' // free or starter user — upgrade option
+    if (userPlanKey === 'starter') return 'primary' // only upgrade option
+    return 'secondary' // free user — secondary alongside starter
   }
   return 'none'
 }
 
 function resolveCtaLabel(cardPlanKey: string | null, ctaStyle: CtaStyle): string {
   if (ctaStyle === 'current') return 'Current plan'
+  if (ctaStyle === 'portal') return 'Change plan'
   if (cardPlanKey === 'starter') return 'Upgrade to Starter'
   if (cardPlanKey === 'pro') return 'Upgrade to Pro'
   return ''
@@ -125,9 +128,15 @@ export default async function UpgradePage() {
 
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-semibold text-zinc-100">Choose a plan</h1>
+          <h1 className="text-3xl font-semibold text-zinc-100">
+            {userPlanKey === 'free' ? 'Choose a plan' : 'Your membership'}
+          </h1>
           <p className="text-sm text-zinc-500">
-            {isBlocked
+            {userPlanKey === 'starter'
+              ? 'Upgrade to Pro or manage your subscription below.'
+              : userPlanKey === 'pro'
+              ? 'Manage your subscription or switch plans below.'
+              : isBlocked
               ? "You've used all your free sessions. Upgrade to keep accepting bookings."
               : 'Choose a plan to grow your coaching business.'}
           </p>
@@ -215,7 +224,14 @@ export default async function UpgradePage() {
                   </button>
                 </form>
               )}
-              {/* ctaStyle === 'none': no CTA rendered */}
+              {plan.ctaStyle === 'portal' && (
+                <ManageBillingButton label={plan.ctaLabel} className="w-full py-2.5" />
+              )}
+              {plan.ctaStyle === 'none' && plan.planKey === null && (
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Free is a founder-only intro plan. It is not available as a downgrade once your initial sessions are used.
+                </p>
+              )}
             </div>
           ))}
         </div>

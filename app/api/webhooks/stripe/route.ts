@@ -278,15 +278,55 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { error } = await createServiceClient()
       .from('subscriptions')
       .update({
-        plan_key:           planKey,
-        status:             sub.status,
-        current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
-        updated_at:         new Date().toISOString(),
+        plan_key:               planKey,
+        status:                 sub.status,
+        current_period_end:     periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+        cancel_at_period_end:   (sub.cancel_at_period_end === true) || (sub.pending_update != null),
+        updated_at:             new Date().toISOString(),
       })
       .eq('stripe_subscription_id', subId)
 
     if (error) console.error(`[webhook] ${event.type} update error:`, error.message)
     else console.log(`[webhook] subscription updated for sub:`, subId)
+
+    return NextResponse.json({ received: true })
+  }
+
+  if (event.type === 'subscription_schedule.updated') {
+    const schedule = event.data.object as Stripe.SubscriptionSchedule
+    const subIdRaw = schedule.subscription
+    const subId = typeof subIdRaw === 'string' ? subIdRaw : subIdRaw?.id ?? null
+
+    if (subId) {
+      // Determine current phase price so we can detect a future phase with a different price.
+      const now = Math.floor(Date.now() / 1000)
+      const phases = schedule.phases ?? []
+      const currentPhase = phases.find((p) => p.start_date <= now && p.end_date > now)
+      const currentPriceId = currentPhase?.items[0]?.price ?? null
+
+      const hasFuturePhase = phases.some(
+        (p) =>
+          p.start_date > now &&
+          p.items[0]?.price !== currentPriceId
+      )
+
+      console.log('[webhook] subscription_schedule.updated', {
+        event_id:         event.id,
+        subscription_id:  subId,
+        has_future_phase: hasFuturePhase,
+      })
+
+      const { error } = await createServiceClient()
+        .from('subscriptions')
+        .update({
+          cancel_at_period_end: hasFuturePhase,
+          updated_at:           new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', subId)
+
+      if (error) console.error('[webhook] subscription_schedule.updated update error:', error.message)
+      else console.log('[webhook] subscription_schedule flag updated for sub:', subId)
+    }
 
     return NextResponse.json({ received: true })
   }

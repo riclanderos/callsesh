@@ -32,7 +32,12 @@ function formatTime(t: string): string {
   return `${hour}:${String(m).padStart(2, '0')} ${period}`;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>
+}) {
+  const { upgraded } = await searchParams
   const supabase = await createClient();
   const {
     data: { user },
@@ -53,6 +58,7 @@ export default async function DashboardPage() {
     { data: sessionTypes },
     { count: usedCount },
     { sessionLimit, planName, planKey },
+    { data: subscription },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -77,6 +83,12 @@ export default async function DashboardPage() {
       .eq('coach_id', user.id)
       .neq('status', 'cancelled'),
     getUserPlan(user.id),
+    supabase
+      .from('subscriptions')
+      .select('cancel_at_period_end')
+      .eq('user_id', user.id)
+      .in('status', ['active', 'trialing'])
+      .maybeSingle(),
   ]);
 
   const used = usedCount ?? 0;
@@ -99,6 +111,16 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto max-w-4xl space-y-8">
+        {/* Upgrade success banner */}
+        {upgraded === '1' && (
+          <div className="rounded-xl border border-indigo-800 bg-indigo-950/40 px-5 py-4 space-y-0.5">
+            <p className="text-sm font-semibold text-indigo-300">Your plan was updated</p>
+            <p className="text-xs text-indigo-400">
+              Your membership is active and your new limits are now available.
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -303,6 +325,11 @@ export default async function DashboardPage() {
             planName={planName}
             planKey={planKey}
           />
+          {subscription?.cancel_at_period_end && (
+            <p className="text-xs text-zinc-500 px-1">
+              Your plan will change at the end of your billing period.
+            </p>
+          )}
         </section>
       </div>
     </div>

@@ -2,7 +2,13 @@
 
 import { useState } from 'react'
 
-export default function ManageBillingButton() {
+export default function ManageBillingButton({
+  label = 'Manage billing',
+  className,
+}: {
+  label?: string
+  className?: string
+} = {}) {
   const [loading, setLoading] = useState(false)
 
   async function handleClick() {
@@ -25,9 +31,9 @@ export default function ManageBillingButton() {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className={`rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed${className ? ` ${className}` : ''}`}
     >
-      {loading ? 'Redirecting…' : 'Manage billing'}
+      {loading ? 'Redirecting…' : label}
     </button>
   )
 }
