@@ -87,7 +87,6 @@ export default async function DashboardPage({
       .from('subscriptions')
       .select('cancel_at_period_end')
       .eq('user_id', user.id)
-      .in('status', ['active', 'trialing'])
       .maybeSingle(),
   ]);
 
