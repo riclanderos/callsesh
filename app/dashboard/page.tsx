@@ -87,11 +87,20 @@ export default async function DashboardPage({
 
   const { data: subscriptionRow } = await createServiceClient()
     .from('subscriptions')
-    .select('cancel_at_period_end')
+    .select('cancel_at_period_end, current_period_end')
     .eq('user_id', user.id)
     .maybeSingle();
 
   const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true;
+
+  const downgradeDateLabel = subscriptionRow?.current_period_end
+    ? new Date(subscriptionRow.current_period_end).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
+
+  const targetPlanName = planKey === 'pro' ? 'Starter' : 'a different plan';
 
   const used = usedCount ?? 0;
   const remaining = sessionLimit - used;
@@ -331,7 +340,8 @@ export default async function DashboardPage({
           />
           {cancelAtPeriodEnd && (
             <p className="text-xs text-zinc-500 px-1">
-              Your plan will change at the end of your billing period.
+              Your plan will downgrade to {targetPlanName}
+              {downgradeDateLabel ? ` on ${downgradeDateLabel}` : ' at the end of your billing period'}.
             </p>
           )}
         </section>

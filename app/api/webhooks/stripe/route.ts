@@ -297,6 +297,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const subIdRaw = schedule.subscription
     const subId = typeof subIdRaw === 'string' ? subIdRaw : subIdRaw?.id ?? null
 
+    console.log('[webhook] subscription_schedule.updated — raw', {
+      event_id:        event.id,
+      schedule_id:     schedule.id,
+      subscription_id: subId,
+      phase_count:     (schedule.phases ?? []).length,
+    })
+
     if (subId) {
       const now = Math.floor(Date.now() / 1000)
       const phases = schedule.phases ?? []
@@ -314,22 +321,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       )
       const currentPriceId = toPriceId(currentPhase?.items[0]?.price)
 
-      // Future phase: starts in the future and carries a different price.
-      const hasFuturePhase = phases.some(
-        (p) =>
-          p.start_date > now &&
-          toPriceId(p.items[0]?.price) !== currentPriceId
-      )
+      const futurePhases = phases.filter((p) => p.start_date > now)
+      const futurePriceIds = futurePhases.map((p) => toPriceId(p.items[0]?.price))
 
-      console.log('[webhook] subscription_schedule.updated', {
-        event_id:          event.id,
-        subscription_id:   subId,
-        phase_count:       phases.length,
-        current_price_id:  currentPriceId,
-        has_future_phase:  hasFuturePhase,
+      // Future phase: starts in the future and carries a different price.
+      const hasFuturePhase = futurePriceIds.some((id) => id !== currentPriceId)
+
+      console.log('[webhook] subscription_schedule.updated — phase analysis', {
+        event_id:                       event.id,
+        schedule_id:                    schedule.id,
+        subscription_id:                subId,
+        now,
+        current_phase_start:            currentPhase?.start_date ?? null,
+        current_phase_end:              currentPhase?.end_date ?? null,
+        current_price_id:               currentPriceId,
+        future_phase_price_ids:         futurePriceIds,
+        has_future_phase_diff_price:    hasFuturePhase,
       })
 
-      const { error } = await createServiceClient()
+      const updateResult = await createServiceClient()
         .from('subscriptions')
         .update({
           cancel_at_period_end: hasFuturePhase,
@@ -337,8 +347,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         })
         .eq('stripe_subscription_id', subId)
 
-      if (error) console.error('[webhook] subscription_schedule.updated update error:', error.message)
-      else console.log('[webhook] subscription_schedule flag updated for sub:', subId)
+      console.log('[webhook] subscription_schedule.updated — supabase update result', {
+        event_id:             event.id,
+        subscription_id:      subId,
+        cancel_at_period_end: hasFuturePhase,
+        error:                updateResult.error?.message ?? null,
+        status:               updateResult.status,
+        count:                updateResult.count,
+      })
+    } else {
+      console.warn('[webhook] subscription_schedule.updated — no subscription_id resolved, skipping update', {
+        event_id:    event.id,
+        schedule_id: schedule.id,
+      })
     }
 
     return NextResponse.json({ received: true })
