@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import Link from 'next/link';
@@ -35,9 +36,9 @@ function formatTime(t: string): string {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ upgraded?: string }>
+  searchParams: Promise<{ upgraded?: string }>;
 }) {
-  const { upgraded } = await searchParams
+  const { upgraded } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -84,7 +85,7 @@ export default async function DashboardPage({
     getUserPlan(user.id),
   ]);
 
-  const { data: subscriptionRow } = await supabase
+  const { data: subscriptionRow } = await createServiceClient()
     .from('subscriptions')
     .select('cancel_at_period_end')
     .eq('user_id', user.id)
@@ -115,7 +116,9 @@ export default async function DashboardPage({
         {/* Upgrade success banner */}
         {upgraded === '1' && (
           <div className="rounded-xl border border-indigo-800 bg-indigo-950/40 px-5 py-4 space-y-0.5">
-            <p className="text-sm font-semibold text-indigo-300">Your plan was updated</p>
+            <p className="text-sm font-semibold text-indigo-300">
+              Your plan was updated
+            </p>
             <p className="text-xs text-indigo-400">
               Your membership is active and your new limits are now available.
             </p>
