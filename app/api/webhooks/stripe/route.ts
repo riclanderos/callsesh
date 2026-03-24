@@ -298,22 +298,35 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const subId = typeof subIdRaw === 'string' ? subIdRaw : subIdRaw?.id ?? null
 
     if (subId) {
-      // Determine current phase price so we can detect a future phase with a different price.
       const now = Math.floor(Date.now() / 1000)
       const phases = schedule.phases ?? []
-      const currentPhase = phases.find((p) => p.start_date <= now && p.end_date > now)
-      const currentPriceId = currentPhase?.items[0]?.price ?? null
 
+      // Normalize price to its ID regardless of whether Stripe expanded it.
+      const toPriceId = (p: string | Stripe.Price | Stripe.DeletedPrice | null | undefined): string | null => {
+        if (!p) return null
+        return typeof p === 'string' ? p : p.id
+      }
+
+      // Current phase: started in the past. end_date may be null on the last phase —
+      // treat null end_date as "still active" so the fallback works correctly.
+      const currentPhase = phases.find(
+        (p) => p.start_date <= now && (p.end_date === null || p.end_date > now)
+      )
+      const currentPriceId = toPriceId(currentPhase?.items[0]?.price)
+
+      // Future phase: starts in the future and carries a different price.
       const hasFuturePhase = phases.some(
         (p) =>
           p.start_date > now &&
-          p.items[0]?.price !== currentPriceId
+          toPriceId(p.items[0]?.price) !== currentPriceId
       )
 
       console.log('[webhook] subscription_schedule.updated', {
-        event_id:         event.id,
-        subscription_id:  subId,
-        has_future_phase: hasFuturePhase,
+        event_id:          event.id,
+        subscription_id:   subId,
+        phase_count:       phases.length,
+        current_price_id:  currentPriceId,
+        has_future_phase:  hasFuturePhase,
       })
 
       const { error } = await createServiceClient()
