@@ -58,7 +58,6 @@ export default async function DashboardPage({
     { data: sessionTypes },
     { count: usedCount },
     { sessionLimit, planName, planKey },
-    { data: subscription },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -83,12 +82,15 @@ export default async function DashboardPage({
       .eq('coach_id', user.id)
       .neq('status', 'cancelled'),
     getUserPlan(user.id),
-    supabase
-      .from('subscriptions')
-      .select('cancel_at_period_end')
-      .eq('user_id', user.id)
-      .maybeSingle(),
   ]);
+
+  const { data: subscriptionRow } = await supabase
+    .from('subscriptions')
+    .select('cancel_at_period_end')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true;
 
   const used = usedCount ?? 0;
   const remaining = sessionLimit - used;
@@ -324,7 +326,7 @@ export default async function DashboardPage({
             planName={planName}
             planKey={planKey}
           />
-          {subscription?.cancel_at_period_end && (
+          {cancelAtPeriodEnd && (
             <p className="text-xs text-zinc-500 px-1">
               Your plan will change at the end of your billing period.
             </p>
