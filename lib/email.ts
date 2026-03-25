@@ -105,6 +105,83 @@ export async function sendGuestReminder(
   })
 }
 
+export interface CancellationEmailParams {
+  sessionTitle: string
+  bookingDate: string
+  startTime: string
+  endTime: string
+  guestName: string
+  guestEmail: string
+  coachEmail: string
+  coachTimezone: string
+}
+
+export async function sendGuestCancelledByGuest(params: CancellationEmailParams): Promise<void> {
+  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachEmail, coachTimezone } = params
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
+    to: guestEmail,
+    subject: 'Your session was cancelled',
+    text: [
+      `Hi ${guestName},`,
+      '',
+      'Your session has been cancelled.',
+      '',
+      `Session:  ${sessionTitle}`,
+      `Date:     ${formatDate(bookingDate)}`,
+      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
+      `Coach:    ${coachEmail}`,
+      '',
+      'The time slot has been released.',
+      '',
+      '— CallSesh',
+    ].join('\n'),
+  })
+}
+
+export async function sendCoachGuestCancelled(params: CancellationEmailParams): Promise<void> {
+  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachEmail, coachTimezone } = params
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
+    to: coachEmail,
+    subject: `Session cancelled — ${guestName}`,
+    text: [
+      `${guestName} has cancelled their session.`,
+      '',
+      `Session:  ${sessionTitle}`,
+      `Date:     ${formatDate(bookingDate)}`,
+      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
+      `Guest:    ${guestName} (${guestEmail})`,
+      '',
+      'The time slot has been released.',
+      '',
+      '— CallSesh',
+    ].join('\n'),
+  })
+}
+
+export async function sendGuestCancelledByCoach(params: CancellationEmailParams): Promise<void> {
+  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachTimezone } = params
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
+    to: guestEmail,
+    subject: 'Your session was cancelled by the coach',
+    text: [
+      `Hi ${guestName},`,
+      '',
+      'Your upcoming session has been cancelled by the coach.',
+      '',
+      `Session:  ${sessionTitle}`,
+      `Date:     ${formatDate(bookingDate)}`,
+      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
+      '',
+      'Please contact the coach if you have any questions.',
+      '',
+      '— CallSesh',
+    ].join('\n'),
+  })
+}
+
 export async function sendCoachNotification(params: BookingEmailParams): Promise<void> {
   const {
     sessionTitle,

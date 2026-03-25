@@ -6,6 +6,12 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { getUserPlan } from '@/lib/plan'
 import { generateSlots } from '@/lib/slots'
 import { stripe } from '@/lib/stripe'
+import {
+  sendGuestCancelledByGuest,
+  sendCoachGuestCancelled,
+  sendGuestCancelledByCoach,
+  type CancellationEmailParams,
+} from '@/lib/email'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
@@ -198,7 +204,7 @@ export async function cancelBookingAsGuest(formData: FormData): Promise<void> {
   const serviceClient = createServiceClient()
   const { data: booking } = await serviceClient
     .from('bookings')
-    .select('id, status, guest_access_token')
+    .select('id, status, guest_access_token, coach_id, session_type_id, guest_name, guest_email, booking_date, start_time, end_time')
     .eq('id', bookingId)
     .single()
 
@@ -228,6 +234,35 @@ export async function cancelBookingAsGuest(formData: FormData): Promise<void> {
 
   if (error) throw new Error(`Cancellation failed: ${error.message}`)
 
+  // Send cancellation emails after successful update.
+  try {
+    const [{ data: sessionType }, { data: coachUser }, { data: profileData }] = await Promise.all([
+      serviceClient.from('session_types').select('title').eq('id', booking.session_type_id).single(),
+      serviceClient.auth.admin.getUserById(booking.coach_id),
+      serviceClient.from('profiles').select('timezone').eq('id', booking.coach_id).single(),
+    ])
+    const coachEmail = coachUser.user?.email
+    if (coachEmail) {
+      const emailParams: CancellationEmailParams = {
+        sessionTitle:  sessionType?.title ?? 'Session',
+        bookingDate:   booking.booking_date,
+        startTime:     booking.start_time,
+        endTime:       booking.end_time,
+        guestName:     booking.guest_name,
+        guestEmail:    booking.guest_email,
+        coachEmail,
+        coachTimezone: profileData?.timezone ?? 'UTC',
+      }
+      console.log('Sending cancellation email', { bookingId, initiator: 'guest' })
+      await Promise.all([
+        sendGuestCancelledByGuest(emailParams),
+        sendCoachGuestCancelled(emailParams),
+      ])
+    }
+  } catch (e) {
+    console.error('[cancel] Cancellation email failed:', e)
+  }
+
   redirect('/cancel/confirmed')
 }
 
@@ -246,11 +281,35 @@ export async function cancelBooking(formData: FormData): Promise<void> {
     .update({ status: 'cancelled' })
     .eq('id', bookingId)
     .eq('coach_id', user.id)
-    .select('id')
+    .select('id, session_type_id, guest_name, guest_email, booking_date, start_time, end_time')
 
   if (error) throw new Error(`Cancellation failed: ${error.message}`)
   if (!data || data.length === 0)
     throw new Error('Booking not found or you are not authorised to cancel it.')
+
+  // Send cancellation email to guest only (coach-initiated).
+  try {
+    const svc = createServiceClient()
+    const [{ data: sessionType }, { data: profileData }, { data: coachUser }] = await Promise.all([
+      svc.from('session_types').select('title').eq('id', data[0].session_type_id).single(),
+      svc.from('profiles').select('timezone').eq('id', user.id).single(),
+      svc.auth.admin.getUserById(user.id),
+    ])
+    const emailParams: CancellationEmailParams = {
+      sessionTitle:  sessionType?.title ?? 'Session',
+      bookingDate:   data[0].booking_date,
+      startTime:     data[0].start_time,
+      endTime:       data[0].end_time,
+      guestName:     data[0].guest_name,
+      guestEmail:    data[0].guest_email,
+      coachEmail:    coachUser.user?.email ?? '',
+      coachTimezone: profileData?.timezone ?? 'UTC',
+    }
+    console.log('Sending cancellation email', { bookingId, initiator: 'coach' })
+    await sendGuestCancelledByCoach(emailParams)
+  } catch (e) {
+    console.error('[cancel] Cancellation email failed:', e)
+  }
 
   revalidatePath('/dashboard/bookings')
 }
