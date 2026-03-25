@@ -173,7 +173,7 @@ export async function startCheckout(
       start_time:      startTime,
       end_time:        endTime,
     },
-    success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}&slug=${sessionType.slug}`,
     cancel_url:  `${appUrl}/book/${sessionType.slug}`,
   })
 

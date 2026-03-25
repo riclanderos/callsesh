@@ -4,9 +4,9 @@ import { createServiceClient } from '@/lib/supabase/service'
 export default async function BookingSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>
+  searchParams: Promise<{ session_id?: string; slug?: string }>
 }) {
-  const { session_id } = await searchParams
+  const { session_id, slug } = await searchParams
 
   // Verify a real confirmed booking exists for this Stripe checkout session.
   // The service client bypasses RLS — this is a public page with no guest auth.
@@ -58,6 +58,15 @@ export default async function BookingSuccessPage({
               and we&apos;ll arrange a full refund.
             </p>
           </div>
+
+          {slug && (
+            <Link
+              href={`/book/${slug}`}
+              className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Choose another time
+            </Link>
+          )}
 
           <Link
             href="/"
