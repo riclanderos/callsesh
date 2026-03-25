@@ -274,25 +274,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   if (event.type === 'customer.subscription.updated') {
     const sub = event.data.object as Stripe.Subscription
-    console.log('Subscription updated', {
-      event_id:             event.id,
-      subscription_id:      sub.id,
-      status:               sub.status,
-      cancel_at_period_end: sub.cancel_at_period_end,
-      current_period_end:   sub.items.data[0]?.current_period_end ?? null,
-    })
-    const { error } = await createServiceClient()
+    const itemPeriodEnd = sub.items.data[0]?.current_period_end ?? null
+    console.log('Stripe sub id:', sub.id)
+    console.log('Cancel at period end:', sub.cancel_at_period_end)
+    const svc = createServiceClient()
+    const { data, error } = await svc
       .from('subscriptions')
       .update({
         status:               sub.status,
         cancel_at_period_end: sub.cancel_at_period_end,
-        current_period_end:   sub.items.data[0]?.current_period_end
-          ? new Date(sub.items.data[0].current_period_end * 1000).toISOString()
+        current_period_end:   itemPeriodEnd
+          ? new Date(itemPeriodEnd * 1000).toISOString()
           : null,
         updated_at:           new Date().toISOString(),
       })
       .eq('stripe_subscription_id', sub.id)
-    if (error) console.error('[webhook] customer.subscription.updated error:', error.message)
+      .select()
+    if (error) {
+      console.error('Subscription update error:', error)
+    } else if (!data || data.length === 0) {
+      console.error('No rows updated for subscription')
+    } else {
+      console.log('Updated subscription row:', data)
+    }
     return NextResponse.json({ received: true })
   }
 
