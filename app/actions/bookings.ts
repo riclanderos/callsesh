@@ -241,26 +241,35 @@ export async function cancelBookingAsGuest(formData: FormData): Promise<void> {
       serviceClient.auth.admin.getUserById(booking.coach_id),
       serviceClient.from('profiles').select('timezone').eq('id', booking.coach_id).single(),
     ])
-    const coachEmail = coachUser.user?.email
+    const coachEmail = coachUser.user?.email ?? ''
+    const emailParams: CancellationEmailParams = {
+      sessionTitle:  sessionType?.title ?? 'Session',
+      bookingDate:   booking.booking_date,
+      startTime:     booking.start_time,
+      endTime:       booking.end_time,
+      guestName:     booking.guest_name,
+      guestEmail:    booking.guest_email,
+      coachEmail,
+      coachTimezone: profileData?.timezone ?? 'UTC',
+    }
+    console.log('Sending guest cancellation email', { bookingId, guestEmail: booking.guest_email })
+    try {
+      await sendGuestCancelledByGuest(emailParams)
+    } catch (e) {
+      console.error('[cancel] Guest cancellation email failed:', e)
+    }
     if (coachEmail) {
-      const emailParams: CancellationEmailParams = {
-        sessionTitle:  sessionType?.title ?? 'Session',
-        bookingDate:   booking.booking_date,
-        startTime:     booking.start_time,
-        endTime:       booking.end_time,
-        guestName:     booking.guest_name,
-        guestEmail:    booking.guest_email,
-        coachEmail,
-        coachTimezone: profileData?.timezone ?? 'UTC',
+      console.log('Sending coach cancellation email', { bookingId, coachEmail })
+      try {
+        await sendCoachGuestCancelled(emailParams)
+      } catch (e) {
+        console.error('[cancel] Coach notification email failed:', e)
       }
-      console.log('Sending cancellation email', { bookingId, initiator: 'guest' })
-      await Promise.all([
-        sendGuestCancelledByGuest(emailParams),
-        sendCoachGuestCancelled(emailParams),
-      ])
+    } else {
+      console.warn('[cancel] Coach email not found — skipping coach notification', { coach_id: booking.coach_id })
     }
   } catch (e) {
-    console.error('[cancel] Cancellation email failed:', e)
+    console.error('[cancel] Cancellation email prep failed:', e)
   }
 
   redirect('/cancel/confirmed')
@@ -305,10 +314,10 @@ export async function cancelBooking(formData: FormData): Promise<void> {
       coachEmail:    coachUser.user?.email ?? '',
       coachTimezone: profileData?.timezone ?? 'UTC',
     }
-    console.log('Sending cancellation email', { bookingId, initiator: 'coach' })
+    console.log('Sending guest cancellation email', { bookingId, guestEmail: data[0].guest_email, initiator: 'coach' })
     await sendGuestCancelledByCoach(emailParams)
   } catch (e) {
-    console.error('[cancel] Cancellation email failed:', e)
+    console.error('[cancel] Guest cancellation email failed:', e)
   }
 
   revalidatePath('/dashboard/bookings')

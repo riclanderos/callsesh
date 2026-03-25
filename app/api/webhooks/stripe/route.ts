@@ -6,13 +6,6 @@ import { sendGuestConfirmation, sendCoachNotification } from '@/lib/email'
 import { provisionDailyRoom } from '@/lib/daily'
 import Stripe from 'stripe'
 
-/** Maps the first price ID on a subscription to our internal plan key. */
-function planKeyFromSub(sub: Stripe.Subscription): 'starter' | 'pro' | 'free' {
-  const priceId = sub.items.data[0]?.price?.id
-  if (priceId && priceId === process.env.STRIPE_PRICE_STARTER) return 'starter'
-  if (priceId && priceId === process.env.STRIPE_PRICE_PRO)     return 'pro'
-  return 'free'
-}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.text()
@@ -279,38 +272,42 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ received: true })
   }
 
-  if (
-    event.type === 'customer.subscription.updated' ||
-    event.type === 'customer.subscription.deleted'
-  ) {
+  if (event.type === 'customer.subscription.updated') {
     const sub = event.data.object as Stripe.Subscription
-    const subId      = sub.id
-    const planKey    = planKeyFromSub(sub)
-    const periodEnd  = sub.items.data[0]?.current_period_end ?? null
-
-    console.log(`[webhook] ${event.type}`, {
-      event_id:        event.id,
-      subscription_id: subId,
-      customer_id:     sub.customer,
-      status:          sub.status,
-      plan_key:        planKey,
-      period_end:      periodEnd,
+    console.log('Subscription updated', {
+      event_id:             event.id,
+      subscription_id:      sub.id,
+      status:               sub.status,
+      cancel_at_period_end: sub.cancel_at_period_end,
+      current_period_end:   sub.items.data[0]?.current_period_end ?? null,
     })
-
     const { error } = await createServiceClient()
       .from('subscriptions')
       .update({
-        plan_key:               planKey,
-        status:                 sub.status,
-        current_period_end:     periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
-        cancel_at_period_end:   (sub.cancel_at_period_end === true) || (sub.pending_update != null),
-        updated_at:             new Date().toISOString(),
+        status:               sub.status,
+        cancel_at_period_end: sub.cancel_at_period_end,
+        current_period_end:   sub.items.data[0]?.current_period_end
+          ? new Date(sub.items.data[0].current_period_end * 1000).toISOString()
+          : null,
+        updated_at:           new Date().toISOString(),
       })
-      .eq('stripe_subscription_id', subId)
+      .eq('stripe_subscription_id', sub.id)
+    if (error) console.error('[webhook] customer.subscription.updated error:', error.message)
+    return NextResponse.json({ received: true })
+  }
 
-    if (error) console.error(`[webhook] ${event.type} update error:`, error.message)
-    else console.log(`[webhook] subscription updated for sub:`, subId)
-
+  if (event.type === 'customer.subscription.deleted') {
+    const sub = event.data.object as Stripe.Subscription
+    console.log('Subscription deleted', { event_id: event.id, subscription_id: sub.id })
+    const { error } = await createServiceClient()
+      .from('subscriptions')
+      .update({
+        status:               'canceled',
+        cancel_at_period_end: false,
+        updated_at:           new Date().toISOString(),
+      })
+      .eq('stripe_subscription_id', sub.id)
+    if (error) console.error('[webhook] customer.subscription.deleted error:', error.message)
     return NextResponse.json({ received: true })
   }
 
