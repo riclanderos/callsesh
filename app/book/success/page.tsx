@@ -106,16 +106,17 @@ export default async function BookingSuccessPage({
           </p>
         </div>
 
-        {slug && (
-          <Link
-            href={`/book/${slug}`}
-            className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
-          >
-            Book another session
-          </Link>
-        )}
-
-        <ClosePageButton />
+        <div className="flex flex-col items-center gap-3 mt-6">
+          {slug && (
+            <Link
+              href={`/book/${slug}`}
+              className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Book another session
+            </Link>
+          )}
+          <ClosePageButton />
+        </div>
 
       </div>
     </div>
