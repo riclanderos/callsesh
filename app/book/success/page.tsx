@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/service'
+import ClosePageButton from './close-page-button'
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -105,12 +106,16 @@ export default async function BookingSuccessPage({
           </p>
         </div>
 
-        <Link
-          href="/"
-          className="inline-block text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-        >
-          ← Back to home
-        </Link>
+        {slug && (
+          <Link
+            href={`/book/${slug}`}
+            className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+          >
+            Book another session
+          </Link>
+        )}
+
+        <ClosePageButton />
 
       </div>
     </div>
