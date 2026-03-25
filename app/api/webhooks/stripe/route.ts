@@ -176,6 +176,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Booking lookup failed after insert.' }, { status: 500 })
     }
 
+    // Re-fetch booking after provisioning to get daily_room_url and confirm status.
+    const { data: confirmedBooking } = await serviceClient
+      .from('bookings')
+      .select('id, status, guest_access_token, daily_room_url')
+      .eq('id', newBooking.id)
+      .single()
+
+    if (confirmedBooking?.status !== 'confirmed') {
+      console.error('[webhook] Booking not confirmed after insert — skipping email', {
+        booking_id: newBooking.id,
+        status: confirmedBooking?.status ?? 'not found',
+      })
+      return NextResponse.json({ received: true })
+    }
+
     // Fetch coach email, session title, and timezone in parallel.
     const [{ data: coachData }, { data: sessionType }, { data: profile }] = await Promise.all([
       serviceClient.auth.admin.getUserById(m.coach_id),
@@ -197,8 +212,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (coachEmail) {
       const appUrl = process.env.APP_URL ?? ''
-      const guestSessionUrl = `${appUrl}/session/${newBooking.id}?guestToken=${newBooking.guest_access_token ?? ''}`
-      const guestCancelUrl  = `${appUrl}/cancel/${newBooking.id}?guestToken=${newBooking.guest_access_token ?? ''}`
+      const guestSessionUrl = confirmedBooking.daily_room_url
+        ?? `${appUrl}/session/${confirmedBooking.id}?guestToken=${confirmedBooking.guest_access_token ?? ''}`
+      const guestCancelUrl  = `${appUrl}/cancel/${confirmedBooking.id}?guestToken=${confirmedBooking.guest_access_token ?? ''}`
       const emailParams = {
         sessionTitle,
         bookingDate:   m.booking_date,
@@ -211,14 +227,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         guestSessionUrl,
         guestCancelUrl,
       }
-      await Promise.all([
-        sendGuestConfirmation(emailParams).catch((e) =>
-          console.error('Guest confirmation email failed:', e)
-        ),
-        sendCoachNotification(emailParams).catch((e) =>
-          console.error('Coach notification email failed:', e)
-        ),
-      ])
+      console.log('[webhook] Sending confirmation email', { booking_id: confirmedBooking.id, guest_email: m.guest_email })
+      try {
+        await Promise.all([
+          sendGuestConfirmation(emailParams),
+          sendCoachNotification(emailParams),
+        ])
+      } catch (e) {
+        console.error('[webhook] Confirmation email failed:', e)
+      }
     } else {
       console.error('Could not resolve coach email for booking notification:', m.coach_id)
     }
