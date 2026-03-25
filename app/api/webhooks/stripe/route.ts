@@ -116,10 +116,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           .single()
 
         if (!existing) {
-          // Booking not found — transient DB read failure. Return 500 so
-          // Stripe retries rather than permanently dropping room creation.
-          console.error('Duplicate webhook but could not find booking for session:', session.id)
-          return NextResponse.json({ error: 'Booking lookup failed.' }, { status: 500 })
+          // No booking found for this checkout session ID. This means the
+          // unique_booking_slot index rejected the insert because a *different*
+          // guest already booked the same slot. Returning 200 prevents Stripe
+          // from retrying — retries cannot resolve a genuine slot conflict.
+          console.error(
+            '[webhook] slot conflict: unique_booking_slot violation for a different checkout session',
+            { checkout_session_id: session.id, coach_id: m.coach_id, booking_date: m.booking_date, start_time: m.start_time }
+          )
+          return NextResponse.json({ received: true, conflict: 'slot_taken' })
         }
 
         if (existing.daily_room_name) {

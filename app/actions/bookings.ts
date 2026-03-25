@@ -114,7 +114,7 @@ export async function startCheckout(
   )
 
   if (!validSlots.includes(startTime))
-    return { ok: false, error: 'Selected time is no longer available.' }
+    return { ok: false, error: 'This time slot is no longer available.' }
 
   const bookingDate = nextOccurrence(dayOfWeek, coachTimezone)
   const endTime = addMinutes(startTime, sessionType.duration_minutes)
@@ -136,7 +136,7 @@ export async function startCheckout(
   if (conflictError)
     return { ok: false, error: 'Could not verify slot availability. Please try again.' }
   if (isTaken)
-    return { ok: false, error: 'This time was just booked. Please choose another slot.' }
+    return { ok: false, error: 'This time slot is no longer available.' }
 
   // Build the absolute base URL from the incoming request host.
   const headersList = await headers()
