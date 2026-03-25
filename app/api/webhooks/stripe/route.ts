@@ -275,14 +275,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (event.type === 'customer.subscription.updated') {
     const sub = event.data.object as Stripe.Subscription
     const itemPeriodEnd = sub.items.data[0]?.current_period_end ?? null
+    const cancelAtPeriodEnd = sub.cancel_at_period_end
     console.log('Stripe sub id:', sub.id)
-    console.log('Cancel at period end:', sub.cancel_at_period_end)
+    console.log('Cancel at period end:', cancelAtPeriodEnd)
     const svc = createServiceClient()
     const { data, error } = await svc
       .from('subscriptions')
       .update({
         status:               sub.status,
-        cancel_at_period_end: sub.cancel_at_period_end,
+        cancel_at_period_end: cancelAtPeriodEnd,
         current_period_end:   itemPeriodEnd
           ? new Date(itemPeriodEnd * 1000).toISOString()
           : null,
