@@ -97,15 +97,19 @@ export async function startCheckout(
   if ((usedCount ?? 0) >= sessionLimit)
     return { ok: false, error: 'This coach has reached their session limit and cannot accept new bookings at this time.' }
 
-  // Fetch the coach's timezone via the service client — profiles has no public
-  // SELECT policy; this action runs server-side only so the service key is safe.
+  // Fetch the coach's timezone and Stripe account via the service client —
+  // profiles has no public SELECT policy; service key is safe here.
   const { data: profile } = await createServiceClient()
     .from('profiles')
-    .select('timezone')
+    .select('timezone, stripe_account_id')
     .eq('id', sessionType.coach_id)
     .single()
 
-  const coachTimezone = profile?.timezone ?? 'UTC'
+  if (!profile?.stripe_account_id)
+    return { ok: false, error: 'This coach has not connected a payment account and cannot accept bookings at this time.' }
+
+  const coachTimezone = profile.timezone ?? 'UTC'
+  const coachStripeAccountId = profile.stripe_account_id
 
   // Validate that the submitted start_time is a real slot for this coach/day.
   const { data: rules } = await supabase
@@ -178,6 +182,12 @@ export async function startCheckout(
       booking_date:    bookingDate,
       start_time:      startTime,
       end_time:        endTime,
+    },
+    payment_intent_data: {
+      application_fee_amount: Math.round(sessionType.price_cents * 0.1),
+      transfer_data: {
+        destination: coachStripeAccountId,
+      },
     },
     success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}&slug=${sessionType.slug}`,
     cancel_url:  `${appUrl}/book/${sessionType.slug}`,
