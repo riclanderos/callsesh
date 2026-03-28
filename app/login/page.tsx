@@ -1,12 +1,38 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState, useActionState } from 'react'
 import Link from 'next/link'
 import { login } from '@/app/actions/auth'
 import PasswordInput from '@/components/ui/password-input'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const [error, action, pending] = useActionState(login, null)
+  const [emailValue, setEmailValue] = useState('')
+  const [magicPending, setMagicPending] = useState(false)
+  const [magicSent, setMagicSent] = useState(false)
+  const [magicError, setMagicError] = useState<string | null>(null)
+
+  async function sendMagicLink() {
+    const email = emailValue.trim()
+    if (!email) {
+      setMagicError('Enter your email above first.')
+      return
+    }
+    setMagicPending(true)
+    setMagicError(null)
+    const supabase = createClient()
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/dashboard' },
+    })
+    setMagicPending(false)
+    if (otpError) {
+      setMagicError(otpError.message)
+    } else {
+      setMagicSent(true)
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -33,6 +59,8 @@ export default function LoginPage() {
                 type="email"
                 required
                 autoComplete="email"
+                value={emailValue}
+                onChange={(e) => setEmailValue(e.target.value)}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
               />
             </div>
@@ -74,13 +102,28 @@ export default function LoginPage() {
             <div className="h-px flex-1 bg-zinc-800" />
           </div>
 
-          {/* Magic link — functionality wired later */}
-          <button
-            type="button"
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2.5 text-sm font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 transition-colors"
-          >
-            Email me a sign-in link
-          </button>
+          {/* Magic link */}
+          {magicSent ? (
+            <p className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-center text-sm text-zinc-300">
+              Check your email for a sign-in link
+            </p>
+          ) : (
+            <>
+              {magicError && (
+                <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-400">
+                  {magicError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={sendMagicLink}
+                disabled={magicPending}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2.5 text-sm font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 disabled:opacity-50 transition-colors"
+              >
+                {magicPending ? 'Sending…' : 'Email me a sign-in link'}
+              </button>
+            </>
+          )}
 
         </div>
 
