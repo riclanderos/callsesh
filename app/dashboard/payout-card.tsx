@@ -26,7 +26,7 @@ export default function PayoutCard({ state }: { state: PayoutState }) {
             type="submit"
             className="rounded-lg border border-zinc-700 bg-zinc-800 px-5 py-2.5 text-sm font-medium text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors"
           >
-            Manage payouts →
+            Manage Payments →
           </button>
         </form>
       </div>
@@ -34,12 +34,12 @@ export default function PayoutCard({ state }: { state: PayoutState }) {
   }
 
   // no_account | setup_incomplete — warning style
-  const heading = state === 'no_account' ? 'Connect payouts' : 'Finish payout setup'
+  const heading = state === 'no_account' ? 'Connect Payments' : 'Finish payment setup'
   const body =
     state === 'no_account'
       ? 'Connect your Stripe account so you can get paid for booked sessions.'
       : 'Your Stripe account exists, but onboarding is not complete yet.'
-  const cta = state === 'no_account' ? 'Connect payouts →' : 'Continue setup →'
+  const cta = state === 'no_account' ? 'Connect Payments →' : 'Continue setup →'
 
   return (
     <div className="rounded-xl border border-amber-900 bg-amber-950/20 p-6 space-y-4">

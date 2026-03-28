@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
-import { sendGuestConfirmation, sendCoachNotification } from '@/lib/email';
+import { sendGuestConfirmation, sendCoachNotification, type CoachNotificationParams } from '@/lib/email';
 import { provisionDailyRoom } from '@/lib/daily';
 import Stripe from 'stripe';
 
@@ -296,7 +296,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         confirmedBooking.daily_room_url ??
         `${appUrl}/session/${confirmedBooking.id}?guestToken=${confirmedBooking.guest_access_token ?? ''}`;
       const guestCancelUrl = `${appUrl}/cancel/${confirmedBooking.id}?guestToken=${confirmedBooking.guest_access_token ?? ''}`;
-      const emailParams = {
+      const guestEmailParams = {
         sessionTitle,
         bookingDate: m.booking_date,
         startTime: m.start_time,
@@ -308,14 +308,34 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         guestSessionUrl,
         guestCancelUrl,
       };
+      const coachName =
+        coachData.user?.user_metadata?.full_name ??
+        coachEmail.split('@')[0];
+      const coachSessionUrl =
+        confirmedBooking.daily_room_url ??
+        `${appUrl}/session/${confirmedBooking.id}`;
+      const coachEmailParams: CoachNotificationParams = {
+        coachName,
+        coachEmail,
+        coachTimezone,
+        sessionTitle,
+        bookingDate: m.booking_date,
+        startTime: m.start_time,
+        endTime: m.end_time,
+        durationMinutes,
+        guestName: m.guest_name,
+        totalAmountCents: session.amount_total ?? 0,
+        coachSessionUrl,
+        appUrl,
+      };
       console.log('[webhook] Sending confirmation email', {
         booking_id: confirmedBooking.id,
         guest_email: m.guest_email,
       });
       try {
         await Promise.all([
-          sendGuestConfirmation(emailParams),
-          sendCoachNotification(emailParams),
+          sendGuestConfirmation(guestEmailParams),
+          sendCoachNotification(coachEmailParams),
         ]);
       } catch (e) {
         console.error('[webhook] Confirmation email failed:', e);

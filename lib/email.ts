@@ -13,6 +13,10 @@ export interface BookingEmailParams {
   guestCancelUrl: string
 }
 
+function formatUSD(cents: number): string {
+  return '$' + (cents / 100).toFixed(2)
+}
+
 function formatDate(d: string): string {
   const [year, month, day] = d.split('-').map(Number)
   return new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -182,31 +186,135 @@ export async function sendGuestCancelledByCoach(params: CancellationEmailParams)
   })
 }
 
-export async function sendCoachNotification(params: BookingEmailParams): Promise<void> {
+export interface CoachNotificationParams {
+  coachName: string
+  coachEmail: string
+  coachTimezone: string
+  sessionTitle: string
+  bookingDate: string
+  startTime: string
+  endTime: string
+  durationMinutes: number
+  guestName: string
+  totalAmountCents: number
+  coachSessionUrl: string
+  appUrl: string
+}
+
+export async function sendCoachNotification(params: CoachNotificationParams): Promise<void> {
   const {
+    coachName,
+    coachEmail,
+    coachTimezone,
     sessionTitle,
     bookingDate,
     startTime,
     endTime,
+    durationMinutes,
     guestName,
-    guestEmail,
-    coachEmail,
-    coachTimezone,
+    totalAmountCents,
+    coachSessionUrl,
+    appUrl,
   } = params
+
+  const platformFeeCents = Math.round(totalAmountCents * 0.1)
+  const netAmountCents   = totalAmountCents - platformFeeCents
+
+  const total   = formatUSD(totalAmountCents)
+  const fee     = formatUSD(platformFeeCents)
+  const net     = formatUSD(netAmountCents)
+  const dateStr = formatDate(bookingDate)
+  const timeStr = `${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`
+
+  const text = [
+    `Hi ${coachName},`,
+    '',
+    `You've just received a new booking on CallSesh.`,
+    '',
+    'Session details',
+    `Client:    ${guestName}`,
+    `Session:   ${sessionTitle}`,
+    `Date:      ${dateStr}`,
+    `Time:      ${timeStr}`,
+    `Duration:  ${durationMinutes} minutes`,
+    '',
+    'Earnings',
+    `Total paid:          ${total}`,
+    `Platform fee (10%):  -${fee}`,
+    `You'll receive:      ${net}`,
+    '',
+    'Your session is confirmed and ready.',
+    'Join here:',
+    coachSessionUrl,
+    '',
+    'Manage this booking and view your earnings from your dashboard.',
+    `${appUrl}/dashboard`,
+    '',
+    'Need help? Contact support@callsesh.com',
+    '',
+    '— CallSesh',
+  ].join('\n')
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>New booking confirmed</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;-webkit-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width:520px;background:#ffffff;border-radius:8px;overflow:hidden;">
+          <tr>
+            <td style="padding:32px 28px;font-family:system-ui,-apple-system,sans-serif;color:#18181b;font-size:15px;line-height:1.6;">
+              <p style="margin:0 0 16px;">Hi ${coachName},</p>
+              <p style="margin:0 0 24px;">You've just received a new booking on CallSesh.</p>
+
+              <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;border-top:1px solid #e4e4e7;padding-top:20px;">Session details</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
+                <tr><td style="padding:3px 0;color:#71717a;width:120px;vertical-align:top;">Client</td><td style="padding:3px 0;color:#18181b;">${guestName}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Session</td><td style="padding:3px 0;color:#18181b;">${sessionTitle}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Date</td><td style="padding:3px 0;color:#18181b;">${dateStr}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Time</td><td style="padding:3px 0;color:#18181b;">${timeStr}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Duration</td><td style="padding:3px 0;color:#18181b;">${durationMinutes} minutes</td></tr>
+              </table>
+
+              <p style="margin:24px 0 10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;border-top:1px solid #e4e4e7;padding-top:20px;">Earnings</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
+                <tr><td style="padding:3px 0;color:#71717a;">Total paid</td><td style="padding:3px 0;color:#18181b;text-align:right;">${total}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;">Platform fee (10%)</td><td style="padding:3px 0;color:#71717a;text-align:right;">&minus;${fee}</td></tr>
+                <tr><td colspan="2" style="border-top:1px solid #e4e4e7;padding:0;line-height:0;font-size:0;">&nbsp;</td></tr>
+                <tr><td style="padding:8px 0 3px;color:#18181b;font-weight:600;">You'll receive</td><td style="padding:8px 0 3px;color:#18181b;font-weight:600;text-align:right;">${net}</td></tr>
+              </table>
+
+              <div style="border-top:1px solid #e4e4e7;margin-top:20px;padding-top:20px;">
+                <p style="margin:0 0 16px;font-size:14px;color:#18181b;">Your session is confirmed and ready.</p>
+                <a href="${coachSessionUrl}" style="display:inline-block;background:#4f46e5;color:#ffffff;padding:11px 22px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;line-height:1;">Join session</a>
+              </div>
+
+              <p style="margin:24px 0 4px;font-size:13px;color:#71717a;">Manage this booking and view your earnings from your <a href="${appUrl}/dashboard" style="color:#4f46e5;text-decoration:none;">dashboard</a>.</p>
+              <p style="margin:0;font-size:13px;color:#71717a;">Need help? Contact <a href="mailto:support@callsesh.com" style="color:#4f46e5;text-decoration:none;">support@callsesh.com</a></p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px;background:#f4f4f5;border-top:1px solid #e4e4e7;font-family:system-ui,-apple-system,sans-serif;font-size:12px;color:#a1a1aa;text-align:center;">
+              CallSesh &bull; Sent to ${coachEmail}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
 
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: coachEmail,
-    subject: `New booking — ${guestName}`,
-    text: [
-      'You have a new confirmed booking.',
-      '',
-      `Session:  ${sessionTitle}`,
-      `Date:     ${formatDate(bookingDate)}`,
-      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
-      `Guest:    ${guestName} (${guestEmail})`,
-      '',
-      '— CallSesh',
-    ].join('\n'),
+    subject: 'New booking confirmed',
+    text,
+    html,
   })
 }

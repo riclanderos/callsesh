@@ -171,7 +171,7 @@ export default function BookingForm({
               disabled={pending}
               className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
             >
-              {pending ? 'Redirecting…' : 'Proceed to payment →'}
+              {pending ? 'Securing your session...' : 'Confirm & pay'}
             </button>
           </div>
         </form>

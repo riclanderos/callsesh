@@ -14,6 +14,7 @@ import { managePayouts } from '@/app/actions/connect';
 import LaunchOfferCard from './launch-offer-card';
 import { syncStripeAccountStatus } from '@/lib/stripe-sync';
 import PayoutSuccessBanner from './payout-success-banner';
+import { computeEarnings, netCents, formatEarnings } from '@/lib/earnings';
 
 function toTitleCase(name: string): string {
   return name
@@ -94,6 +95,7 @@ export default async function DashboardPage({
     { count: usedCount },
     { sessionLimit, planName, planKey },
     { count: availabilityCount },
+    { data: earningsRaw },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -123,6 +125,11 @@ export default async function DashboardPage({
       .select('id', { count: 'exact', head: true })
       .eq('coach_id', user.id)
       .eq('is_active', true),
+    supabase
+      .from('bookings')
+      .select('booking_date, session_types(price_cents)')
+      .eq('coach_id', user.id)
+      .eq('status', 'confirmed'),
   ]);
 
   const { data: subscriptionRow } = await createServiceClient()
@@ -192,6 +199,12 @@ export default async function DashboardPage({
 
   const next = upcoming[0] ?? null;
   const rest = upcoming.slice(1);
+
+  const { totalCents, last30DaysCents } = computeEarnings(
+    (earningsRaw ?? []) as Parameters<typeof computeEarnings>[0]
+  );
+  const netTotal  = netCents(totalCents);
+  const netLast30 = netCents(last30DaysCents);
 
   return (
     <div className="min-h-screen px-6 py-10">
@@ -462,10 +475,28 @@ export default async function DashboardPage({
                 <button
                   type="submit"
                   className="w-full rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-colors text-left">
-                  Payouts →
+                  Manage Payments →
                 </button>
               </form>
             )}
+          </div>
+        </section>
+
+        {/* Earnings */}
+        <section className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Earnings
+          </p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-zinc-400">Total earned</p>
+              <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netTotal)}</p>
+            </div>
+            <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
+              <p className="text-sm text-zinc-400">Last 30 days</p>
+              <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netLast30)}</p>
+            </div>
+            <p className="text-xs text-zinc-600">After 10% platform fee. Confirmed sessions only.</p>
           </div>
         </section>
 
