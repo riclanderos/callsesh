@@ -6,11 +6,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { stripe } from '@/lib/stripe'
 
-const PRICE_IDS: Record<string, string | undefined> = {
-  starter: process.env.STRIPE_PRICE_STARTER,
-  pro:     process.env.STRIPE_PRICE_PRO,
-}
-
 export async function startSubscription(formData: FormData): Promise<void> {
   const plan = formData.get('plan')
 
@@ -18,7 +13,9 @@ export async function startSubscription(formData: FormData): Promise<void> {
     throw new Error('Invalid plan.')
   }
 
-  const priceId = PRICE_IDS[plan]
+  const priceId = plan === 'starter'
+    ? process.env.STRIPE_PRICE_STARTER
+    : process.env.STRIPE_PRICE_PRO
   if (!priceId) {
     throw new Error(`Stripe price ID for plan "${plan}" is not configured. Set STRIPE_PRICE_${plan.toUpperCase()} in your environment.`)
   }
