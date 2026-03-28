@@ -134,15 +134,20 @@ export default function BookingForm({
     }
   }, [state]);
 
-  // Mobile-only auto-scroll: fires once per new slot selection
+  // Auto-scroll: fires once per new slot selection, only if form not already in view
   useEffect(() => {
     if (!selected) return;
-    if (typeof window !== 'undefined' && window.innerWidth >= 768) return;
     const key = `${selected.day}:${selected.time}`;
     if (lastScrolledKey.current === key) return;
     lastScrolledKey.current = key;
     requestAnimationFrame(() => {
-      formWrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const el = formWrapperRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      if (!inView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   }, [selected]);
 
@@ -208,9 +213,9 @@ export default function BookingForm({
                 })}
               </div>
 
-              {/* Mobile: form inline under the selected day's slots, scroll target */}
+              {/* Form inline under the selected day's slots — scroll target */}
               {isDaySelected && selected && (
-                <div ref={formWrapperRef} className="mt-2 block md:hidden">
+                <div ref={formWrapperRef} className="mt-4">
                   <GuestForm
                     action={action}
                     pending={pending}
@@ -224,19 +229,6 @@ export default function BookingForm({
           );
         })}
       </div>
-
-      {/* Desktop: form appears below the full slot grid */}
-      {selected && (
-        <div className="hidden md:block">
-          <GuestForm
-            action={action}
-            pending={pending}
-            state={state}
-            sessionTypeId={sessionTypeId}
-            selected={selected}
-          />
-        </div>
-      )}
     </div>
   );
 }
