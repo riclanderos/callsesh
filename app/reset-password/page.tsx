@@ -12,6 +12,8 @@ export default function ResetPasswordPage() {
   const [pending, setPending] = useState(false)
   const [success, setSuccess] = useState(false)
   const [sessionReady, setSessionReady] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   // Supabase exchanges the token from the email link and sets the session.
   // We listen for the PASSWORD_RECOVERY event before allowing the form to submit.
@@ -86,13 +88,20 @@ export default function ResetPasswordPage() {
               <div className="relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 pr-16 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
               </div>
             </div>
 
@@ -106,13 +115,20 @@ export default function ResetPasswordPage() {
               <div className="relative">
                 <input
                   id="confirm"
-                  type="password"
+                  type={showConfirm ? 'text' : 'password'}
                   required
                   autoComplete="new-password"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 pr-16 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {showConfirm ? 'Hide' : 'Show'}
+                </button>
               </div>
             </div>
 

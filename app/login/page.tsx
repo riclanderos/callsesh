@@ -3,12 +3,12 @@
 import { useState, useActionState } from 'react'
 import Link from 'next/link'
 import { login } from '@/app/actions/auth'
-import PasswordInput from '@/components/ui/password-input'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const [error, action, pending] = useActionState(login, null)
   const [emailValue, setEmailValue] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [magicPending, setMagicPending] = useState(false)
   const [magicSent, setMagicSent] = useState(false)
   const [magicError, setMagicError] = useState<string | null>(null)
@@ -77,7 +77,24 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <PasswordInput id="password" name="password" autoComplete="current-password" />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 pr-16 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
             </div>
 
             {error && (
