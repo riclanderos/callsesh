@@ -58,7 +58,8 @@ export async function createDailyRoom(bookingId: string): Promise<DailyRoom> {
  */
 export async function createDailyMeetingToken(
   roomName: string,
-  isOwner: boolean
+  isOwner: boolean,
+  redirectOnMeetingExit?: string
 ): Promise<string> {
   const apiKey = process.env.DAILY_API_KEY
   if (!apiKey) throw new Error('DAILY_API_KEY is not set')
@@ -76,6 +77,7 @@ export async function createDailyMeetingToken(
         room_name: roomName,
         exp,
         is_owner: isOwner,
+        ...(redirectOnMeetingExit ? { redirect_on_meeting_exit: redirectOnMeetingExit } : {}),
       },
     }),
   })

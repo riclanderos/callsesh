@@ -36,10 +36,23 @@ export async function POST(
     return NextResponse.json({ error: 'Not found.' }, { status: 404 })
   }
 
-  // ── 6. Issue token ────────────────────────────────────────────────────────
+  // ── 6. Build exit redirect URL ────────────────────────────────────────────
+  const origin = req.nextUrl.origin
+  const exitBase = `${origin}/session/${bookingId}?ended=1`
+  const redirectOnMeetingExit = access.isCoach
+    ? exitBase
+    : guestToken
+      ? `${exitBase}&guestToken=${encodeURIComponent(guestToken)}`
+      : exitBase
+
+  // ── 7. Issue token ────────────────────────────────────────────────────────
   let token: string
   try {
-    token = await createDailyMeetingToken(access.booking.daily_room_name, access.isCoach)
+    token = await createDailyMeetingToken(
+      access.booking.daily_room_name,
+      access.isCoach,
+      redirectOnMeetingExit,
+    )
   } catch (e) {
     console.error('Failed to create Daily meeting token for booking', bookingId, e)
     return NextResponse.json({ error: 'Could not create session token.' }, { status: 500 })

@@ -5,17 +5,19 @@ import { getUserPlan } from '@/lib/plan'
 import Link from 'next/link'
 import BookingForm, { type DaySlots } from './booking-form'
 
-/** Returns the next occurrence of dayOfWeek (0=Sun…6=Sat) starting from
- *  tomorrow in the given timezone, as a "YYYY-MM-DD" string. */
+/** Minimum minutes ahead a slot must start to be shown on the booking page. */
+const LEAD_TIME_MINUTES = 5
+
+/** Returns the nearest occurrence of dayOfWeek (0=Sun…6=Sat) starting from
+ *  today in the given timezone, as a "YYYY-MM-DD" string.
+ *  Today is included when the day matches; otherwise advances to the next occurrence. */
 function nextOccurrenceDate(dayOfWeek: number, timezone: string): string {
   const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date())
   const [y, mo, d] = todayStr.split('-').map(Number)
   const today = new Date(y, mo - 1, d)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(today.getDate() + 1)
-  const daysUntil = (dayOfWeek - tomorrow.getDay() + 7) % 7
-  const target = new Date(tomorrow)
-  target.setDate(tomorrow.getDate() + daysUntil)
+  const daysUntil = (dayOfWeek - today.getDay() + 7) % 7
+  const target = new Date(today)
+  target.setDate(today.getDate() + daysUntil)
   const ty = target.getFullYear()
   const tm = String(target.getMonth() + 1).padStart(2, '0')
   const td = String(target.getDate()).padStart(2, '0')
@@ -33,19 +35,16 @@ export default async function BookingPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  console.log('[book] slug:', slug)
 
   const supabase = await createClient()
 
   // Fetch active session type by slug
-  const { data: session, error: sessionError } = await supabase
+  const { data: session } = await supabase
     .from('session_types')
     .select('id, coach_id, title, description, duration_minutes, price_cents')
     .eq('slug', slug)
     .eq('is_active', true)
     .single()
-
-  console.log('[book] session_types result:', { data: session, error: sessionError })
 
   if (!session) {
     return (
@@ -86,6 +85,15 @@ export default async function BookingPage({
   const isCoachOwner = viewer?.id === session.coach_id
 
   const coachTimezone = profile?.timezone ?? 'UTC'
+
+  // Current time in coach's timezone for same-day lead-time filtering.
+  const todayInCoachTz = new Intl.DateTimeFormat('en-CA', { timeZone: coachTimezone }).format(new Date())
+  const nowParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: coachTimezone, hour: 'numeric', minute: '2-digit', hour12: false,
+  }).formatToParts(new Date())
+  const nowH = parseInt(nowParts.find((p) => p.type === 'hour')?.value ?? '0', 10) % 24
+  const nowM = parseInt(nowParts.find((p) => p.type === 'minute')?.value ?? '0', 10)
+  const nowMinutes = nowH * 60 + nowM
 
   // Compute the concrete booking date for each active day of week.
   const dayDates = new Map<number, string>()
@@ -130,6 +138,8 @@ export default async function BookingPage({
     const available = slots.filter((slot) => {
       const slotStart = timeToMinutes(slot)
       const slotEnd = slotStart + session.duration_minutes
+      // Drop same-day slots that don't have enough lead time.
+      if (date === todayInCoachTz && slotStart < nowMinutes + LEAD_TIME_MINUTES) return false
       return !bookingsOnDate.some((b) => {
         const bStart = timeToMinutes(b.start_time)
         const bEnd = timeToMinutes(b.end_time)
@@ -138,7 +148,8 @@ export default async function BookingPage({
     })
 
     const existing = slotMap.get(rule.day_of_week) ?? []
-    slotMap.set(rule.day_of_week, [...existing, ...available])
+    const merged = [...new Set([...existing, ...available])]
+    slotMap.set(rule.day_of_week, merged)
   }
 
   const daySlots: DaySlots[] = Array.from(slotMap.entries())

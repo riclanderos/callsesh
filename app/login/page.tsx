@@ -12,6 +12,10 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
 
+        <Link href="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+          ← Back to home
+        </Link>
+
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold text-zinc-100">Log in</h1>
           <p className="text-sm text-zinc-500">Welcome back to CallSesh</p>

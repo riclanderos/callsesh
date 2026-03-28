@@ -54,7 +54,7 @@ export default function SlotPicker({ daySlots }: { daySlots: DaySlots[] }) {
 
                 return (
                   <button
-                    key={slot}
+                    key={key}
                     type="button"
                     onClick={() => setSelected(isSelected ? null : key)}
                     className={`rounded border px-3 py-1.5 text-sm transition-colors ${

@@ -94,7 +94,7 @@ export default function BookingForm({
 
                   return (
                     <button
-                      key={slot}
+                      key={`${day}:${slot}`}
                       type="button"
                       onClick={() => setSelected(isSelected ? null : { day, time: slot })}
                       className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${

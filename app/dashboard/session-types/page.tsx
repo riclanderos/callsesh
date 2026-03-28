@@ -55,6 +55,22 @@ export default async function SessionTypesPage() {
           </Link>
         </div>
 
+        {/* Next-step nudge — shown when at least one session type exists */}
+        {sessionTypes && sessionTypes.length > 0 && (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-zinc-400">
+              Session type ready.{' '}
+              <span className="text-zinc-500">Make sure your availability is set so clients can book.</span>
+            </p>
+            <Link
+              href="/dashboard/availability"
+              className="flex-shrink-0 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 transition-colors"
+            >
+              Set availability →
+            </Link>
+          </div>
+        )}
+
         {/* Existing session types */}
         {sessionTypes && sessionTypes.length > 0 ? (
           <section className="space-y-3">

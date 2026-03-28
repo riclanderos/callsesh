@@ -33,7 +33,8 @@ export default function JoinButton({
         roomUrl: string
       }
 
-      window.location.href = `${roomUrl}?t=${token}`
+      const sep = roomUrl.includes('?') ? '&' : '?'
+      window.location.href = `${roomUrl}${sep}t=${token}`
     } catch {
       setError('Could not start the session. Please try again.')
     } finally {

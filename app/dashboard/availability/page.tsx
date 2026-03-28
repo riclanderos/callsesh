@@ -54,6 +54,22 @@ export default async function AvailabilityPage() {
         {/* Existing rules */}
         <RuleList rules={(rules ?? []) as Rule[]} />
 
+        {/* Share prompt — shown when at least one rule exists */}
+        {rules && rules.length > 0 && (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-zinc-400">
+              Availability is set.{' '}
+              <span className="text-zinc-500">Head to your dashboard to copy and share your booking link.</span>
+            </p>
+            <Link
+              href="/dashboard"
+              className="flex-shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Go to dashboard →
+            </Link>
+          </div>
+        )}
+
         {/* Single-day form */}
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
           <div className="space-y-0.5">

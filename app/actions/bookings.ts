@@ -21,9 +21,13 @@ export type CheckoutState =
   | { ok: true; checkoutUrl: string }
   | { ok: false; error: string }
 
+/** Minimum minutes ahead a slot must start to be accepted server-side. */
+const LEAD_TIME_MINUTES = 5
+
 /**
- * Returns the next occurrence of dayOfWeek (0=Sun…6=Sat) starting from
- * tomorrow (in the coach's timezone), as a "YYYY-MM-DD" string.
+ * Returns the nearest occurrence of dayOfWeek (0=Sun…6=Sat) starting from
+ * today (in the coach's timezone), as a "YYYY-MM-DD" string.
+ * Today is included when the day matches; otherwise advances to the next occurrence.
  */
 function nextOccurrence(dayOfWeek: number, timezone: string): string {
   // Resolve today's calendar date in the coach's timezone so that coaches in
@@ -32,12 +36,9 @@ function nextOccurrence(dayOfWeek: number, timezone: string): string {
   const [y, mo, d] = todayStr.split('-').map(Number)
   const today = new Date(y, mo - 1, d) // midnight local (server) — only the date part matters
 
-  const tomorrow = new Date(today)
-  tomorrow.setDate(today.getDate() + 1)
-
-  const daysUntil = (dayOfWeek - tomorrow.getDay() + 7) % 7
-  const target = new Date(tomorrow)
-  target.setDate(tomorrow.getDate() + daysUntil)
+  const daysUntil = (dayOfWeek - today.getDay() + 7) % 7
+  const target = new Date(today)
+  target.setDate(today.getDate() + daysUntil)
 
   const ty = target.getFullYear()
   const tm = String(target.getMonth() + 1).padStart(2, '0')
@@ -128,6 +129,21 @@ export async function startCheckout(
 
   const bookingDate = nextOccurrence(dayOfWeek, coachTimezone)
   const endTime = addMinutes(startTime, sessionType.duration_minutes)
+
+  // Reject same-day slots that are too close to the current time.
+  const todayInCoachTz = new Intl.DateTimeFormat('en-CA', { timeZone: coachTimezone }).format(new Date())
+  if (bookingDate === todayInCoachTz) {
+    const nowParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: coachTimezone, hour: 'numeric', minute: '2-digit', hour12: false,
+    }).formatToParts(new Date())
+    const nowH = parseInt(nowParts.find((p) => p.type === 'hour')?.value ?? '0', 10) % 24
+    const nowM = parseInt(nowParts.find((p) => p.type === 'minute')?.value ?? '0', 10)
+    const nowMinutes = nowH * 60 + nowM
+    const [slotH, slotM] = startTime.split(':').map(Number)
+    const slotMinutes = slotH * 60 + slotM
+    if (slotMinutes < nowMinutes + LEAD_TIME_MINUTES)
+      return { ok: false, error: 'This time slot is no longer available.' }
+  }
 
   // Conflict check — early fast-fail before touching Stripe.
   // Note: a second conflict check happens in the webhook at booking creation

@@ -8,6 +8,12 @@ import CopyButton from './copy-button';
 import RelativeTime from './relative-time';
 import PlanUsageCard from '@/components/billing/plan-usage-card';
 import { getUserPlan } from '@/lib/plan';
+import OnboardingChecklist from './onboarding-checklist';
+import PayoutCard, { type PayoutState } from './payout-card';
+import { managePayouts } from '@/app/actions/connect';
+import LaunchOfferCard from './launch-offer-card';
+import { syncStripeAccountStatus } from '@/lib/stripe-sync';
+import PayoutSuccessBanner from './payout-success-banner';
 
 function toTitleCase(name: string): string {
   return name
@@ -36,9 +42,9 @@ function formatTime(t: string): string {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ upgraded?: string }>;
+  searchParams: Promise<{ upgraded?: string; payout_refresh?: string; payout_connected?: string }>;
 }) {
-  const { upgraded } = await searchParams;
+  const { upgraded, payout_refresh, payout_connected } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -52,13 +58,42 @@ export default async function DashboardPage({
     host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https';
   const baseUrl = `${proto}://${host}`;
 
-  const today = new Date().toISOString().split('T')[0];
+  // Fetch profile first so we can use the coach's timezone for accurate date
+  // classification. Fetching separately with maybeSingle() prevents a query
+  // error from silently returning null and masking a real stripe_account_id.
+  const { data: profileRow } = await createServiceClient()
+    .from('profiles')
+    .select('stripe_account_id, stripe_payouts_enabled, stripe_charges_enabled, timezone, launch_offer_eligible, launch_offer_sessions_remaining, launch_offer_expires_at')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  // If returning from a Stripe onboarding/update flow, pull the latest account
+  // status from Stripe and write it back to the DB before we derive payoutState.
+  // This is the only place a live Stripe call happens — and only when needed.
+  if (payout_refresh === '1' && profileRow?.stripe_account_id) {
+    await syncStripeAccountStatus(user.id, profileRow.stripe_account_id)
+    const { data: refreshed } = await createServiceClient()
+      .from('profiles')
+      .select('stripe_payouts_enabled, stripe_charges_enabled')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (refreshed && profileRow) {
+      profileRow.stripe_payouts_enabled = refreshed.stripe_payouts_enabled
+      profileRow.stripe_charges_enabled = refreshed.stripe_charges_enabled
+    }
+  }
+
+  const coachTimezone = profileRow?.timezone ?? 'UTC'
+  // Use the coach's local date so late-evening US coaches don't lose today's
+  // upcoming bookings to a UTC date that's already rolled to tomorrow.
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: coachTimezone }).format(new Date())
 
   const [
     { data: upcomingRaw },
     { data: sessionTypes },
     { count: usedCount },
     { sessionLimit, planName, planKey },
+    { count: availabilityCount },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -83,6 +118,11 @@ export default async function DashboardPage({
       .eq('coach_id', user.id)
       .neq('status', 'cancelled'),
     getUserPlan(user.id),
+    supabase
+      .from('availability_rules')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', user.id)
+      .eq('is_active', true),
   ]);
 
   const { data: subscriptionRow } = await createServiceClient()
@@ -90,6 +130,40 @@ export default async function DashboardPage({
     .select('cancel_at_period_end, current_period_end')
     .eq('user_id', user.id)
     .maybeSingle();
+
+  // Payout readiness — derived from DB fields kept in sync by the Stripe webhook.
+  // No live Stripe API call needed; avoids latency and a hard dependency on Stripe
+  // being reachable on every dashboard load.
+  const hasStripeAccount = !!profileRow?.stripe_account_id
+  const payoutsEnabled = profileRow?.stripe_payouts_enabled === true
+  const chargesEnabled = profileRow?.stripe_charges_enabled === true
+
+  let payoutState: PayoutState = 'no_account'
+  if (hasStripeAccount) {
+    if (payoutsEnabled) {
+      payoutState = 'ready'
+    } else if (chargesEnabled) {
+      // Details submitted and charges enabled but payouts not yet unlocked —
+      // Stripe is still verifying the account.
+      payoutState = 'verification_pending'
+    } else {
+      payoutState = 'setup_incomplete'
+    }
+  }
+
+  // After a successful payout sync, swap the transient ?payout_refresh param for
+  // ?payout_connected=1 so the banner renders exactly once. The client component
+  // immediately replaces the URL with /dashboard, so reloads never see the param.
+  if (payout_refresh === '1' && payoutState === 'ready') {
+    redirect('/dashboard?payout_connected=1')
+  }
+
+  // Launch offer visibility: show the card only while eligible, not expired, and sessions remain.
+  const offerEligible = profileRow?.launch_offer_eligible === true
+  const offerExpiresAt = profileRow?.launch_offer_expires_at ?? null
+  const offerNotExpired = !offerExpiresAt || new Date(offerExpiresAt) > new Date()
+  const offerSessionsLeft = profileRow?.launch_offer_sessions_remaining ?? 0
+  const showOfferCard = offerEligible && offerNotExpired && offerSessionsLeft > 0 && planKey === 'free'
 
   const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true;
 
@@ -134,6 +208,20 @@ export default async function DashboardPage({
           </div>
         )}
 
+        {/* Payout setup success banner — one-time, client strips param on mount */}
+        {payout_connected === '1' && <PayoutSuccessBanner />}
+
+        {/* Payout card — above setup checklist when not ready */}
+        {payoutState !== 'ready' && <PayoutCard state={payoutState} />}
+
+        {/* Launch offer notice — shown only while eligible, unexpired, and sessions remain */}
+        {showOfferCard && (
+          <LaunchOfferCard
+            sessionsRemaining={offerSessionsLeft}
+            expiresAt={offerExpiresAt!}
+          />
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -141,14 +229,23 @@ export default async function DashboardPage({
               Your dashboard
             </h1>
             <p className="text-sm text-zinc-500">{user.email}</p>
-            {remaining <= 0 ? (
+            {remaining <= 0 && sessionLimit === 0 && used === 0 ? (
+              <p className="text-xs font-medium text-amber-400">
+                Subscribe to start accepting bookings.{' '}
+                <Link
+                  href="/upgrade"
+                  className="underline underline-offset-2 hover:text-amber-300 transition-colors">
+                  See plans
+                </Link>
+              </p>
+            ) : remaining <= 0 ? (
               <p className="text-xs font-medium text-amber-400">
                 You&apos;ve used your free sessions.{' '}
-                <a
+                <Link
                   href="/upgrade"
                   className="underline underline-offset-2 hover:text-amber-300 transition-colors">
                   Upgrade to continue
-                </a>
+                </Link>
               </p>
             ) : remaining <= 3 ? (
               <p className="text-xs font-medium text-amber-400">
@@ -170,6 +267,15 @@ export default async function DashboardPage({
             </button>
           </form>
         </div>
+
+
+        {/* Onboarding checklist */}
+        <OnboardingChecklist
+          hasSessionType={(sessionTypes ?? []).length > 0}
+          hasAvailability={(availabilityCount ?? 0) > 0}
+          hasBooking={(usedCount ?? 0) > 0}
+          firstSessionSlug={sessionTypes?.[0]?.slug}
+        />
 
         {/* Next session */}
         <section className="space-y-3">
@@ -197,9 +303,33 @@ export default async function DashboardPage({
                 </Link>
               </div>
             </div>
+          ) : sessionTypes && sessionTypes.length === 0 ? (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-4">
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-zinc-200">You&apos;re not set up yet</p>
+                <p className="text-sm text-zinc-500">
+                  Create a session type and set your availability to start accepting bookings.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href="/dashboard/session-types"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+                  Create a session type
+                </Link>
+                <Link
+                  href="/dashboard/availability"
+                  className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">
+                  Set availability
+                </Link>
+              </div>
+            </div>
           ) : (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 text-center">
-              <p className="text-sm text-zinc-500">No upcoming sessions.</p>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-1">
+              <p className="text-sm text-zinc-400">No upcoming bookings yet.</p>
+              <p className="text-sm text-zinc-500">
+                Share your booking link below to start accepting sessions.
+              </p>
             </div>
           )}
         </section>
@@ -234,21 +364,35 @@ export default async function DashboardPage({
 
         {/* Booking links */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Your booking links
-          </p>
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              Share your booking links
+            </p>
+            {sessionTypes && sessionTypes.length > 0 && (
+              <p className="text-xs text-zinc-600">
+                Send these links to clients so they can book a session.
+              </p>
+            )}
+          </div>
           {sessionTypes && sessionTypes.length > 0 ? (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 divide-y divide-zinc-800">
-              {sessionTypes.map((st) => {
+              {sessionTypes.map((st, i) => {
                 const url = `${baseUrl}/book/${st.slug}`;
                 return (
                   <div
                     key={st.id}
                     className="flex items-center justify-between px-5 py-4 gap-4">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-zinc-100">
-                        {st.title}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-zinc-100">
+                          {st.title}
+                        </p>
+                        {i === 0 && sessionTypes.length > 1 && (
+                          <span className="rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-500">
+                            Latest
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs mt-0.5 truncate">
                         <span className="text-zinc-600">
                           {baseUrl.replace(/^https?:\/\//, '')}
@@ -262,9 +406,10 @@ export default async function DashboardPage({
               })}
             </div>
           ) : (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 text-center">
-              <p className="text-sm text-zinc-500">
-                No active session types.{' '}
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-2 text-center">
+              <p className="text-sm text-zinc-400">No active session types yet.</p>
+              <p className="text-xs text-zinc-600">
+                Create a session type to get a shareable booking link.{' '}
                 <Link
                   href="/dashboard/session-types"
                   className="text-indigo-400 hover:text-indigo-300 transition-colors">
@@ -304,7 +449,6 @@ export default async function DashboardPage({
               { title: 'Session Types', href: '/dashboard/session-types' },
               { title: 'Bookings', href: '/dashboard/bookings' },
               { title: 'Availability', href: '/dashboard/availability' },
-              { title: 'Settings', href: '/dashboard/settings' },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -313,6 +457,15 @@ export default async function DashboardPage({
                 {item.title} →
               </Link>
             ))}
+            {payoutState === 'ready' && (
+              <form action={managePayouts}>
+                <button
+                  type="submit"
+                  className="w-full rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-colors text-left">
+                  Payouts →
+                </button>
+              </form>
+            )}
           </div>
         </section>
 

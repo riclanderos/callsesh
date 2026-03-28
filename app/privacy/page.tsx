@@ -1,11 +1,18 @@
+import Link from 'next/link'
+
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen px-6 py-16">
+    <div className="min-h-screen bg-zinc-950 text-white px-6 py-16">
       <div className="mx-auto max-w-3xl space-y-10">
 
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold text-zinc-100">Privacy Policy</h1>
-          <p className="text-sm text-zinc-500">Last updated: March 24, 2026</p>
+        <div className="space-y-4">
+          <Link href="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+            ← Back to home
+          </Link>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold text-zinc-100">Privacy Policy</h1>
+            <p className="text-sm text-zinc-500">Last updated: March 24, 2026</p>
+          </div>
         </div>
 
         <Section title="1. Who We Are">

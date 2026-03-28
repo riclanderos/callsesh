@@ -28,9 +28,9 @@ export default async function SessionPage({
   searchParams,
 }: {
   params: Promise<{ bookingId: string }>
-  searchParams: Promise<{ guestToken?: string }>
+  searchParams: Promise<{ guestToken?: string; ended?: string }>
 }) {
-  const [{ bookingId }, { guestToken }] = await Promise.all([params, searchParams])
+  const [{ bookingId }, { guestToken, ended }] = await Promise.all([params, searchParams])
 
   const supabase = await createClient()
   const {
@@ -78,6 +78,48 @@ export default async function SessionPage({
   const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? 'Session') : (st?.title ?? 'Session')
 
   const backHref = isCoach ? '/dashboard/bookings' : '/'
+
+  if (ended === '1') {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="w-full max-w-sm rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-6">
+          <div className="space-y-1">
+            <h1 className="text-xl font-semibold text-zinc-100">Session ended</h1>
+            <p className="text-sm text-zinc-400">
+              {isCoach
+                ? 'Head back to your dashboard to see your upcoming bookings or review past sessions.'
+                : 'Thanks for joining. The session has been completed.'}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
+            {isCoach ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+                >
+                  Back to Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/bookings"
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-center text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-white transition-colors"
+                >
+                  View Bookings
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/"
+                className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+              >
+                Back to Home
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen px-4 py-12">

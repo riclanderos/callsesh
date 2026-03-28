@@ -239,6 +239,37 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ received: true });
     }
 
+    // Decrement launch offer sessions remaining when applicable.
+    // Rules: eligible coach · offer not expired · sessions > 0 · session ≤ 60 min.
+    // Computed from start/end times in metadata to avoid needing extra metadata fields.
+    const [startH, startM] = (m.start_time as string).split(':').map(Number)
+    const [endH, endM]     = (m.end_time   as string).split(':').map(Number)
+    const durationMinutes  = (endH * 60 + endM) - (startH * 60 + startM)
+
+    if (durationMinutes <= 60) {
+      const { data: offerProfile } = await serviceClient
+        .from('profiles')
+        .select('launch_offer_eligible, launch_offer_sessions_remaining, launch_offer_expires_at')
+        .eq('id', m.coach_id)
+        .maybeSingle()
+
+      const offerActive =
+        offerProfile?.launch_offer_eligible === true &&
+        (!offerProfile?.launch_offer_expires_at ||
+          new Date(offerProfile.launch_offer_expires_at) > new Date()) &&
+        (offerProfile?.launch_offer_sessions_remaining ?? 0) > 0
+
+      if (offerActive) {
+        const newRemaining = (offerProfile!.launch_offer_sessions_remaining ?? 1) - 1
+        await serviceClient
+          .from('profiles')
+          .update({ launch_offer_sessions_remaining: Math.max(0, newRemaining) })
+          .eq('id', m.coach_id)
+          .gt('launch_offer_sessions_remaining', 0)
+        console.log('[webhook] launch offer decremented for coach:', m.coach_id, '→ remaining:', Math.max(0, newRemaining))
+      }
+    }
+
     // Fetch coach email, session title, and timezone in parallel.
     const [{ data: coachData }, { data: sessionType }, { data: profile }] =
       await Promise.all([
