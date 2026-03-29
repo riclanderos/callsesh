@@ -14,7 +14,7 @@ export default function PayoutCard({ state }: { state: PayoutState }) {
     return (
       <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-6 space-y-4">
         <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Get paid</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Get paid</p>
           <p className="text-base font-semibold text-zinc-100">Verification in progress</p>
           <p className="text-sm text-zinc-400">
             Your payout details were submitted. Stripe is still reviewing your account before

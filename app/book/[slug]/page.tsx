@@ -42,7 +42,7 @@ export default async function BookingPage({
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="text-center space-y-2">
           <p className="text-base font-medium text-zinc-200">Session not available</p>
-          <p className="text-sm text-zinc-500">This booking link is no longer active.</p>
+          <p className="text-sm text-zinc-400">This booking link is no longer active.</p>
         </div>
       </div>
     )

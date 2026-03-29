@@ -68,11 +68,11 @@ function GuestForm({
             <span className="text-xs text-zinc-500">{clientAbbr}</span>
           </p>
           {tzDiffers && (
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               {formatTime(coachTime)} {coachAbbr} · coach time
             </p>
           )}
-          <p className="text-xs text-zinc-500 pt-1">Enter your details to continue</p>
+          <p className="text-sm text-zinc-400 pt-1">Enter your details to continue</p>
         </div>
 
         <div className="space-y-4">
@@ -199,7 +199,7 @@ export default function DateSelector({
   if (!hasAnySlots) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center">
-        <p className="text-sm text-zinc-500">No time slots available for this session length.</p>
+        <p className="text-sm text-zinc-400">No time slots available for this session length.</p>
       </div>
     )
   }
@@ -213,12 +213,12 @@ export default function DateSelector({
     <div className="space-y-3">
       {/* Single-line timezone context */}
       <div className="px-1">
-        <p className="text-xs text-zinc-500">
+        <p className="text-sm text-zinc-400">
           Times shown in your timezone{' '}
-          <span className="text-zinc-400">({clientAbbr})</span>
+          <span className="text-zinc-300">({clientAbbr})</span>
         </p>
         {tzDiffers && (
-          <p className="text-xs text-zinc-600">Coach is in {coachAbbr}</p>
+          <p className="text-xs text-zinc-500">Coach is in {coachAbbr}</p>
         )}
       </div>
 
@@ -254,7 +254,7 @@ export default function DateSelector({
         {/* Slot grid for the active date */}
         <div className="p-6 space-y-4">
           {activeSlots.length === 0 ? (
-            <p className="text-sm text-zinc-500 text-center py-4">
+            <p className="text-sm text-zinc-400 text-center py-4">
               No availability on this date.
             </p>
           ) : (

@@ -88,7 +88,7 @@ const planDefs = [
     badge: null,
     planKey: 'pro',
     priceClass: 'text-zinc-300',
-    sessionsClass: 'text-zinc-500',
+    sessionsClass: 'text-zinc-400',
   },
 ]
 
@@ -131,7 +131,7 @@ export default async function UpgradePage() {
           <h1 className="text-3xl font-semibold text-zinc-100">
             {userPlanKey === 'free' ? 'Choose a plan' : 'Your membership'}
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {userPlanKey === 'starter'
               ? 'Upgrade to Pro or manage your subscription below.'
               : userPlanKey === 'pro'
@@ -167,26 +167,26 @@ export default async function UpgradePage() {
 
               {/* Plan name + price */}
               <div className="space-y-1">
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                   {plan.name}
                 </p>
                 <div className="flex items-baseline gap-1.5">
                   <span className={`text-3xl font-bold ${plan.priceClass}`}>{plan.price}</span>
                   {plan.period && (
-                    <span className="text-sm text-zinc-500">{plan.period}</span>
+                    <span className="text-sm text-zinc-400">{plan.period}</span>
                   )}
                 </div>
                 <p className={`text-sm font-medium ${plan.sessionsClass}`}>{plan.sessions}</p>
               </div>
 
               {/* Description */}
-              <p className="text-sm text-zinc-400 leading-relaxed">{plan.description}</p>
+              <p className="text-sm text-zinc-300 leading-relaxed">{plan.description}</p>
 
               {/* Features */}
               <ul className="space-y-2">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-zinc-400">
-                    <span className="text-zinc-600">—</span>
+                  <li key={f} className="flex items-center gap-2 text-sm text-zinc-300">
+                    <span className="text-zinc-500">—</span>
                     {f}
                   </li>
                 ))}
@@ -228,7 +228,7 @@ export default async function UpgradePage() {
                 <ManageBillingButton label={plan.ctaLabel} className="w-full py-2.5" />
               )}
               {plan.ctaStyle === 'none' && plan.planKey === null && (
-                <p className="text-xs text-zinc-600 leading-relaxed">
+                <p className="text-sm text-zinc-400 leading-relaxed">
                   Free is a founder-only intro plan. It is not available as a downgrade once your initial sessions are used.
                 </p>
               )}
@@ -241,11 +241,9 @@ export default async function UpgradePage() {
           {(userPlanKey === 'starter' || userPlanKey === 'pro') && (
             <ManageBillingButton />
           )}
-          <p className="text-xs text-zinc-600">
-            <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-300 transition-colors">
-              Back to dashboard →
-            </Link>
-          </p>
+          <Link href="/dashboard" className="text-sm text-zinc-400 hover:text-zinc-300 transition-colors">
+            Back to dashboard →
+          </Link>
         </div>
 
       </div>

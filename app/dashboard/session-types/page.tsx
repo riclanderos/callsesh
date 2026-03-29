@@ -45,11 +45,11 @@ export default async function SessionTypesPage() {
         <div className="flex items-start justify-between">
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Session Types</h1>
-            <p className="text-sm text-zinc-500">Define the coaching sessions you offer.</p>
+            <p className="text-sm text-zinc-400">Define the coaching sessions you offer.</p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
@@ -60,7 +60,7 @@ export default async function SessionTypesPage() {
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 flex items-center justify-between gap-4">
             <p className="text-sm text-zinc-400">
               Session type ready.{' '}
-              <span className="text-zinc-500">Make sure your availability is set so clients can book.</span>
+              <span className="text-zinc-400">Make sure your availability is set so clients can book.</span>
             </p>
             <Link
               href="/dashboard/availability"
@@ -74,7 +74,7 @@ export default async function SessionTypesPage() {
         {/* Existing session types */}
         {sessionTypes && sessionTypes.length > 0 ? (
           <section className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Your sessions</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Your sessions</p>
             <div className="space-y-2">
               {(sessionTypes as SessionType[]).map((st) => (
                 <div
@@ -94,10 +94,10 @@ export default async function SessionTypesPage() {
                       {st.description && (
                         <p className="text-sm text-zinc-400">{st.description}</p>
                       )}
-                      <p className="text-sm text-zinc-500">
+                      <p className="text-sm text-zinc-400">
                         {st.duration_minutes} min &middot; ${(st.price_cents / 100).toFixed(2)}
                       </p>
-                      <p className="text-xs text-zinc-600 font-mono truncate">
+                      <p className="text-sm text-zinc-500 font-mono truncate">
                         <Link
                           href={`/book/${st.slug}`}
                           target="_blank"
@@ -115,7 +115,7 @@ export default async function SessionTypesPage() {
           </section>
         ) : (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-8 text-center">
-            <p className="text-sm text-zinc-500">No session types yet. Create your first one below.</p>
+            <p className="text-sm text-zinc-400">No session types yet. Create your first one below.</p>
           </div>
         )}
 
@@ -123,7 +123,7 @@ export default async function SessionTypesPage() {
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
           <div className="space-y-0.5">
             <h2 className="font-medium text-zinc-100">New Session Type</h2>
-            <p className="text-xs text-zinc-500">Add a new session to your coaching offerings.</p>
+            <p className="text-sm text-zinc-400">Add a new session to your coaching offerings.</p>
           </div>
           <CreateSessionTypeForm />
         </section>

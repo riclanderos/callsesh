@@ -42,13 +42,13 @@ export default async function AvailabilityPage() {
         <div className="flex items-start justify-between">
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Availability</h1>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               Select the times you&apos;re available each week.
             </p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
@@ -62,7 +62,7 @@ export default async function AvailabilityPage() {
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 flex items-center justify-between gap-4">
             <p className="text-sm text-zinc-400">
               Availability is set.{' '}
-              <span className="text-zinc-500">Share your booking link from the dashboard.</span>
+              <span className="text-zinc-400">Share your booking link from the dashboard.</span>
             </p>
             <Link
               href="/dashboard"

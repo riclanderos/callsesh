@@ -116,13 +116,13 @@ export default async function BookingsPage() {
         <div className="flex items-start justify-between">
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Bookings</h1>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               {coachTimezone} · {tzAbbr(coachTimezone)}
             </p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
           >
             ← Dashboard
           </Link>
@@ -130,14 +130,14 @@ export default async function BookingsPage() {
 
         {bookings.length === 0 && (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-10 text-center">
-            <p className="text-sm text-zinc-500">No bookings yet.</p>
+            <p className="text-sm text-zinc-400">No bookings yet.</p>
           </div>
         )}
 
         {/* Upcoming */}
         {upcoming.length > 0 && (
           <section className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Upcoming</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Upcoming</p>
             <div className="space-y-2">
               {upcoming.map((b) => (
                 <BookingRow key={b.id} booking={b} isUpcoming />
@@ -149,7 +149,7 @@ export default async function BookingsPage() {
         {/* Past */}
         {past.length > 0 && (
           <section className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Past</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Past</p>
             <div className="space-y-2">
               {past.map((b) => (
                 <BookingRow key={b.id} booking={b} />
@@ -175,8 +175,8 @@ function BookingRow({ booking: b, isUpcoming = false }: { booking: Booking; isUp
           {statusBadge(b.status)}
         </div>
         <p className="text-sm text-zinc-400">{b.sessionTitle}</p>
-        <p className="text-sm text-zinc-500">{b.guest_email}</p>
-        <p className="text-xs text-zinc-600 font-mono">
+        <p className="text-sm text-zinc-400">{b.guest_email}</p>
+        <p className="text-sm text-zinc-400 font-mono">
           {formatDate(b.booking_date)} · {formatTime(b.start_time)} – {formatTime(b.end_time)}
         </p>
       </div>

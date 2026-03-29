@@ -88,7 +88,7 @@ export default async function BookingSuccessPage({
             <p className="text-sm text-zinc-400 leading-relaxed">
               Someone else booked this slot at the same time. Your booking was not completed.
             </p>
-            <p className="text-sm text-zinc-500 leading-relaxed">
+            <p className="text-sm text-zinc-400 leading-relaxed">
               If payment was collected, please contact{' '}
               <a
                 href="mailto:support@landerossystems.com"
@@ -111,7 +111,7 @@ export default async function BookingSuccessPage({
 
           <Link
             href="/"
-            className="inline-block text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="inline-block text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
           >
             ← Back to home
           </Link>
@@ -166,25 +166,25 @@ export default async function BookingSuccessPage({
             <div className="border-t border-zinc-800 pt-4 space-y-3">
               {sessionTitle && (
                 <div className="flex justify-between items-baseline gap-2">
-                  <span className="text-xs text-zinc-500 uppercase tracking-wider">Session</span>
+                  <span className="text-xs text-zinc-400 uppercase tracking-wider">Session</span>
                   <span className="text-sm text-zinc-200 text-right">{sessionTitle}</span>
                 </div>
               )}
               <div className="flex justify-between items-baseline gap-2">
-                <span className="text-xs text-zinc-500 uppercase tracking-wider">Date</span>
+                <span className="text-xs text-zinc-400 uppercase tracking-wider">Date</span>
                 <span className="text-sm text-zinc-200 text-right">{formatDate(booking.booking_date)}</span>
               </div>
               <div className="flex justify-between items-start gap-2">
-                <span className="text-xs text-zinc-500 uppercase tracking-wider mt-0.5">Time</span>
+                <span className="text-xs text-zinc-400 uppercase tracking-wider mt-0.5">Time</span>
                 <div className="text-right space-y-0.5">
                   <p className="text-sm text-zinc-200">
                     {formatTime(booking.start_time)} – {formatTime(booking.end_time)}{' '}
-                    <span className="text-zinc-500 text-xs">{coachAbbr}</span>
+                    <span className="text-zinc-400 text-xs">{coachAbbr}</span>
                   </p>
                   {guestStart && guestEnd && guestAbbr && (
                     <p className="text-xs text-zinc-500">
                       {formatTime(guestStart)} – {formatTime(guestEnd)}{' '}
-                      <span className="text-zinc-600">{guestAbbr} · your time</span>
+                      <span className="text-zinc-500">{guestAbbr} · your time</span>
                     </p>
                   )}
                 </div>
