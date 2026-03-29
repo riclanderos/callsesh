@@ -17,10 +17,6 @@ const DAY_FULL: Record<number, string> = {
   4: 'Thursday', 5: 'Friday', 6: 'Saturday',
 }
 
-/**
- * "9 AM" for :00 slots, "9:30" for :30 slots.
- * Hour markers carry AM/PM context; half-hour slots stay terse.
- */
 function formatSlot(t: string): string {
   const [h, m] = t.split(':').map(Number)
   const hour = h % 12 || 12
@@ -38,35 +34,63 @@ function eqSet(a: Set<string>, b: Set<string>): boolean {
 
 function DayEditor({
   day,
-  initialSelected,
+  currentSlots,
+  onToggle,
+  initialSaved,
   onSaved,
+  otherDays,
+  onCopyTo,
 }: {
   day: number
-  initialSelected: string[]
-  /** Called with the newly-saved slot list after each successful save. */
+  /** Controlled by SlotPicker so copy can write to any day without a remount. */
+  currentSlots: Set<string>
+  onToggle: (slot: string) => void
+  initialSaved: string[]
   onSaved: (slots: string[]) => void
+  /** Other days available as copy targets, with their current hasSlots state. */
+  otherDays: { day: number; label: string; hasSlots: boolean }[]
+  onCopyTo: (targetDays: number[]) => void
 }) {
   // savedSlots = what is currently persisted in the DB for this day.
-  // Initialised from server data; updated locally after each successful save so
-  // we never need to remount this component to re-sync with the server.
-  const [savedSlots, setSavedSlots] = useState<Set<string>>(() => new Set(initialSelected))
-  const [currentSlots, setCurrentSlots] = useState<Set<string>>(() => new Set(initialSelected))
-  // 'saved' shows the green success state for 2 s; 'idle' is the default.
+  const [savedSlots, setSavedSlots] = useState<Set<string>>(() => new Set(initialSaved))
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle')
   const [actionError, formAction, pending] = useActionState(saveRecurringDay, null)
-
   const wasPending = useRef(false)
-  // Single timer per DayEditor; cleared before each new save so timers never overlap.
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // dirty = user has unsaved changes relative to what's in the DB
+  // Copy panel state
+  const [copyOpen, setCopyOpen] = useState(false)
+  const [copyTargets, setCopyTargets] = useState<Set<number>>(new Set())
+
   const dirty = !eqSet(currentSlots, savedSlots)
-  // canSave is the single source of truth for button enable/disable
   const canSave = dirty && !pending
   const isSaved = saveStatus === 'saved'
 
+  const conflictingCount = [...copyTargets].filter(
+    (d) => otherDays.find((od) => od.day === d)?.hasSlots
+  ).length
+
+  // Serialize current slots for stable effect dependency.
+  const slotKey = [...currentSlots].sort().join(',')
+
+  // Clear saved status whenever the slot selection changes (toggle or external copy).
+  // Uses functional setSaveStatus so we don't need saveStatus in the dep array.
+  useEffect(() => {
+    setSaveStatus((prev) => {
+      if (prev === 'saved') {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current)
+          timerRef.current = null
+        }
+        return 'idle'
+      }
+      return prev
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slotKey])
+
   // Detect successful save: pending flipped true → false with no error.
-  // Toggles are disabled while pending, so currentSlots is stable here.
+  // currentSlots is stable during pending (slot buttons are disabled).
   useEffect(() => {
     if (wasPending.current && !pending) {
       if (actionError === null) {
@@ -74,7 +98,6 @@ function DayEditor({
         setSavedSlots(new Set(currentSlots))
         setSaveStatus('saved')
         onSaved(saved)
-        // Guard against overlapping timers on repeated rapid saves
         if (timerRef.current) clearTimeout(timerRef.current)
         timerRef.current = setTimeout(() => {
           setSaveStatus('idle')
@@ -83,33 +106,21 @@ function DayEditor({
       }
     }
     wasPending.current = pending
-  // currentSlots is intentionally excluded: it is stable during pending (toggles
-  // are disabled) so the closure value is always the slots that were submitted.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, actionError])
 
-  // Clean up any in-flight timer when the component is removed from the DOM.
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
-  function toggle(slot: string) {
-    // Any user edit immediately cancels the success state and re-evaluates dirty.
-    if (saveStatus === 'saved') {
-      setSaveStatus('idle')
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
-      }
-    }
-    setCurrentSlots((prev) => {
-      const next = new Set(prev)
-      next.has(slot) ? next.delete(slot) : next.add(slot)
-      return next
-    })
+  function handleCopyApply() {
+    if (copyTargets.size === 0) return
+    onCopyTo([...copyTargets])
+    setCopyTargets(new Set())
+    setCopyOpen(false)
   }
 
   return (
     <div className="p-5 space-y-4">
-      {/* Slot grid — disabled while save is in flight to prevent mid-save edits */}
+      {/* Slot grid — disabled while save is in flight */}
       <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1.5">
         {ALL_SLOTS.map((slot) => {
           const on = currentSlots.has(slot)
@@ -117,7 +128,7 @@ function DayEditor({
             <button
               key={slot}
               type="button"
-              onClick={() => toggle(slot)}
+              onClick={() => onToggle(slot)}
               disabled={pending}
               className={`rounded-md py-2 text-xs font-medium transition-colors select-none disabled:pointer-events-none disabled:opacity-50 ${
                 on
@@ -157,6 +168,86 @@ function DayEditor({
           <span className="text-xs text-red-400">{actionError}</span>
         )}
       </form>
+
+      {/* Copy to other days — only shown when this day has slots to copy */}
+      {currentSlots.size > 0 && (
+        <div className="pt-1 border-t border-zinc-800/60">
+          {!copyOpen ? (
+            <button
+              type="button"
+              onClick={() => setCopyOpen(true)}
+              className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
+            >
+              Copy to other days →
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs text-zinc-500">Copy these slots to:</p>
+
+              {/* Target day pills */}
+              <div className="flex flex-wrap gap-1.5">
+                {otherDays.map(({ day: d, label, hasSlots }) => {
+                  const selected = copyTargets.has(d)
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() =>
+                        setCopyTargets((prev) => {
+                          const next = new Set(prev)
+                          next.has(d) ? next.delete(d) : next.add(d)
+                          return next
+                        })
+                      }
+                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                        selected
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+                      }`}
+                    >
+                      {label}
+                      {/* Dot indicates this day already has slots selected */}
+                      {hasSlots && (
+                        <span className={`ml-1.5 inline-block h-1 w-1 rounded-full align-middle ${selected ? 'bg-indigo-300' : 'bg-zinc-500'}`} />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Overwrite warning — shown when ≥1 selected target already has slots */}
+              {copyTargets.size > 0 && conflictingCount > 0 && (
+                <p className="text-xs text-amber-500/90">
+                  {conflictingCount === 1 ? '1 day' : `${conflictingCount} days`} already{' '}
+                  {conflictingCount === 1 ? 'has' : 'have'} slots selected and will be replaced.
+                </p>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  disabled={copyTargets.size === 0}
+                  onClick={handleCopyApply}
+                  className="rounded-lg bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                >
+                  {conflictingCount > 0 && copyTargets.size > 0 ? 'Replace & copy' : 'Copy'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCopyOpen(false)
+                    setCopyTargets(new Set())
+                  }}
+                  className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -169,16 +260,42 @@ export default function SlotPicker({
   initialSelectedByDay: Partial<Record<number, string[]>>
 }) {
   const [activeDay, setActiveDay] = useState(1) // default to Monday
-  // Tracks the current persisted slot count per day so the tab dot stays accurate
-  // after saves without requiring a page re-render or component remount.
+
+  // currentSlotsByDay is lifted here (rather than living inside each DayEditor)
+  // so the copy feature can read and write any day's selection without remounting.
+  const [currentSlotsByDay, setCurrentSlotsByDay] = useState<Record<number, Set<string>>>(() => {
+    const init: Record<number, Set<string>> = {}
+    for (const day of DAY_ORDER) {
+      init[day] = new Set(initialSelectedByDay[day] ?? [])
+    }
+    return init
+  })
+
   const [savedSlotsByDay, setSavedSlotsByDay] = useState<Partial<Record<number, string[]>>>(
     () => initialSelectedByDay
   )
-  // Tracks which days were recently saved for the green tab-dot feedback.
   const [recentlySaved, setRecentlySaved] = useState<Set<number>>(new Set())
-  // One timer ref per day — prevents overlapping timers when the same day is saved
-  // multiple times in quick succession (timer from save N-1 won't clear save N early).
   const tabTimerRefs = useRef<Partial<Record<number, ReturnType<typeof setTimeout>>>>({})
+
+  function handleToggle(day: number, slot: string) {
+    setCurrentSlotsByDay((prev) => {
+      const next = new Set(prev[day])
+      next.has(slot) ? next.delete(slot) : next.add(slot)
+      return { ...prev, [day]: next }
+    })
+  }
+
+  /** Overwrites the current slot selection for each target day with the source day's slots. */
+  function handleCopy(sourceDay: number, targetDays: number[]) {
+    const sourceSlots = currentSlotsByDay[sourceDay]
+    setCurrentSlotsByDay((prev) => {
+      const next = { ...prev }
+      for (const day of targetDays) {
+        next[day] = new Set(sourceSlots)
+      }
+      return next
+    })
+  }
 
   function handleSaved(day: number, slots: string[]) {
     setSavedSlotsByDay((prev) => ({ ...prev, [day]: slots }))
@@ -230,17 +347,29 @@ export default function SlotPicker({
         })}
       </div>
 
-      {/* Render all editors hidden when inactive — preserves unsaved state on tab switch.
-          Stable key (day number only) prevents remounts; DayEditor owns its own state. */}
-      {DAY_ORDER.map((day) => (
-        <div key={day} className={activeDay === day ? '' : 'hidden'}>
-          <DayEditor
-            day={day}
-            initialSelected={initialSelectedByDay[day] ?? []}
-            onSaved={(slots) => handleSaved(day, slots)}
-          />
-        </div>
-      ))}
+      {/* All editors rendered; inactive ones are hidden to preserve unsaved state */}
+      {DAY_ORDER.map((day) => {
+        const otherDays = DAY_ORDER.filter((d) => d !== day).map((d) => ({
+          day: d,
+          label: DAY_SHORT[d],
+          // hasSlots reflects current (possibly unsaved) selection so the
+          // overwrite warning accurately signals what would be replaced.
+          hasSlots: currentSlotsByDay[d].size > 0,
+        }))
+        return (
+          <div key={day} className={activeDay === day ? '' : 'hidden'}>
+            <DayEditor
+              day={day}
+              currentSlots={currentSlotsByDay[day]}
+              onToggle={(slot) => handleToggle(day, slot)}
+              initialSaved={initialSelectedByDay[day] ?? []}
+              onSaved={(slots) => handleSaved(day, slots)}
+              otherDays={otherDays}
+              onCopyTo={(targets) => handleCopy(day, targets)}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
