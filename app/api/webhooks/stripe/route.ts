@@ -118,6 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       status: 'confirmed',
       stripe_checkout_session_id: session.id,
       guest_access_token: generatedToken,
+      ...(m.client_message ? { client_message: m.client_message } : {}),
     });
 
     console.log('[webhook] insert error:', insertError ?? 'none');

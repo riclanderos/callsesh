@@ -15,6 +15,7 @@ type Booking = {
   end_time: string
   status: string
   sessionTitle: string
+  client_message: string | null
 }
 
 // "YYYY-MM-DD" → "Mon, Mar 24, 2026"
@@ -64,7 +65,7 @@ export default async function BookingsPage() {
   const [{ data: rawData, error }, { data: profile }] = await Promise.all([
     supabase
       .from('bookings')
-      .select('id, guest_name, guest_email, booking_date, start_time, end_time, status, session_types(title)')
+      .select('id, guest_name, guest_email, booking_date, start_time, end_time, status, client_message, session_types(title)')
       .eq('coach_id', user.id)
       .order('booking_date', { ascending: true })
       .order('start_time', { ascending: true }),
@@ -175,6 +176,9 @@ function BookingRow({ booking: b, isUpcoming = false }: { booking: Booking; isUp
           {statusBadge(b.status)}
         </div>
         <p className="text-sm text-zinc-400">{b.sessionTitle}</p>
+        {b.client_message && (
+          <p className="text-sm text-zinc-300">&ldquo;{b.client_message}&rdquo;</p>
+        )}
         <p className="text-sm text-zinc-400">{b.guest_email}</p>
         <p className="text-sm text-zinc-400 font-mono">
           {formatDate(b.booking_date)} · {formatTime(b.start_time)} – {formatTime(b.end_time)}

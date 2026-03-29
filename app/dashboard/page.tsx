@@ -102,7 +102,7 @@ export default async function DashboardPage({
     supabase
       .from('bookings')
       .select(
-        'id, guest_name, booking_date, start_time, end_time, session_types(title)',
+        'id, guest_name, booking_date, start_time, end_time, client_message, session_types(title)',
       )
       .eq('coach_id', user.id)
       .eq('status', 'confirmed')
@@ -314,6 +314,11 @@ export default async function DashboardPage({
                     startTime={next.start_time}
                     endTime={next.end_time}
                   />
+                  {(next as { client_message?: string | null }).client_message && (
+                    <p className="text-sm text-zinc-300 pt-1">
+                      &ldquo;{(next as { client_message?: string | null }).client_message}&rdquo;
+                    </p>
+                  )}
                 </div>
                 <Link
                   href="/dashboard/bookings"
@@ -371,6 +376,11 @@ export default async function DashboardPage({
                     <p className="text-sm text-zinc-300">
                       {formatDate(b.booking_date)} · {formatTime(b.start_time)}
                     </p>
+                    {(b as { client_message?: string | null }).client_message && (
+                      <p className="text-sm text-zinc-300 truncate">
+                        &ldquo;{(b as { client_message?: string | null }).client_message}&rdquo;
+                      </p>
+                    )}
                   </div>
                   <span className="flex-shrink-0 text-sm text-zinc-300">
                     {b.sessionTitle}

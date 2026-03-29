@@ -46,6 +46,7 @@ export async function startCheckout(
   const guestEmail = (formData.get('guest_email') as string).trim().toLowerCase()
   // IANA timezone string detected in the browser; used for display only (not stored).
   const guestTimezone = ((formData.get('guest_timezone') as string) ?? '').trim()
+  const clientMessage = ((formData.get('client_message') as string) ?? '').trim().slice(0, 300)
 
   if (!guestName) return { ok: false, error: 'Name is required.' }
   if (!guestEmail || !guestEmail.includes('@'))
@@ -184,6 +185,7 @@ export async function startCheckout(
       end_time:        endTime,
       coach_timezone:  coachTimezone,
       guest_timezone:  guestTimezone,
+      ...(clientMessage ? { client_message: clientMessage } : {}),
     },
     payment_intent_data: {
       application_fee_amount: Math.round(sessionType.price_cents * 0.1),

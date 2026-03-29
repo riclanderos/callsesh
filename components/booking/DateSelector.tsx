@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useId } from 'react'
 import { useActionState } from 'react'
 import { startCheckout, type CheckoutState } from '@/app/actions/bookings'
 import { tzAbbr, convertTime, type DateSlots } from '@/lib/booking'
@@ -17,6 +17,8 @@ function formatTime(t: string): string {
   const hour = h % 12 || 12
   return `${hour}:${String(m).padStart(2, '0')} ${period}`
 }
+
+const MAX_MESSAGE = 300
 
 function GuestForm({
   action,
@@ -39,6 +41,8 @@ function GuestForm({
   clientTimezone: string
   isCoachOwner: boolean
 }) {
+  const [messageLength, setMessageLength] = useState(0)
+  const messageId = useId()
   const [y, mo, d] = date.split('-').map(Number)
   const dt = new Date(y, mo - 1, d)
   const displayDate = `${DAY_FULL[dt.getDay()]}, ${MONTH_FULL[mo - 1]} ${d}`
@@ -112,6 +116,27 @@ function GuestForm({
             />
           </div>
         </div>
+
+          <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor={messageId}
+                  className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  What would you like help with? <span className="normal-case">(optional)</span>
+                </label>
+                <span className="text-xs text-zinc-500">{messageLength}/{MAX_MESSAGE}</span>
+              </div>
+              <textarea
+                id={messageId}
+                name="client_message"
+                rows={3}
+                maxLength={MAX_MESSAGE}
+                placeholder="Share a bit about what you're looking for so your coach can prepare"
+                onChange={(e) => setMessageLength(e.target.value.length)}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-colors resize-none"
+              />
+            </div>
 
         {state?.ok === false && (
           <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-400">
