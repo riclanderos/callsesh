@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { cancelBooking } from '@/app/actions/bookings'
 import CancelButton from './cancel-button'
 import JoinSessionButton from './join-session-button'
+import { tzAbbr } from '@/lib/booking'
 
 type Booking = {
   id: string
@@ -116,7 +117,7 @@ export default async function BookingsPage() {
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Bookings</h1>
             <p className="text-sm text-zinc-500">
-              {coachTimezone}
+              {coachTimezone} · {tzAbbr(coachTimezone)}
             </p>
           </div>
           <Link

@@ -15,6 +15,7 @@ import {
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
+import { dateToDayOfWeek } from '@/lib/booking'
 
 export type CheckoutState =
   | null
@@ -24,27 +25,6 @@ export type CheckoutState =
 /** Minimum minutes ahead a slot must start to be accepted server-side. */
 const LEAD_TIME_MINUTES = 5
 
-/**
- * Returns the nearest occurrence of dayOfWeek (0=Sun…6=Sat) starting from
- * today (in the coach's timezone), as a "YYYY-MM-DD" string.
- * Today is included when the day matches; otherwise advances to the next occurrence.
- */
-function nextOccurrence(dayOfWeek: number, timezone: string): string {
-  // Resolve today's calendar date in the coach's timezone so that coaches in
-  // non-UTC zones don't see their next slot land on the wrong day.
-  const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(new Date())
-  const [y, mo, d] = todayStr.split('-').map(Number)
-  const today = new Date(y, mo - 1, d) // midnight local (server) — only the date part matters
-
-  const daysUntil = (dayOfWeek - today.getDay() + 7) % 7
-  const target = new Date(today)
-  target.setDate(today.getDate() + daysUntil)
-
-  const ty = target.getFullYear()
-  const tm = String(target.getMonth() + 1).padStart(2, '0')
-  const td = String(target.getDate()).padStart(2, '0')
-  return `${ty}-${tm}-${td}`
-}
 
 /** Adds minutes to a "HH:MM" string and returns a "HH:MM" string. */
 function addMinutes(time: string, minutes: number): string {
@@ -60,18 +40,21 @@ export async function startCheckout(
   formData: FormData
 ): Promise<CheckoutState> {
   const sessionTypeId = formData.get('session_type_id') as string
-  const dayOfWeekRaw = formData.get('day_of_week') as string
+  const bookingDate = (formData.get('booking_date') as string).trim()
   const startTime = (formData.get('start_time') as string).trim()
   const guestName = (formData.get('guest_name') as string).trim()
   const guestEmail = (formData.get('guest_email') as string).trim().toLowerCase()
+  // IANA timezone string detected in the browser; used for display only (not stored).
+  const guestTimezone = ((formData.get('guest_timezone') as string) ?? '').trim()
 
   if (!guestName) return { ok: false, error: 'Name is required.' }
   if (!guestEmail || !guestEmail.includes('@'))
     return { ok: false, error: 'A valid email is required.' }
 
-  const dayOfWeek = parseInt(dayOfWeekRaw, 10)
-  if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6)
-    return { ok: false, error: 'Invalid day selected.' }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(bookingDate))
+    return { ok: false, error: 'Invalid booking date.' }
+
+  const dayOfWeek = dateToDayOfWeek(bookingDate)
 
   const supabase = await createClient()
 
@@ -127,11 +110,12 @@ export async function startCheckout(
   if (!validSlots.includes(startTime))
     return { ok: false, error: 'This time slot is no longer available.' }
 
-  const bookingDate = nextOccurrence(dayOfWeek, coachTimezone)
   const endTime = addMinutes(startTime, sessionType.duration_minutes)
 
-  // Reject same-day slots that are too close to the current time.
+  // Reject dates in the past and same-day slots that are too close to the current time.
   const todayInCoachTz = new Intl.DateTimeFormat('en-CA', { timeZone: coachTimezone }).format(new Date())
+  if (bookingDate < todayInCoachTz)
+    return { ok: false, error: 'This time slot is no longer available.' }
   if (bookingDate === todayInCoachTz) {
     const nowParts = new Intl.DateTimeFormat('en-US', {
       timeZone: coachTimezone, hour: 'numeric', minute: '2-digit', hour12: false,
@@ -198,6 +182,8 @@ export async function startCheckout(
       booking_date:    bookingDate,
       start_time:      startTime,
       end_time:        endTime,
+      coach_timezone:  coachTimezone,
+      guest_timezone:  guestTimezone,
     },
     payment_intent_data: {
       application_fee_amount: Math.round(sessionType.price_cents * 0.1),
@@ -205,7 +191,7 @@ export async function startCheckout(
         destination: coachStripeAccountId,
       },
     },
-    success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}&slug=${sessionType.slug}`,
+    success_url: `${appUrl}/book/success?session_id={CHECKOUT_SESSION_ID}&slug=${sessionType.slug}${guestTimezone ? `&ctz=${encodeURIComponent(guestTimezone)}` : ''}`,
     cancel_url:  `${appUrl}/book/${sessionType.slug}`,
   })
 

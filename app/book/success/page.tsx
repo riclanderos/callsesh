@@ -1,26 +1,65 @@
 import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/service'
+import { tzAbbr, convertTime } from '@/lib/booking'
 
+function formatDate(d: string): string {
+  const [year, month, day] = d.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+  })
+}
+
+function formatTime(t: string): string {
+  const [h, m] = t.split(':').map(Number)
+  const period = h >= 12 ? 'PM' : 'AM'
+  const hour = h % 12 || 12
+  return `${hour}:${String(m).padStart(2, '0')} ${period}`
+}
 
 export default async function BookingSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string; slug?: string }>
+  searchParams: Promise<{ session_id?: string; slug?: string; ctz?: string }>
 }) {
-  const { session_id, slug } = await searchParams
+  const { session_id, slug, ctz } = await searchParams
 
-  // Verify a real confirmed booking exists for this Stripe checkout session.
-  // The service client bypasses RLS — this is a public page with no guest auth.
+  const svc = createServiceClient()
+
+  type BookingRow = {
+    id: string
+    booking_date: string
+    start_time: string
+    end_time: string
+    coach_id: string
+    session_types: { title: string } | { title: string }[] | null
+  }
+
   let confirmed = false
+  let booking: BookingRow | null = null
+
   if (session_id) {
-    const { data } = await createServiceClient()
+    const { data } = await svc
       .from('bookings')
-      .select('id')
+      .select('id, booking_date, start_time, end_time, coach_id, session_types(title)')
       .eq('stripe_checkout_session_id', session_id)
       .eq('status', 'confirmed')
       .maybeSingle()
 
-    confirmed = !!data
+    if (data) {
+      confirmed = true
+      booking = data as BookingRow
+    }
+  }
+
+  // Fetch coach timezone for confirmed bookings.
+  let coachTimezone = 'UTC'
+  if (booking?.coach_id) {
+    const { data: profile } = await svc
+      .from('profiles')
+      .select('timezone')
+      .eq('id', booking.coach_id)
+      .single()
+    coachTimezone = profile?.timezone ?? 'UTC'
   }
 
   if (!confirmed) {
@@ -81,6 +120,21 @@ export default async function BookingSuccessPage({
     )
   }
 
+  // Derive session title from the join result.
+  const st = booking?.session_types
+  const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? '') : (st?.title ?? '')
+
+  // Compute timezone-aware display values.
+  const coachAbbr = tzAbbr(coachTimezone)
+  const guestTimezone = ctz && ctz !== coachTimezone ? ctz : null
+  const guestAbbr = guestTimezone ? tzAbbr(guestTimezone) : null
+  const guestStart = guestTimezone && booking
+    ? convertTime(booking.booking_date, booking.start_time, coachTimezone, guestTimezone)
+    : null
+  const guestEnd = guestTimezone && booking
+    ? convertTime(booking.booking_date, booking.end_time, coachTimezone, guestTimezone)
+    : null
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8 text-center">
@@ -98,12 +152,43 @@ export default async function BookingSuccessPage({
           </svg>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">You&apos;re booked!</h1>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            Payment confirmed. A confirmation email is on its way with your session
-            details and a secure link to join the video call.
-          </p>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 space-y-4 text-left">
+          <div className="text-center space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">You&apos;re booked!</h1>
+            <p className="text-sm text-zinc-400">
+              Payment confirmed. Check your email for session details and a secure join link.
+            </p>
+          </div>
+
+          {booking && (
+            <div className="border-t border-zinc-800 pt-4 space-y-3">
+              {sessionTitle && (
+                <div className="flex justify-between items-baseline gap-2">
+                  <span className="text-xs text-zinc-500 uppercase tracking-wider">Session</span>
+                  <span className="text-sm text-zinc-200 text-right">{sessionTitle}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-baseline gap-2">
+                <span className="text-xs text-zinc-500 uppercase tracking-wider">Date</span>
+                <span className="text-sm text-zinc-200 text-right">{formatDate(booking.booking_date)}</span>
+              </div>
+              <div className="flex justify-between items-start gap-2">
+                <span className="text-xs text-zinc-500 uppercase tracking-wider mt-0.5">Time</span>
+                <div className="text-right space-y-0.5">
+                  <p className="text-sm text-zinc-200">
+                    {formatTime(booking.start_time)} – {formatTime(booking.end_time)}{' '}
+                    <span className="text-zinc-500 text-xs">{coachAbbr}</span>
+                  </p>
+                  {guestStart && guestEnd && guestAbbr && (
+                    <p className="text-xs text-zinc-500">
+                      {formatTime(guestStart)} – {formatTime(guestEnd)}{' '}
+                      <span className="text-zinc-600">{guestAbbr} · your time</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {slug && (

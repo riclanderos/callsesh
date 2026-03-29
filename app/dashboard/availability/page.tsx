@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import CreateAvailabilityRuleForm from './create-form'
-import BulkAvailabilityForm from './bulk-form'
-import RuleList, { type Rule } from './rule-list'
+import SlotPicker from '@/components/dashboard/availability/SlotPicker'
+import { rulesToSelectedSlots } from '@/lib/availability'
 
 export default async function AvailabilityPage() {
   const supabase = await createClient()
@@ -15,22 +14,37 @@ export default async function AvailabilityPage() {
 
   const { data: rules, error } = await supabase
     .from('availability_rules')
-    .select('id, day_of_week, start_time, end_time, is_active, created_at, rule_kind')
+    .select('day_of_week, start_time, end_time')
     .eq('coach_id', user.id)
+    .eq('rule_kind', 'recurring')
+    .eq('is_active', true)
     .order('day_of_week', { ascending: true })
     .order('start_time', { ascending: true })
 
   if (error) throw new Error(error.message)
 
+  // Convert stored rules into picker-ready slot sets, grouped by day.
+  const initialSelectedByDay: Partial<Record<number, string[]>> = {}
+  for (let day = 0; day <= 6; day++) {
+    const dayRules = (rules ?? []).filter((r) => r.day_of_week === day)
+    if (dayRules.length > 0) {
+      initialSelectedByDay[day] = [...rulesToSelectedSlots(dayRules)]
+    }
+  }
+
+  const hasRules = (rules ?? []).length > 0
+
   return (
     <div className="min-h-screen px-6 py-10">
-      <div className="mx-auto max-w-4xl space-y-8">
+      <div className="mx-auto max-w-3xl space-y-8">
 
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Availability</h1>
-            <p className="text-sm text-zinc-500">Set the days and times you&apos;re available.</p>
+            <p className="text-sm text-zinc-500">
+              Select the times you&apos;re available each week.
+            </p>
           </div>
           <Link
             href="/dashboard"
@@ -40,26 +54,15 @@ export default async function AvailabilityPage() {
           </Link>
         </div>
 
-        {/* Bulk setup */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
-          <div className="space-y-0.5">
-            <h2 className="font-medium text-zinc-100">Quick setup</h2>
-            <p className="text-xs text-zinc-500">
-              Apply the same hours to multiple days at once.
-            </p>
-          </div>
-          <BulkAvailabilityForm />
-        </section>
+        {/* Slot picker */}
+        <SlotPicker initialSelectedByDay={initialSelectedByDay} />
 
-        {/* Existing rules */}
-        <RuleList rules={(rules ?? []) as Rule[]} />
-
-        {/* Share prompt — shown when at least one rule exists */}
-        {rules && rules.length > 0 && (
+        {/* Share prompt */}
+        {hasRules && (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 flex items-center justify-between gap-4">
             <p className="text-sm text-zinc-400">
               Availability is set.{' '}
-              <span className="text-zinc-500">Head to your dashboard to copy and share your booking link.</span>
+              <span className="text-zinc-500">Share your booking link from the dashboard.</span>
             </p>
             <Link
               href="/dashboard"
@@ -69,17 +72,6 @@ export default async function AvailabilityPage() {
             </Link>
           </div>
         )}
-
-        {/* Single-day form */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
-          <div className="space-y-0.5">
-            <h2 className="font-medium text-zinc-100">Add a specific day</h2>
-            <p className="text-xs text-zinc-500">
-              Overrides your regular hours for that day of the week.
-            </p>
-          </div>
-          <CreateAvailabilityRuleForm />
-        </section>
 
       </div>
     </div>

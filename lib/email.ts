@@ -1,16 +1,33 @@
 import { resend } from './resend'
+import { tzAbbr, convertTime } from './booking'
 
 export interface BookingEmailParams {
   sessionTitle: string
-  bookingDate: string   // "YYYY-MM-DD"
-  startTime: string     // "HH:MM" or "HH:MM:SS"
-  endTime: string       // "HH:MM" or "HH:MM:SS"
+  bookingDate: string    // "YYYY-MM-DD"
+  startTime: string      // "HH:MM" or "HH:MM:SS"
+  endTime: string        // "HH:MM" or "HH:MM:SS"
   guestName: string
   guestEmail: string
   coachEmail: string
-  coachTimezone: string // IANA timezone name, e.g. "America/New_York"
+  coachTimezone: string  // IANA timezone name, e.g. "America/New_York"
+  guestTimezone?: string // IANA timezone name detected from the guest's browser
   guestSessionUrl: string
   guestCancelUrl: string
+}
+
+/** Formats a time range with timezone abbreviation, plus a guest-local line if timezones differ. */
+function formatTimeBlock(
+  bookingDate: string,
+  startTime: string,
+  endTime: string,
+  coachTimezone: string,
+  guestTimezone?: string
+): string {
+  const coachLine = `${formatTime(startTime)} – ${formatTime(endTime)} (${tzAbbr(coachTimezone)} · ${coachTimezone})`
+  if (!guestTimezone || guestTimezone === coachTimezone) return coachLine
+  const guestStart = convertTime(bookingDate, startTime, coachTimezone, guestTimezone)
+  const guestEnd   = convertTime(bookingDate, endTime,   coachTimezone, guestTimezone)
+  return `${coachLine}\n          ${formatTime(guestStart)} – ${formatTime(guestEnd)} (${tzAbbr(guestTimezone)} · your local time)`
 }
 
 function formatUSD(cents: number): string {
@@ -44,6 +61,7 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
     guestEmail,
     coachEmail,
     coachTimezone,
+    guestTimezone,
     guestSessionUrl,
     guestCancelUrl,
   } = params
@@ -59,7 +77,7 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
       '',
       `Session:  ${sessionTitle}`,
       `Date:     ${formatDate(bookingDate)}`,
-      `Time:     ${formatTime(startTime)} – ${formatTime(endTime)} (${coachTimezone})`,
+      `Time:     ${formatTimeBlock(bookingDate, startTime, endTime, coachTimezone, guestTimezone)}`,
       `Coach:    ${coachEmail}`,
       '',
       'Join your session here:',
@@ -78,7 +96,7 @@ export async function sendGuestReminder(
   params: BookingEmailParams,
   reminderType: '24h' | '1h'
 ): Promise<void> {
-  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachTimezone, guestSessionUrl } = params
+  const { sessionTitle, bookingDate, startTime, endTime, guestName, guestEmail, coachTimezone, guestTimezone, guestSessionUrl } = params
 
   const subject = reminderType === '24h'
     ? `Reminder: your session is tomorrow — ${sessionTitle}`
