@@ -36,23 +36,27 @@ function DayEditor({
   day,
   currentSlots,
   onToggle,
-  initialSaved,
+  savedSlots,
   onSaved,
+  onRevert,
   otherDays,
   onCopyTo,
 }: {
   day: number
-  /** Controlled by SlotPicker so copy can write to any day without a remount. */
+  /** Controlled by SlotPicker so copy/revert can write to any day without a remount. */
   currentSlots: Set<string>
   onToggle: (slot: string) => void
-  initialSaved: string[]
+  /**
+   * The last-saved slot set for this day, owned by SlotPicker so it remains
+   * accurate after saves and can be used as the revert target.
+   */
+  savedSlots: Set<string>
   onSaved: (slots: string[]) => void
+  onRevert: () => void
   /** Other days available as copy targets, with their current hasSlots state. */
   otherDays: { day: number; label: string; hasSlots: boolean }[]
   onCopyTo: (targetDays: number[]) => void
 }) {
-  // savedSlots = what is currently persisted in the DB for this day.
-  const [savedSlots, setSavedSlots] = useState<Set<string>>(() => new Set(initialSaved))
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle')
   const [actionError, formAction, pending] = useActionState(saveRecurringDay, null)
   const wasPending = useRef(false)
@@ -73,8 +77,7 @@ function DayEditor({
   // Serialize current slots for stable effect dependency.
   const slotKey = [...currentSlots].sort().join(',')
 
-  // Clear saved status whenever the slot selection changes (toggle or external copy).
-  // Uses functional setSaveStatus so we don't need saveStatus in the dep array.
+  // Clear saved status whenever the slot selection changes (toggle, copy, or revert).
   useEffect(() => {
     setSaveStatus((prev) => {
       if (prev === 'saved') {
@@ -91,13 +94,12 @@ function DayEditor({
 
   // Detect successful save: pending flipped true → false with no error.
   // currentSlots is stable during pending (slot buttons are disabled).
+  // savedSlots is now updated by SlotPicker via onSaved, so no local setSavedSlots needed.
   useEffect(() => {
     if (wasPending.current && !pending) {
       if (actionError === null) {
-        const saved = [...currentSlots]
-        setSavedSlots(new Set(currentSlots))
         setSaveStatus('saved')
-        onSaved(saved)
+        onSaved([...currentSlots])
         if (timerRef.current) clearTimeout(timerRef.current)
         timerRef.current = setTimeout(() => {
           setSaveStatus('idle')
@@ -161,10 +163,23 @@ function DayEditor({
         >
           {pending ? 'Saving…' : isSaved ? 'Saved ✓' : `Save ${DAY_FULL[day]}`}
         </button>
+
+        {/* Revert — only visible when there are unsaved changes */}
+        {dirty && !pending && (
+          <button
+            type="button"
+            onClick={onRevert}
+            className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
+          >
+            Revert
+          </button>
+        )}
+
         {canSave && currentSlots.size === 0 && (
           <span className="text-xs text-zinc-600">Saving will clear all slots for this day.</span>
         )}
-        {actionError && (
+        {/* Hide the error once the user has reverted (dirty=false means no pending change) */}
+        {actionError && dirty && (
           <span className="text-xs text-red-400">{actionError}</span>
         )}
       </form>
@@ -261,8 +276,7 @@ export default function SlotPicker({
 }) {
   const [activeDay, setActiveDay] = useState(1) // default to Monday
 
-  // currentSlotsByDay is lifted here (rather than living inside each DayEditor)
-  // so the copy feature can read and write any day's selection without remounting.
+  // currentSlotsByDay is lifted here so copy/revert can write to any day without a remount.
   const [currentSlotsByDay, setCurrentSlotsByDay] = useState<Record<number, Set<string>>>(() => {
     const init: Record<number, Set<string>> = {}
     for (const day of DAY_ORDER) {
@@ -271,9 +285,17 @@ export default function SlotPicker({
     return init
   })
 
-  const [savedSlotsByDay, setSavedSlotsByDay] = useState<Partial<Record<number, string[]>>>(
-    () => initialSelectedByDay
-  )
+  // savedSlotsByDay is the single source of truth for what is persisted in the DB.
+  // Stored as Set<string> (not string[]) so it can be passed directly to DayEditor
+  // for dirty detection and used as the revert target without conversion on every render.
+  const [savedSlotsByDay, setSavedSlotsByDay] = useState<Record<number, Set<string>>>(() => {
+    const init: Record<number, Set<string>> = {}
+    for (const day of DAY_ORDER) {
+      init[day] = new Set(initialSelectedByDay[day] ?? [])
+    }
+    return init
+  })
+
   const [recentlySaved, setRecentlySaved] = useState<Set<number>>(new Set())
   const tabTimerRefs = useRef<Partial<Record<number, ReturnType<typeof setTimeout>>>>({})
 
@@ -283,6 +305,14 @@ export default function SlotPicker({
       next.has(slot) ? next.delete(slot) : next.add(slot)
       return { ...prev, [day]: next }
     })
+  }
+
+  /** Restores the current slot selection for one day to its last-saved state. */
+  function handleRevert(day: number) {
+    setCurrentSlotsByDay((prev) => ({
+      ...prev,
+      [day]: new Set(savedSlotsByDay[day]),
+    }))
   }
 
   /** Overwrites the current slot selection for each target day with the source day's slots. */
@@ -298,7 +328,8 @@ export default function SlotPicker({
   }
 
   function handleSaved(day: number, slots: string[]) {
-    setSavedSlotsByDay((prev) => ({ ...prev, [day]: slots }))
+    const saved = new Set(slots)
+    setSavedSlotsByDay((prev) => ({ ...prev, [day]: saved }))
     setRecentlySaved((prev) => new Set([...prev, day]))
     if (tabTimerRefs.current[day]) clearTimeout(tabTimerRefs.current[day]!)
     tabTimerRefs.current[day] = setTimeout(() => {
@@ -316,7 +347,7 @@ export default function SlotPicker({
       {/* Day tab strip */}
       <div className="flex border-b border-zinc-800 overflow-x-auto">
         {DAY_ORDER.map((day) => {
-          const hasSavedSlots = (savedSlotsByDay[day]?.length ?? 0) > 0
+          const hasSavedSlots = savedSlotsByDay[day].size > 0
           const justSaved = recentlySaved.has(day)
           const isActive = activeDay === day
           return (
@@ -362,8 +393,9 @@ export default function SlotPicker({
               day={day}
               currentSlots={currentSlotsByDay[day]}
               onToggle={(slot) => handleToggle(day, slot)}
-              initialSaved={initialSelectedByDay[day] ?? []}
+              savedSlots={savedSlotsByDay[day]}
               onSaved={(slots) => handleSaved(day, slots)}
+              onRevert={() => handleRevert(day)}
               otherDays={otherDays}
               onCopyTo={(targets) => handleCopy(day, targets)}
             />
