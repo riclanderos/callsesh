@@ -156,10 +156,16 @@ export default async function BookingPage({
 
         {/* Preview banner — only visible to the coach who owns this page */}
         {isCoachOwner && (
-          <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 px-4 py-3">
+          <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 px-4 py-3 flex items-center justify-between gap-4">
             <p className="text-sm text-zinc-400">
               You&apos;re viewing your booking page as a client.
             </p>
+            <Link
+              href="/dashboard"
+              className="flex-shrink-0 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              ← Back to dashboard
+            </Link>
           </div>
         )}
 
