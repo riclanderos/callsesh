@@ -5,6 +5,7 @@ import { getUserPlan } from '@/lib/plan'
 import Link from 'next/link'
 import DateSelector from '@/components/booking/DateSelector'
 import { upcomingDates, dateToDayOfWeek, type DateSlots } from '@/lib/booking'
+import { TrackOnMount } from '@/lib/analytics'
 
 // Always render fresh — availability and bookings must never be served from cache.
 // This is belt-and-suspenders: the page is already dynamic because it accesses
@@ -150,6 +151,7 @@ export default async function BookingPage({
 
   return (
     <div className="min-h-screen bg-zinc-950 px-4 py-12">
+      <TrackOnMount event="booking_page_viewed" properties={{ slug }} />
       <div className="mx-auto max-w-xl space-y-6">
 
         {/* Session header card */}

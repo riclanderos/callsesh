@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useActionState } from 'react'
 import { startCheckout, type CheckoutState } from '@/app/actions/bookings'
 import { tzAbbr, convertTime, type DateSlots } from '@/lib/booking'
+import { track } from '@/lib/analytics'
 
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAY_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
@@ -46,7 +47,7 @@ function GuestForm({
   const coachAbbr  = tzAbbr(coachTimezone)
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} onSubmit={() => track('checkout_started', { session_type_id: sessionTypeId, date, slot: coachTime })} className="space-y-4">
       <input type="hidden" name="session_type_id" value={sessionTypeId} />
       <input type="hidden" name="booking_date" value={date} />
       {/* start_time is always the coach-local slot time — used for availability validation */}
@@ -254,7 +255,11 @@ export default function DateSelector({
                   <button
                     key={coachSlot}
                     type="button"
-                    onClick={() => setSelectedTime(isSelected ? null : coachSlot)}
+                    onClick={() => {
+                      const next = isSelected ? null : coachSlot
+                      setSelectedTime(next)
+                      if (next) track('slot_selected', { session_type_id: sessionTypeId, date: activeDate, slot: coachSlot })
+                    }}
                     className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                       isSelected
                         ? 'border-white bg-white text-zinc-900'

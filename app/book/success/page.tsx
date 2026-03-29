@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/service'
 import { tzAbbr, convertTime } from '@/lib/booking'
+import { TrackOnMount } from '@/lib/analytics'
 
 function formatDate(d: string): string {
   const [year, month, day] = d.split('-').map(Number)
@@ -139,6 +140,7 @@ export default async function BookingSuccessPage({
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8 text-center">
 
+        <TrackOnMount event="booking_completed" properties={{ session_id }} />
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-green-900 bg-green-950">
           <svg
             className="h-8 w-8 text-green-400"

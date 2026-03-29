@@ -16,6 +16,7 @@ import { syncStripeAccountStatus } from '@/lib/stripe-sync';
 import PayoutSuccessBanner from './payout-success-banner';
 import { computeEarnings, netCents, formatEarnings } from '@/lib/earnings';
 import TimezoneAutoDetect from '@/components/dashboard/TimezoneAutoDetect';
+import { TrackOnMount } from '@/lib/analytics';
 
 function toTitleCase(name: string): string {
   return name
@@ -210,6 +211,7 @@ export default async function DashboardPage({
   return (
     <div className="min-h-screen px-6 py-10">
       <TimezoneAutoDetect currentTimezone={coachTimezone} />
+      <TrackOnMount event="dashboard_viewed" />
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Upgrade success banner */}
         {upgraded === '1' && (
