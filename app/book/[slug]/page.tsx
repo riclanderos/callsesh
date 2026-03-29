@@ -6,6 +6,11 @@ import Link from 'next/link'
 import DateSelector from '@/components/booking/DateSelector'
 import { upcomingDates, dateToDayOfWeek, type DateSlots } from '@/lib/booking'
 
+// Always render fresh — availability and bookings must never be served from cache.
+// This is belt-and-suspenders: the page is already dynamic because it accesses
+// `params` (a Promise in Next.js 16) and calls cookies() via createClient().
+export const dynamic = 'force-dynamic'
+
 /** Minimum minutes ahead a slot must start to be shown on the booking page. */
 const LEAD_TIME_MINUTES = 5
 

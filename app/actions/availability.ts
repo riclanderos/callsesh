@@ -100,6 +100,7 @@ export async function updateAvailabilityRule(formData: FormData): Promise<void> 
 
   if (error) throw new Error(error.message)
   revalidatePath('/dashboard/availability')
+  revalidatePath('/book/[slug]', 'page')
 }
 
 export async function toggleAvailabilityRule(formData: FormData): Promise<void> {
@@ -118,6 +119,7 @@ export async function toggleAvailabilityRule(formData: FormData): Promise<void> 
 
   if (error) throw new Error(error.message)
   revalidatePath('/dashboard/availability')
+  revalidatePath('/book/[slug]', 'page')
 }
 
 export async function deleteAvailabilityRule(formData: FormData): Promise<void> {
@@ -135,6 +137,7 @@ export async function deleteAvailabilityRule(formData: FormData): Promise<void> 
 
   if (error) throw new Error(error.message)
   revalidatePath('/dashboard/availability')
+  revalidatePath('/book/[slug]', 'page')
 }
 
 /**
@@ -180,6 +183,7 @@ export async function saveRecurringDay(
   }
 
   revalidatePath('/dashboard/availability')
+  revalidatePath('/book/[slug]', 'page')
   return null
 }
 
@@ -250,4 +254,5 @@ export async function deleteBlockedTime(formData: FormData): Promise<void> {
 
   if (error) throw new Error(error.message)
   revalidatePath('/dashboard/availability')
+  revalidatePath('/book/[slug]', 'page')
 }

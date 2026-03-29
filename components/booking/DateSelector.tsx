@@ -23,7 +23,7 @@ function GuestForm({
   state,
   sessionTypeId,
   date,
-  time,
+  coachTime,
   coachTimezone,
   clientTimezone,
 }: {
@@ -32,42 +32,40 @@ function GuestForm({
   state: CheckoutState
   sessionTypeId: string
   date: string
-  time: string
+  coachTime: string
   coachTimezone: string
   clientTimezone: string
 }) {
   const [y, mo, d] = date.split('-').map(Number)
   const dt = new Date(y, mo - 1, d)
   const displayDate = `${DAY_FULL[dt.getDay()]}, ${MONTH_FULL[mo - 1]} ${d}`
-  const coachAbbr = tzAbbr(coachTimezone)
 
   const tzDiffers = clientTimezone !== coachTimezone
-  const clientTime = tzDiffers ? convertTime(date, time, coachTimezone, clientTimezone) : null
-  const clientAbbr = tzDiffers ? tzAbbr(clientTimezone) : null
+  const clientTime = tzDiffers ? convertTime(date, coachTime, coachTimezone, clientTimezone) : coachTime
+  const clientAbbr = tzAbbr(clientTimezone)
+  const coachAbbr  = tzAbbr(coachTimezone)
 
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="session_type_id" value={sessionTypeId} />
       <input type="hidden" name="booking_date" value={date} />
-      <input type="hidden" name="start_time" value={time} />
+      {/* start_time is always the coach-local slot time — used for availability validation */}
+      <input type="hidden" name="start_time" value={coachTime} />
       <input type="hidden" name="guest_timezone" value={clientTimezone} />
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
-        <div className="pb-3 border-b border-zinc-700 space-y-1">
+        <div className="pb-3 border-b border-zinc-700 space-y-0.5">
           <p className="text-sm font-medium text-zinc-100">{displayDate}</p>
-          <div className="flex flex-col gap-0.5">
-            <p className="text-sm text-zinc-200">
-              {formatTime(time)}{' '}
-              <span className="text-xs text-zinc-500">{coachAbbr} · coach time</span>
+          <p className="text-sm text-zinc-200">
+            {formatTime(clientTime)}{' '}
+            <span className="text-xs text-zinc-500">{clientAbbr}</span>
+          </p>
+          {tzDiffers && (
+            <p className="text-xs text-zinc-600">
+              {formatTime(coachTime)} {coachAbbr} · coach time
             </p>
-            {clientTime && clientAbbr && (
-              <p className="text-xs text-zinc-500">
-                {formatTime(clientTime)}{' '}
-                <span className="text-zinc-600">{clientAbbr} · your local time</span>
-              </p>
-            )}
-          </div>
-          <p className="text-xs text-zinc-500 pt-0.5">Enter your details to continue</p>
+          )}
+          <p className="text-xs text-zinc-500 pt-1">Enter your details to continue</p>
         </div>
 
         <div className="space-y-4">
@@ -141,8 +139,7 @@ export default function DateSelector({
   const [state, action, pending] = useActionState<CheckoutState, FormData>(startCheckout, null)
   const formWrapperRef = useRef<HTMLDivElement>(null)
   const lastScrolledKey = useRef<string | null>(null)
-  // Detect client timezone after mount to avoid SSR hydration mismatch.
-  // Default to coachTimezone so the initial render matches the server output.
+  // Default to coachTimezone to avoid hydration mismatch; updated after mount.
   const [clientTimezone, setClientTimezone] = useState(coachTimezone)
   useEffect(() => {
     setClientTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -152,12 +149,10 @@ export default function DateSelector({
     if (state?.ok) window.location.href = state.checkoutUrl
   }, [state])
 
-  // Reset selected time when active date changes
   useEffect(() => {
     setSelectedTime(null)
   }, [activeDate])
 
-  // Auto-scroll form into view on slot selection
   useEffect(() => {
     if (!selectedTime) return
     const key = `${activeDate}:${selectedTime}`
@@ -167,8 +162,9 @@ export default function DateSelector({
       const el = formWrapperRef.current
       if (!el) return
       const rect = el.getBoundingClientRect()
-      const inView = rect.top >= 0 && rect.bottom <= window.innerHeight
-      if (!inView) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     })
   }, [selectedTime, activeDate])
 
@@ -194,33 +190,22 @@ export default function DateSelector({
   }
 
   const activeSlots = dateSlots.find((ds) => ds.date === activeDate)?.slots ?? []
-  const coachAbbr = tzAbbr(coachTimezone)
-  const tzDiffers = clientTimezone !== coachTimezone
-  const clientAbbr = tzDiffers ? tzAbbr(clientTimezone) : null
+  const tzDiffers   = clientTimezone !== coachTimezone
+  const clientAbbr  = tzAbbr(clientTimezone)
+  const coachAbbr   = tzAbbr(coachTimezone)
 
   return (
     <div className="space-y-3">
-      {/* Timezone context */}
-      <div className="px-1 space-y-1">
+      {/* Single-line timezone context */}
+      <div className="px-1">
         <p className="text-xs text-zinc-500">
-          Coach timezone: <span className="text-zinc-400">{coachTimezone} · {coachAbbr}</span>
+          Times shown in your timezone{' '}
+          <span className="text-zinc-400">({clientAbbr})</span>
         </p>
-        {tzDiffers && clientAbbr && (
-          <p className="text-xs text-zinc-500">
-            Your timezone: <span className="text-zinc-400">{clientTimezone} · {clientAbbr}</span>
-          </p>
+        {tzDiffers && (
+          <p className="text-xs text-zinc-600">Coach is in {coachAbbr}</p>
         )}
       </div>
-
-      {/* Cross-timezone notice */}
-      {tzDiffers && (
-        <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 px-3 py-2 flex items-start gap-2">
-          <span className="text-amber-500 mt-0.5 flex-shrink-0" aria-hidden>⚠</span>
-          <p className="text-xs text-amber-300/80">
-            Times below are in the coach&apos;s timezone ({coachAbbr}). Your local equivalents are shown when you select a slot.
-          </p>
-        </div>
-      )}
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
         {/* Scrollable date tab strip */}
@@ -236,7 +221,7 @@ export default function DateSelector({
                 type="button"
                 onClick={() => setActiveDate(date)}
                 disabled={!hasSlots}
-                className={`relative flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-3 min-w-[60px] text-xs font-medium transition-colors ${
+                className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-3 min-w-[60px] text-xs font-medium transition-colors ${
                   !hasSlots
                     ? 'text-zinc-700 cursor-not-allowed'
                     : isActive
@@ -259,26 +244,24 @@ export default function DateSelector({
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {activeSlots.map((slot) => {
-                const isSelected = selectedTime === slot
-                const clientSlot = tzDiffers ? convertTime(activeDate, slot, coachTimezone, clientTimezone) : null
+              {activeSlots.map((coachSlot) => {
+                const isSelected = selectedTime === coachSlot
+                // Display the slot in the client's local timezone
+                const displayTime = tzDiffers
+                  ? convertTime(activeDate, coachSlot, coachTimezone, clientTimezone)
+                  : coachSlot
                 return (
                   <button
-                    key={slot}
+                    key={coachSlot}
                     type="button"
-                    onClick={() => setSelectedTime(isSelected ? null : slot)}
-                    className={`rounded-lg border px-3 py-2 text-left transition-colors ${
+                    onClick={() => setSelectedTime(isSelected ? null : coachSlot)}
+                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                       isSelected
                         ? 'border-white bg-white text-zinc-900'
                         : 'border-zinc-600 bg-zinc-800 text-zinc-100 hover:border-zinc-500 hover:text-white'
                     }`}
                   >
-                    <span className="text-sm font-medium">{formatTime(slot)}</span>
-                    {clientSlot && (
-                      <span className={`block text-xs mt-0.5 ${isSelected ? 'text-zinc-500' : 'text-zinc-600'}`}>
-                        {formatTime(clientSlot)} {clientAbbr}
-                      </span>
-                    )}
+                    {formatTime(displayTime)}
                   </button>
                 )
               })}
@@ -293,7 +276,7 @@ export default function DateSelector({
                 state={state}
                 sessionTypeId={sessionTypeId}
                 date={activeDate}
-                time={selectedTime}
+                coachTime={selectedTime}
                 coachTimezone={coachTimezone}
                 clientTimezone={clientTimezone}
               />
