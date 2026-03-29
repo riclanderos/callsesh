@@ -412,11 +412,8 @@ export default async function DashboardPage({
                           </span>
                         )}
                       </div>
-                      <p className="text-xs mt-0.5 truncate">
-                        <span className="text-zinc-600">
-                          {baseUrl.replace(/^https?:\/\//, '')}
-                        </span>
-                        <span className="text-zinc-300">/book/{st.slug}</span>
+                      <p className="text-sm mt-0.5 truncate text-zinc-300 hover:text-zinc-100 transition-colors">
+                        {baseUrl.replace(/^https?:\/\//, '')}/book/{st.slug}
                       </p>
                     </div>
                     <CopyButton text={url} />
