@@ -245,9 +245,9 @@ export default async function DashboardPage({
             <h1 className="text-2xl font-semibold text-zinc-100">
               Your dashboard
             </h1>
-            <p className="text-sm text-zinc-500">{user.email}</p>
+            <p className="text-sm text-zinc-300">{user.email}</p>
             {remaining <= 0 && sessionLimit === 0 && used === 0 ? (
-              <p className="text-xs font-medium text-amber-400">
+              <p className="text-sm font-medium text-amber-400">
                 Subscribe to start accepting bookings.{' '}
                 <Link
                   href="/upgrade"
@@ -256,7 +256,7 @@ export default async function DashboardPage({
                 </Link>
               </p>
             ) : remaining <= 0 ? (
-              <p className="text-xs font-medium text-amber-400">
+              <p className="text-sm font-medium text-amber-400">
                 You&apos;ve used your free sessions.{' '}
                 <Link
                   href="/upgrade"
@@ -265,13 +265,13 @@ export default async function DashboardPage({
                 </Link>
               </p>
             ) : remaining <= 3 ? (
-              <p className="text-xs font-medium text-amber-400">
+              <p className="text-sm font-medium text-amber-400">
                 {remaining} session{remaining === 1 ? '' : 's'} remaining
               </p>
             ) : planKey === 'pro' ? (
-              <p className="text-xs text-zinc-500">Unlimited sessions</p>
+              <p className="text-sm text-zinc-300">Unlimited sessions</p>
             ) : (
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm text-zinc-300">
                 {used} of {sessionLimit} sessions used
               </p>
             )}
@@ -298,7 +298,7 @@ export default async function DashboardPage({
 
         {/* Next session */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Next session
           </p>
           {next ? (
@@ -308,7 +308,7 @@ export default async function DashboardPage({
                   <p className="text-lg font-semibold text-zinc-100">
                     {toTitleCase(next.guest_name)}
                   </p>
-                  <p className="text-sm text-zinc-400">{next.sessionTitle}</p>
+                  <p className="text-sm text-zinc-300">{next.sessionTitle}</p>
                   <RelativeTime
                     bookingDate={next.booking_date}
                     startTime={next.start_time}
@@ -326,7 +326,7 @@ export default async function DashboardPage({
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-4">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-zinc-200">You&apos;re not set up yet</p>
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-zinc-300">
                   Create a session type and set your availability to start accepting bookings.
                 </p>
               </div>
@@ -345,8 +345,8 @@ export default async function DashboardPage({
             </div>
           ) : (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-1">
-              <p className="text-sm text-zinc-400">No upcoming bookings yet.</p>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-zinc-300">No upcoming bookings yet.</p>
+              <p className="text-sm text-zinc-300">
                 Share your booking link below to start accepting sessions.
               </p>
             </div>
@@ -356,7 +356,7 @@ export default async function DashboardPage({
         {/* Upcoming sessions */}
         {rest.length > 0 && (
           <section className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
               Upcoming
             </p>
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 divide-y divide-zinc-800">
@@ -368,11 +368,11 @@ export default async function DashboardPage({
                     <p className="text-sm font-medium text-zinc-100">
                       {toTitleCase(b.guest_name)}
                     </p>
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-sm text-zinc-300">
                       {formatDate(b.booking_date)} · {formatTime(b.start_time)}
                     </p>
                   </div>
-                  <span className="flex-shrink-0 text-xs text-zinc-500">
+                  <span className="flex-shrink-0 text-sm text-zinc-300">
                     {b.sessionTitle}
                   </span>
                 </div>
@@ -384,11 +384,11 @@ export default async function DashboardPage({
         {/* Booking links */}
         <section className="space-y-3">
           <div className="space-y-0.5">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
               Share your booking links
             </p>
             {sessionTypes && sessionTypes.length > 0 && (
-              <p className="text-xs text-zinc-600">
+              <p className="text-sm text-zinc-300">
                 Send these links to clients so they can book a session.
               </p>
             )}
@@ -426,8 +426,8 @@ export default async function DashboardPage({
             </div>
           ) : (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-6 space-y-2 text-center">
-              <p className="text-sm text-zinc-400">No active session types yet.</p>
-              <p className="text-xs text-zinc-600">
+              <p className="text-sm text-zinc-300">No active session types yet.</p>
+              <p className="text-sm text-zinc-300">
                 Create a session type to get a shareable booking link.{' '}
                 <Link
                   href="/dashboard/session-types"
@@ -441,7 +441,7 @@ export default async function DashboardPage({
 
         {/* Quick actions */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Quick actions
           </p>
           <div className="flex flex-wrap gap-3">
@@ -460,7 +460,7 @@ export default async function DashboardPage({
 
         {/* Manage */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Manage
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -472,7 +472,7 @@ export default async function DashboardPage({
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-colors">
+                className="rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:border-zinc-700 hover:text-zinc-300 transition-colors">
                 {item.title} →
               </Link>
             ))}
@@ -480,7 +480,7 @@ export default async function DashboardPage({
               <form action={managePayouts}>
                 <button
                   type="submit"
-                  className="w-full rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-colors text-left">
+                  className="w-full rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:border-zinc-700 hover:text-zinc-300 transition-colors text-left">
                   Manage Payments →
                 </button>
               </form>
@@ -490,29 +490,29 @@ export default async function DashboardPage({
 
         {/* Earnings */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Earnings
           </p>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-zinc-400">Total earned</p>
+              <p className="text-sm text-zinc-300">Total earned</p>
               <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netTotal)}</p>
             </div>
             <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
-              <p className="text-sm text-zinc-400">Last 30 days</p>
+              <p className="text-sm text-zinc-300">Last 30 days</p>
               <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netLast30)}</p>
             </div>
-            <p className="text-xs text-zinc-600">After 10% platform fee. Confirmed sessions only.</p>
+            <p className="text-sm text-zinc-400">After 10% platform fee. Confirmed sessions only.</p>
           </div>
         </section>
 
         {/* Plan & usage */}
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Your plan
           </p>
           {remaining >= 1 && remaining <= 3 && (
-            <p className="text-xs text-amber-400 px-1">
+            <p className="text-sm text-amber-400 px-1">
               You have {remaining} session{remaining === 1 ? '' : 's'} remaining
               before you hit your limit.{' '}
               <Link
@@ -529,7 +529,7 @@ export default async function DashboardPage({
             planKey={planKey}
           />
           {cancelAtPeriodEnd && (
-            <p className="text-xs text-zinc-500 px-1">
+            <p className="text-sm text-zinc-300 px-1">
               Your plan will downgrade to {targetPlanName}
               {downgradeDateLabel ? ` on ${downgradeDateLabel}` : ' at the end of your billing period'}.
             </p>
