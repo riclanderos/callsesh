@@ -27,6 +27,7 @@ function GuestForm({
   coachTime,
   coachTimezone,
   clientTimezone,
+  isCoachOwner,
 }: {
   action: (payload: FormData) => void
   pending: boolean
@@ -36,6 +37,7 @@ function GuestForm({
   coachTime: string
   coachTimezone: string
   clientTimezone: string
+  isCoachOwner: boolean
 }) {
   const [y, mo, d] = date.split('-').map(Number)
   const dt = new Date(y, mo - 1, d)
@@ -47,7 +49,11 @@ function GuestForm({
   const coachAbbr  = tzAbbr(coachTimezone)
 
   return (
-    <form action={action} onSubmit={() => track('checkout_started', { session_type_id: sessionTypeId, date, slot: coachTime })} className="space-y-4">
+    <form
+      action={action}
+      onSubmit={isCoachOwner ? (e) => e.preventDefault() : () => track('checkout_started', { session_type_id: sessionTypeId, date, slot: coachTime })}
+      className="space-y-4"
+    >
       <input type="hidden" name="session_type_id" value={sessionTypeId} />
       <input type="hidden" name="booking_date" value={date} />
       {/* start_time is always the coach-local slot time — used for availability validation */}
@@ -113,13 +119,19 @@ function GuestForm({
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
-        >
-          {pending ? 'Securing your session…' : 'Confirm & pay'}
-        </button>
+        {isCoachOwner ? (
+          <div className="w-full rounded-lg bg-zinc-800 py-3 text-center text-sm font-medium text-zinc-500 select-none">
+            You can&apos;t book your own session
+          </div>
+        ) : (
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
+          >
+            {pending ? 'Securing your session…' : 'Confirm & pay'}
+          </button>
+        )}
       </div>
     </form>
   )
@@ -129,10 +141,12 @@ export default function DateSelector({
   sessionTypeId,
   dateSlots,
   coachTimezone,
+  isCoachOwner = false,
 }: {
   sessionTypeId: string
   dateSlots: DateSlots[]
   coachTimezone: string
+  isCoachOwner?: boolean
 }) {
   const firstAvailable = dateSlots.find((ds) => ds.slots.length > 0)?.date ?? dateSlots[0]?.date ?? ''
   const [activeDate, setActiveDate] = useState(firstAvailable)
@@ -284,6 +298,7 @@ export default function DateSelector({
                 coachTime={selectedTime}
                 coachTimezone={coachTimezone}
                 clientTimezone={clientTimezone}
+                isCoachOwner={isCoachOwner}
               />
             </div>
           )}

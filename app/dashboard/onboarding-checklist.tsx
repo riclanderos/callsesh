@@ -33,7 +33,7 @@ export default function OnboardingChecklist({
     ctaLabel = 'Set availability →'
   } else {
     ctaHref  = firstSessionSlug ? `/book/${firstSessionSlug}` : '/dashboard/session-types'
-    ctaLabel = 'View your booking page →'
+    ctaLabel = 'Preview your booking page →'
   }
 
   return (
@@ -63,12 +63,19 @@ export default function OnboardingChecklist({
         ))}
       </ol>
 
-      <Link
-        href={ctaHref}
-        className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
-      >
-        {ctaLabel}
-      </Link>
+      <div>
+        <Link
+          href={ctaHref}
+          className="inline-block rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+        >
+          {ctaLabel}
+        </Link>
+        {hasSessionType && hasAvailability && (
+          <p className="mt-2 text-xs text-zinc-500">
+            Make sure everything looks right before sharing your link.
+          </p>
+        )}
+      </div>
     </div>
   )
 }

@@ -154,6 +154,15 @@ export default async function BookingPage({
       <TrackOnMount event="booking_page_viewed" properties={{ slug }} />
       <div className="mx-auto max-w-xl space-y-6">
 
+        {/* Preview banner — only visible to the coach who owns this page */}
+        {isCoachOwner && (
+          <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 px-4 py-3">
+            <p className="text-sm text-zinc-400">
+              You&apos;re viewing your booking page as a client.
+            </p>
+          </div>
+        )}
+
         {/* Session header card */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-4">
           <div className="space-y-1">
@@ -209,6 +218,7 @@ export default async function BookingPage({
                 sessionTypeId={session.id}
                 dateSlots={dateSlots}
                 coachTimezone={coachTimezone}
+                isCoachOwner={isCoachOwner}
               />
             </>
           )}
