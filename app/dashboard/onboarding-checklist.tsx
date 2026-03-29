@@ -15,10 +15,12 @@ export default function OnboardingChecklist({
 }: Props) {
   if (hasSessionType && hasAvailability && hasBooking) return null
 
+  const step3Done = hasSessionType && hasAvailability && hasBooking
+
   const steps = [
-    { label: 'Create a session type', done: hasSessionType },
-    { label: 'Set your availability',  done: hasAvailability },
-    { label: 'Get your first booking', done: hasBooking },
+    { label: 'Create a session type',    done: hasSessionType },
+    { label: 'Set your availability',    done: hasAvailability },
+    { label: 'Receive your first booking', done: step3Done },
   ]
 
   let ctaHref: string

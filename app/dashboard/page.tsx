@@ -282,13 +282,15 @@ export default async function DashboardPage({
         </div>
 
 
-        {/* Onboarding checklist */}
-        <OnboardingChecklist
-          hasSessionType={(sessionTypes ?? []).length > 0}
-          hasAvailability={(availabilityCount ?? 0) > 0}
-          hasBooking={(usedCount ?? 0) > 0}
-          firstSessionSlug={sessionTypes?.[0]?.slug}
-        />
+        {/* Onboarding checklist — hidden once any booking activity is visible */}
+        {upcoming.length === 0 && (
+          <OnboardingChecklist
+            hasSessionType={(sessionTypes ?? []).length > 0}
+            hasAvailability={(availabilityCount ?? 0) > 0}
+            hasBooking={(usedCount ?? 0) > 0}
+            firstSessionSlug={sessionTypes?.[0]?.slug}
+          />
+        )}
 
         {/* Next session */}
         <section className="space-y-3">
