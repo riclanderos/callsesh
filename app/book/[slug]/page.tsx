@@ -61,7 +61,7 @@ export default async function BookingPage({
   const [{ data: availability }, { data: profile }, { count: usedCount }, { sessionLimit }] = await Promise.all([
     supabase
       .from('availability_rules')
-      .select('day_of_week, start_time, end_time')
+      .select('day_of_week, start_time, end_time, rule_kind')
       .eq('coach_id', session.coach_id)
       .eq('is_active', true)
       .order('day_of_week', { ascending: true })
@@ -95,9 +95,19 @@ export default async function BookingPage({
   const nowM = parseInt(nowParts.find((p) => p.type === 'minute')?.value ?? '0', 10)
   const nowMinutes = nowH * 60 + nowM
 
+  // For each day: if ANY rule has rule_kind = 'override', use only override rules.
+  // Otherwise use recurring rules. Never merge both.
+  const allRules = availability ?? []
+  const overrideDaySet = new Set(
+    allRules.filter((r) => r.rule_kind === 'override').map((r) => r.day_of_week)
+  )
+  const effectiveRules = allRules.filter((r) =>
+    overrideDaySet.has(r.day_of_week) ? r.rule_kind === 'override' : true
+  )
+
   // Compute the concrete booking date for each active day of week.
   const dayDates = new Map<number, string>()
-  for (const rule of availability ?? []) {
+  for (const rule of effectiveRules) {
     if (!dayDates.has(rule.day_of_week)) {
       dayDates.set(rule.day_of_week, nextOccurrenceDate(rule.day_of_week, coachTimezone))
     }
@@ -128,7 +138,7 @@ export default async function BookingPage({
   // Normalize booking_date to YYYY-MM-DD (slice(0,10)) to guard against
   // any timestamp suffix in the PostgREST response.
   const slotMap = new Map<number, string[]>()
-  for (const rule of availability ?? []) {
+  for (const rule of effectiveRules) {
     const date = dayDates.get(rule.day_of_week)!
     const bookingsOnDate = existingBookings.filter(
       (b) => String(b.booking_date).slice(0, 10) === date
@@ -147,9 +157,7 @@ export default async function BookingPage({
       })
     })
 
-    const existing = slotMap.get(rule.day_of_week) ?? []
-    const merged = [...new Set([...existing, ...available])]
-    slotMap.set(rule.day_of_week, merged)
+    slotMap.set(rule.day_of_week, available)
   }
 
   const daySlots: DaySlots[] = Array.from(slotMap.entries())

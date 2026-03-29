@@ -22,10 +22,22 @@ export type Rule = {
   start_time: string
   end_time: string
   is_active: boolean
+  created_at: string
+  rule_kind: string
 }
 
 export default function RuleList({ rules }: { rules: Rule[] }) {
   const [editingId, setEditingId] = useState<string | null>(null)
+
+  // For each day with at least one override rule, recurring rules are overridden.
+  const overrideDaySet = new Set(
+    rules.filter((r) => r.rule_kind === 'override').map((r) => r.day_of_week)
+  )
+  const overriddenIds = new Set(
+    rules
+      .filter((r) => overrideDaySet.has(r.day_of_week) && r.rule_kind === 'recurring')
+      .map((r) => r.id)
+  )
 
   if (rules.length === 0) {
     return (
@@ -99,14 +111,21 @@ export default function RuleList({ rules }: { rules: Rule[] }) {
             >
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-zinc-100">{DAYS[rule.day_of_week]}</span>
-                  {!rule.is_active && (
+                  <span className={`font-medium ${overriddenIds.has(rule.id) ? 'text-zinc-500' : 'text-zinc-100'}`}>
+                    {DAYS[rule.day_of_week]}
+                  </span>
+                  {overriddenIds.has(rule.id) && (
+                    <span className="rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-600">
+                      Overridden
+                    </span>
+                  )}
+                  {!rule.is_active && !overriddenIds.has(rule.id) && (
                     <span className="rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-500">
                       Inactive
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-zinc-500">
+                <p className={`text-sm ${overriddenIds.has(rule.id) ? 'text-zinc-700 line-through decoration-zinc-700' : 'text-zinc-500'}`}>
                   {formatTime(rule.start_time)} – {formatTime(rule.end_time)}
                 </p>
               </div>

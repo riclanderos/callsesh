@@ -15,7 +15,7 @@ export default async function AvailabilityPage() {
 
   const { data: rules, error } = await supabase
     .from('availability_rules')
-    .select('id, day_of_week, start_time, end_time, is_active')
+    .select('id, day_of_week, start_time, end_time, is_active, created_at, rule_kind')
     .eq('coach_id', user.id)
     .order('day_of_week', { ascending: true })
     .order('start_time', { ascending: true })
@@ -74,7 +74,9 @@ export default async function AvailabilityPage() {
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-5">
           <div className="space-y-0.5">
             <h2 className="font-medium text-zinc-100">Add a specific day</h2>
-            <p className="text-xs text-zinc-500">Set different hours for one day.</p>
+            <p className="text-xs text-zinc-500">
+              Overrides your regular hours for that day of the week.
+            </p>
           </div>
           <CreateAvailabilityRuleForm />
         </section>

@@ -34,6 +34,7 @@ export async function createAvailabilityRule(
     start_time: startTime,
     end_time: endTime,
     is_active: isActive,
+    rule_kind: 'override',
   })
 
   if (error) return error.message
@@ -68,6 +69,7 @@ export async function createBulkAvailabilityRules(
     start_time:  startTime,
     end_time:    endTime,
     is_active:   true,
+    rule_kind:   'recurring',
   }))
 
   const { error } = await supabase.from('availability_rules').insert(rows)
