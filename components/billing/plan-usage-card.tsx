@@ -55,10 +55,18 @@ export default function PlanUsageCard({
   hasLapsed?: boolean;
 }) {
   const remaining = sessionLimit - sessionsUsed;
-  // Paid users get a portal button; free users get the upgrade link.
+  // Starter: portal button (secondary) + upgrade link (primary).
+  // Free: upgrade link only. Pro: handled by its own early-return above.
   const cta =
-    planKey === 'starter' || planKey === 'pro' ? (
-      <PortalButton label="Manage subscription" />
+    planKey === 'starter' ? (
+      <>
+        <Link
+          href="/upgrade"
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+          Upgrade plan
+        </Link>
+        <PortalButton label="Manage subscription" />
+      </>
     ) : (
       <Link
         href="/upgrade"
