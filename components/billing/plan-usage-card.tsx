@@ -55,7 +55,17 @@ export default function PlanUsageCard({
   hasLapsed?: boolean;
 }) {
   const remaining = sessionLimit - sessionsUsed;
-  const ctaLabel = planKey === 'pro' ? 'Manage billing' : planKey === 'starter' ? 'Upgrade to Pro' : 'Upgrade';
+  // Paid users get a portal button; free users get the upgrade link.
+  const cta =
+    planKey === 'starter' || planKey === 'pro' ? (
+      <PortalButton label="Manage subscription" />
+    ) : (
+      <Link
+        href="/upgrade"
+        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+        Upgrade
+      </Link>
+    );
 
   if (hasLapsed) {
     return (
@@ -92,7 +102,7 @@ export default function PlanUsageCard({
           <p className="text-sm text-zinc-300">Unlimited sessions</p>
         </div>
         <div className="flex items-center gap-4">
-          <PortalButton label={ctaLabel} />
+          <PortalButton label="Manage subscription" />
         </div>
       </div>
     );
@@ -109,16 +119,12 @@ export default function PlanUsageCard({
             Session limit reached
           </p>
           <p className="text-sm text-zinc-400">
-            {sessionsUsed} of {sessionLimit} sessions used — upgrade to continue
-            accepting bookings.
+            {sessionsUsed} of {sessionLimit} sessions used
+            {planKey === 'free' ? ' — upgrade to continue accepting bookings.' : '.'}
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            href="/upgrade"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
-            {ctaLabel}
-          </Link>
+          {cta}
         </div>
       </div>
     );
@@ -139,11 +145,7 @@ export default function PlanUsageCard({
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            href="/upgrade"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
-            {ctaLabel}
-          </Link>
+          {cta}
         </div>
       </div>
     );
@@ -161,11 +163,7 @@ export default function PlanUsageCard({
         <p className="text-sm text-zinc-400">{remaining} remaining</p>
       </div>
       <div className="flex items-center gap-4">
-        <Link
-          href="/upgrade"
-          className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:text-zinc-100 transition-colors">
-          {ctaLabel}
-        </Link>
+        {cta}
       </div>
     </div>
   );

@@ -530,11 +530,13 @@ export default async function DashboardPage({
             <p className="text-sm text-amber-400 px-1">
               You have {remaining} session{remaining === 1 ? '' : 's'} remaining
               before you hit your limit.{' '}
-              <Link
-                href="/upgrade"
-                className="font-medium underline underline-offset-2 hover:text-amber-300 transition-colors">
-                Upgrade
-              </Link>
+              {planKey === 'free' && (
+                <Link
+                  href="/upgrade"
+                  className="font-medium underline underline-offset-2 hover:text-amber-300 transition-colors">
+                  Upgrade
+                </Link>
+              )}
             </p>
           )}
           <PlanUsageCard
