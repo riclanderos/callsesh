@@ -46,14 +46,41 @@ export default function PlanUsageCard({
   sessionLimit,
   planName = 'Free',
   planKey = 'free',
+  hasLapsed = false,
 }: {
   sessionsUsed: number;
   sessionLimit: number;
   planName?: string;
   planKey?: string;
+  hasLapsed?: boolean;
 }) {
   const remaining = sessionLimit - sessionsUsed;
   const ctaLabel = planKey === 'pro' ? 'Manage billing' : planKey === 'starter' ? 'Upgrade to Pro' : 'Upgrade';
+
+  if (hasLapsed) {
+    return (
+      <div className="rounded-xl border border-amber-900/60 bg-amber-950/20 p-5 space-y-4">
+        <div className="space-y-1">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            Plan access ended
+          </p>
+          <p className="text-sm font-medium text-amber-400">
+            No active plan
+          </p>
+          <p className="text-sm text-zinc-400">
+            Your paid plan has ended. Subscribe again to continue accepting bookings.
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/upgrade"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+            See plans
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (planKey === 'pro') {
     return (

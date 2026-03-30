@@ -23,7 +23,7 @@ export async function POST(): Promise<NextResponse> {
     return NextResponse.json({ error: 'No billing account found.' }, { status: 404 })
   }
 
-  const returnUrl = (process.env.APP_URL ?? '') + '/dashboard'
+  const returnUrl = (process.env.APP_URL ?? 'https://callsesh.com') + '/dashboard'
 
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: subscription.stripe_customer_id,

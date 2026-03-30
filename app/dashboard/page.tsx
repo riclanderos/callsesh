@@ -95,7 +95,7 @@ export default async function DashboardPage({
     { data: upcomingRaw },
     { data: sessionTypes },
     { count: usedCount },
-    { sessionLimit, planName, planKey },
+    { sessionLimit, planName, planKey, hasLapsedSubscription },
     { count: availabilityCount },
     { data: earningsRaw },
   ] = await Promise.all([
@@ -167,23 +167,22 @@ export default async function DashboardPage({
     redirect('/dashboard?payout_connected=1')
   }
 
-  // Launch offer visibility: show the card only while eligible, not expired, and sessions remain.
+  // Launch offer visibility: show only while eligible, unexpired, sessions remain, and
+  // the user has never had a paid subscription (lapsed users cannot reuse the allowance).
   const offerEligible = profileRow?.launch_offer_eligible === true
   const offerExpiresAt = profileRow?.launch_offer_expires_at ?? null
   const offerNotExpired = !offerExpiresAt || new Date(offerExpiresAt) > new Date()
   const offerSessionsLeft = profileRow?.launch_offer_sessions_remaining ?? 0
-  const showOfferCard = offerEligible && offerNotExpired && offerSessionsLeft > 0 && planKey === 'free'
+  const showOfferCard = offerEligible && offerNotExpired && offerSessionsLeft > 0 && planKey === 'free' && !hasLapsedSubscription
 
   const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true;
 
-  const downgradeDateLabel = subscriptionRow?.current_period_end
+  const accessEndDateLabel = subscriptionRow?.current_period_end
     ? new Date(subscriptionRow.current_period_end).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
       })
     : null;
-
-  const targetPlanName = planKey === 'pro' ? 'Starter' : 'a different plan';
 
   const used = usedCount ?? 0;
   const remaining = sessionLimit - used;
@@ -246,7 +245,16 @@ export default async function DashboardPage({
               Your dashboard
             </h1>
             <p className="text-sm text-zinc-300">{user.email}</p>
-            {remaining <= 0 && sessionLimit === 0 && used === 0 ? (
+            {hasLapsedSubscription ? (
+              <p className="text-sm font-medium text-amber-400">
+                Your plan has ended.{' '}
+                <Link
+                  href="/upgrade"
+                  className="underline underline-offset-2 hover:text-amber-300 transition-colors">
+                  Renew to continue
+                </Link>
+              </p>
+            ) : remaining <= 0 && sessionLimit === 0 && used === 0 ? (
               <p className="text-sm font-medium text-amber-400">
                 Subscribe to start accepting bookings.{' '}
                 <Link
@@ -534,11 +542,12 @@ export default async function DashboardPage({
             sessionLimit={sessionLimit}
             planName={planName}
             planKey={planKey}
+            hasLapsed={hasLapsedSubscription}
           />
           {cancelAtPeriodEnd && (
             <p className="text-sm text-zinc-300 px-1">
-              Your plan will downgrade to {targetPlanName}
-              {downgradeDateLabel ? ` on ${downgradeDateLabel}` : ' at the end of your billing period'}.
+              Your plan access ends{accessEndDateLabel ? ` on ${accessEndDateLabel}` : ' at the end of your billing period'}.
+              You&apos;ll need to resubscribe to continue accepting bookings.
             </p>
           )}
         </section>
