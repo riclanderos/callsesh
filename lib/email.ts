@@ -66,7 +66,7 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
     guestCancelUrl,
   } = params
 
-  await resend.emails.send({
+  const { error: sendError } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: guestEmail,
     subject: `Your session is confirmed — ${sessionTitle}`,
@@ -90,6 +90,7 @@ export async function sendGuestConfirmation(params: BookingEmailParams): Promise
       '— CallSesh',
     ].join('\n'),
   })
+  if (sendError) throw new Error(`Resend rejected guest confirmation: ${sendError.message ?? JSON.stringify(sendError)}`)
 }
 
 export async function sendGuestReminder(
@@ -335,11 +336,12 @@ export async function sendCoachNotification(params: CoachNotificationParams): Pr
 </body>
 </html>`
 
-  await resend.emails.send({
+  const { error: sendError } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: coachEmail,
     subject: 'New booking confirmed',
     text,
     html,
   })
+  if (sendError) throw new Error(`Resend rejected coach notification: ${sendError.message ?? JSON.stringify(sendError)}`)
 }
