@@ -239,6 +239,63 @@ export async function createBlockedTime(
   redirect('/dashboard/availability')
 }
 
+/**
+ * Bulk save: copies the given slot list to each of the specified days, replacing
+ * their existing recurring rules. Intended for the copy-to-other-days flow in SlotPicker.
+ * Returns which days succeeded and which failed so the UI can give per-day feedback.
+ */
+export async function saveBulkRecurringDays(
+  days: number[],
+  slots: string[]
+): Promise<{ saved: number[]; failed: { day: number; error: string }[] }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated.')
+
+  const ranges = slotsToRanges(slots)
+  const saved: number[] = []
+  const failed: { day: number; error: string }[] = []
+
+  for (const day of days) {
+    const { error: delErr } = await supabase
+      .from('availability_rules')
+      .delete()
+      .eq('coach_id', user.id)
+      .eq('day_of_week', day)
+      .eq('rule_kind', 'recurring')
+
+    if (delErr) {
+      failed.push({ day, error: delErr.message })
+      continue
+    }
+
+    if (ranges.length > 0) {
+      const rows = ranges.map((r) => ({
+        coach_id:    user.id,
+        day_of_week: day,
+        start_time:  r.start_time,
+        end_time:    r.end_time,
+        is_active:   true,
+        rule_kind:   'recurring',
+      }))
+      const { error: insErr } = await supabase.from('availability_rules').insert(rows)
+      if (insErr) {
+        failed.push({ day, error: insErr.message })
+        continue
+      }
+    }
+
+    saved.push(day)
+  }
+
+  if (saved.length > 0) {
+    revalidatePath('/dashboard/availability')
+    revalidatePath('/book/[slug]', 'page')
+  }
+
+  return { saved, failed }
+}
+
 export async function deleteBlockedTime(formData: FormData): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

@@ -131,22 +131,23 @@ export async function startCheckout(
   }
 
   // Conflict check — early fast-fail before touching Stripe.
-  // Note: a second conflict check happens in the webhook at booking creation
-  // time, but the window between checkout initiation and payment completion
-  // is not protected (see race-condition notes in README).
-  const { data: isTaken, error: conflictError } = await supabase.rpc(
-    'is_slot_taken',
-    {
-      p_coach_id:     sessionType.coach_id,
-      p_booking_date: bookingDate,
-      p_start_time:   startTime,
-      p_end_time:     endTime,
-    }
-  )
+  // Uses the service client (bypasses RLS) and counts rows directly rather than
+  // calling the is_slot_taken RPC: PostgREST wraps scalar boolean returns in an
+  // array, making the JS value truthy even when the slot is free ([false] is
+  // truthy in JavaScript). A numeric count is unambiguously 0 or >0.
+  // The unique index bookings_no_double_book remains the hard DB-level backstop.
+  const { count: conflictCount, error: conflictError } = await createServiceClient()
+    .from('bookings')
+    .select('id', { count: 'exact', head: true })
+    .eq('coach_id', sessionType.coach_id)
+    .eq('booking_date', bookingDate)
+    .in('status', ['confirmed', 'completed'])
+    .lt('start_time', endTime)
+    .gt('end_time', startTime)
 
   if (conflictError)
     return { ok: false, error: 'Could not verify slot availability. Please try again.' }
-  if (isTaken)
+  if ((conflictCount ?? 0) > 0)
     return { ok: false, error: 'This time slot is no longer available.' }
 
   // Build the absolute base URL from the incoming request host.

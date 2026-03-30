@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useState, useEffect, useRef } from 'react'
-import { saveRecurringDay } from '@/app/actions/availability'
+import { saveRecurringDay, saveBulkRecurringDays } from '@/app/actions/availability'
 import { allPickerSlots } from '@/lib/availability'
 
 const ALL_SLOTS = allPickerSlots()
@@ -40,7 +40,7 @@ function DayEditor({
   onSaved,
   onRevert,
   otherDays,
-  onCopyTo,
+  onBulkSaved,
 }: {
   day: number
   /** Controlled by SlotPicker so copy/revert can write to any day without a remount. */
@@ -53,9 +53,10 @@ function DayEditor({
   savedSlots: Set<string>
   onSaved: (slots: string[]) => void
   onRevert: () => void
-  /** Other days available as copy targets, with their current hasSlots state. */
-  otherDays: { day: number; label: string; hasSlots: boolean }[]
-  onCopyTo: (targetDays: number[]) => void
+  /** Other days available as copy targets, with their DB-saved slot state. */
+  otherDays: { day: number; label: string; hasSavedSlots: boolean }[]
+  /** Called after a successful bulk save with the days that were saved. */
+  onBulkSaved: (savedDays: number[], slots: string[]) => void
 }) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle')
   const [actionError, formAction, pending] = useActionState(saveRecurringDay, null)
@@ -65,13 +66,17 @@ function DayEditor({
   // Copy panel state
   const [copyOpen, setCopyOpen] = useState(false)
   const [copyTargets, setCopyTargets] = useState<Set<number>>(new Set())
+  const [bulkPending, setBulkPending] = useState(false)
+  const [bulkSaved, setBulkSaved] = useState<number[]>([])
+  const [bulkErrors, setBulkErrors] = useState<{ day: number; error: string }[]>([])
+  const bulkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const dirty = !eqSet(currentSlots, savedSlots)
   const canSave = dirty && !pending
   const isSaved = saveStatus === 'saved'
 
   const conflictingCount = [...copyTargets].filter(
-    (d) => otherDays.find((od) => od.day === d)?.hasSlots
+    (d) => otherDays.find((od) => od.day === d)?.hasSavedSlots
   ).length
 
   // Serialize current slots for stable effect dependency.
@@ -93,8 +98,6 @@ function DayEditor({
   }, [slotKey])
 
   // Detect successful save: pending flipped true → false with no error.
-  // currentSlots is stable during pending (slot buttons are disabled).
-  // savedSlots is now updated by SlotPicker via onSaved, so no local setSavedSlots needed.
   useEffect(() => {
     if (wasPending.current && !pending) {
       if (actionError === null) {
@@ -111,13 +114,38 @@ function DayEditor({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, actionError])
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    if (bulkTimerRef.current) clearTimeout(bulkTimerRef.current)
+  }, [])
 
-  function handleCopyApply() {
-    if (copyTargets.size === 0) return
-    onCopyTo([...copyTargets])
-    setCopyTargets(new Set())
-    setCopyOpen(false)
+  async function handleCopyAndSave() {
+    if (copyTargets.size === 0 || bulkPending) return
+    setBulkPending(true)
+    setBulkSaved([])
+    setBulkErrors([])
+    try {
+      const { saved, failed } = await saveBulkRecurringDays([...copyTargets], [...currentSlots])
+      setBulkSaved(saved)
+      setBulkErrors(failed)
+      if (saved.length > 0) {
+        onBulkSaved(saved, [...currentSlots])
+        if (failed.length === 0) {
+          // Full success: auto-close after 2s
+          if (bulkTimerRef.current) clearTimeout(bulkTimerRef.current)
+          bulkTimerRef.current = setTimeout(() => {
+            setCopyOpen(false)
+            setCopyTargets(new Set())
+            setBulkSaved([])
+            bulkTimerRef.current = null
+          }, 2000)
+        }
+      }
+    } catch (e) {
+      setBulkErrors([{ day: -1, error: e instanceof Error ? e.message : 'Unknown error' }])
+    } finally {
+      setBulkPending(false)
+    }
   }
 
   return (
@@ -190,7 +218,11 @@ function DayEditor({
           {!copyOpen ? (
             <button
               type="button"
-              onClick={() => setCopyOpen(true)}
+              onClick={() => {
+                setCopyOpen(true)
+                setBulkSaved([])
+                setBulkErrors([])
+              }}
               className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
             >
               Copy to other days →
@@ -201,12 +233,14 @@ function DayEditor({
 
               {/* Target day pills */}
               <div className="flex flex-wrap gap-1.5">
-                {otherDays.map(({ day: d, label, hasSlots }) => {
+                {otherDays.map(({ day: d, label, hasSavedSlots }) => {
                   const selected = copyTargets.has(d)
+                  const wasSaved = bulkSaved.includes(d)
                   return (
                     <button
                       key={d}
                       type="button"
+                      disabled={bulkPending}
                       onClick={() =>
                         setCopyTargets((prev) => {
                           const next = new Set(prev)
@@ -214,15 +248,17 @@ function DayEditor({
                           return next
                         })
                       }
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                        selected
+                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:pointer-events-none disabled:opacity-60 ${
+                        wasSaved
+                          ? 'bg-green-700/60 text-green-300'
+                          : selected
                           ? 'bg-indigo-600 text-white'
                           : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       {label}
-                      {/* Dot indicates this day already has slots selected */}
-                      {hasSlots && (
+                      {/* Dot indicates this day already has saved DB slots */}
+                      {hasSavedSlots && !wasSaved && (
                         <span className={`ml-1.5 inline-block h-1 w-1 rounded-full align-middle ${selected ? 'bg-indigo-300' : 'bg-zinc-500'}`} />
                       )}
                     </button>
@@ -230,33 +266,59 @@ function DayEditor({
                 })}
               </div>
 
-              {/* Overwrite warning — shown when ≥1 selected target already has slots */}
-              {copyTargets.size > 0 && conflictingCount > 0 && (
+              {/* Overwrite warning — shown when ≥1 selected target already has saved DB slots */}
+              {copyTargets.size > 0 && conflictingCount > 0 && bulkSaved.length === 0 && (
                 <p className="text-xs text-amber-500/90">
                   {conflictingCount === 1 ? '1 day' : `${conflictingCount} days`} already{' '}
-                  {conflictingCount === 1 ? 'has' : 'have'} slots selected and will be replaced.
+                  {conflictingCount === 1 ? 'has' : 'have'} saved slots and will be replaced.
                 </p>
               )}
+
+              {/* Success feedback */}
+              {bulkSaved.length > 0 && (
+                <p className="text-xs text-green-400">
+                  Saved to {bulkSaved.map((d) => DAY_SHORT[d]).join(', ')} ✓
+                  {bulkErrors.length > 0 && ' — some days failed (see below)'}
+                </p>
+              )}
+
+              {/* Per-day error feedback */}
+              {bulkErrors.map((e) => (
+                <p key={e.day} className="text-xs text-red-400">
+                  {e.day === -1 ? 'Error' : DAY_FULL[e.day]}: {e.error}
+                </p>
+              ))}
 
               {/* Actions */}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  disabled={copyTargets.size === 0}
-                  onClick={handleCopyApply}
+                  disabled={copyTargets.size === 0 || bulkPending}
+                  onClick={handleCopyAndSave}
                   className="rounded-lg bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:pointer-events-none transition-colors"
                 >
-                  {conflictingCount > 0 && copyTargets.size > 0 ? 'Replace & copy' : 'Copy'}
+                  {bulkPending
+                    ? 'Saving…'
+                    : conflictingCount > 0 && copyTargets.size > 0
+                    ? 'Replace & Save'
+                    : 'Copy & Save'}
                 </button>
                 <button
                   type="button"
+                  disabled={bulkPending}
                   onClick={() => {
                     setCopyOpen(false)
                     setCopyTargets(new Set())
+                    setBulkSaved([])
+                    setBulkErrors([])
+                    if (bulkTimerRef.current) {
+                      clearTimeout(bulkTimerRef.current)
+                      bulkTimerRef.current = null
+                    }
                   }}
-                  className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                 >
-                  Cancel
+                  {bulkSaved.length > 0 && bulkErrors.length === 0 ? 'Close' : 'Cancel'}
                 </button>
               </div>
             </div>
@@ -286,8 +348,6 @@ export default function SlotPicker({
   })
 
   // savedSlotsByDay is the single source of truth for what is persisted in the DB.
-  // Stored as Set<string> (not string[]) so it can be passed directly to DayEditor
-  // for dirty detection and used as the revert target without conversion on every render.
   const [savedSlotsByDay, setSavedSlotsByDay] = useState<Record<number, Set<string>>>(() => {
     const init: Record<number, Set<string>> = {}
     for (const day of DAY_ORDER) {
@@ -315,19 +375,8 @@ export default function SlotPicker({
     }))
   }
 
-  /** Overwrites the current slot selection for each target day with the source day's slots. */
-  function handleCopy(sourceDay: number, targetDays: number[]) {
-    const sourceSlots = currentSlotsByDay[sourceDay]
-    setCurrentSlotsByDay((prev) => {
-      const next = { ...prev }
-      for (const day of targetDays) {
-        next[day] = new Set(sourceSlots)
-      }
-      return next
-    })
-  }
-
-  function handleSaved(day: number, slots: string[]) {
+  /** Marks a day as saved — updates savedSlotsByDay and triggers the tab dot animation. */
+  function markSaved(day: number, slots: string[]) {
     const saved = new Set(slots)
     setSavedSlotsByDay((prev) => ({ ...prev, [day]: saved }))
     setRecentlySaved((prev) => new Set([...prev, day]))
@@ -340,6 +389,24 @@ export default function SlotPicker({
       })
       delete tabTimerRefs.current[day]
     }, 2000)
+  }
+
+  function handleSaved(day: number, slots: string[]) {
+    markSaved(day, slots)
+  }
+
+  /** Called after a successful bulk save to update both current and saved state. */
+  function handleBulkSaved(savedDays: number[], slots: string[]) {
+    setCurrentSlotsByDay((prev) => {
+      const next = { ...prev }
+      for (const day of savedDays) {
+        next[day] = new Set(slots)
+      }
+      return next
+    })
+    for (const day of savedDays) {
+      markSaved(day, slots)
+    }
   }
 
   return (
@@ -383,9 +450,9 @@ export default function SlotPicker({
         const otherDays = DAY_ORDER.filter((d) => d !== day).map((d) => ({
           day: d,
           label: DAY_SHORT[d],
-          // hasSlots reflects current (possibly unsaved) selection so the
-          // overwrite warning accurately signals what would be replaced.
-          hasSlots: currentSlotsByDay[d].size > 0,
+          // hasSavedSlots reflects DB-persisted state so the overwrite warning
+          // and indicator accurately signal what would be replaced on disk.
+          hasSavedSlots: savedSlotsByDay[d].size > 0,
         }))
         return (
           <div key={day} className={activeDay === day ? '' : 'hidden'}>
@@ -397,7 +464,7 @@ export default function SlotPicker({
               onSaved={(slots) => handleSaved(day, slots)}
               onRevert={() => handleRevert(day)}
               otherDays={otherDays}
-              onCopyTo={(targets) => handleCopy(day, targets)}
+              onBulkSaved={handleBulkSaved}
             />
           </div>
         )
