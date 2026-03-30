@@ -214,6 +214,8 @@ export interface CoachNotificationParams {
   endTime: string
   durationMinutes: number
   guestName: string
+  guestEmail: string
+  clientMessage?: string
   totalAmountCents: number
   coachSessionUrl: string
   appUrl: string
@@ -230,6 +232,8 @@ export async function sendCoachNotification(params: CoachNotificationParams): Pr
     endTime,
     durationMinutes,
     guestName,
+    guestEmail,
+    clientMessage,
     totalAmountCents,
     coachSessionUrl,
     appUrl,
@@ -250,11 +254,12 @@ export async function sendCoachNotification(params: CoachNotificationParams): Pr
     `You've just received a new booking on CallSesh.`,
     '',
     'Session details',
-    `Client:    ${guestName}`,
+    `Client:    ${guestName} (${guestEmail})`,
     `Session:   ${sessionTitle}`,
     `Date:      ${dateStr}`,
     `Time:      ${timeStr}`,
     `Duration:  ${durationMinutes} minutes`,
+    ...(clientMessage ? ['', `Message from client: "${clientMessage}"`] : []),
     '',
     'Earnings',
     `Total paid:          ${total}`,
@@ -293,10 +298,12 @@ export async function sendCoachNotification(params: CoachNotificationParams): Pr
               <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;border-top:1px solid #e4e4e7;padding-top:20px;">Session details</p>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
                 <tr><td style="padding:3px 0;color:#71717a;width:120px;vertical-align:top;">Client</td><td style="padding:3px 0;color:#18181b;">${guestName}</td></tr>
+                <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Email</td><td style="padding:3px 0;color:#18181b;"><a href="mailto:${guestEmail}" style="color:#4f46e5;text-decoration:none;">${guestEmail}</a></td></tr>
                 <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Session</td><td style="padding:3px 0;color:#18181b;">${sessionTitle}</td></tr>
                 <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Date</td><td style="padding:3px 0;color:#18181b;">${dateStr}</td></tr>
                 <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Time</td><td style="padding:3px 0;color:#18181b;">${timeStr}</td></tr>
                 <tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Duration</td><td style="padding:3px 0;color:#18181b;">${durationMinutes} minutes</td></tr>
+                ${clientMessage ? `<tr><td style="padding:3px 0;color:#71717a;vertical-align:top;">Message</td><td style="padding:3px 0;color:#18181b;font-style:italic;">&ldquo;${clientMessage}&rdquo;</td></tr>` : ''}
               </table>
 
               <p style="margin:24px 0 10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#71717a;border-top:1px solid #e4e4e7;padding-top:20px;">Earnings</p>

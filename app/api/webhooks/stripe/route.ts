@@ -325,21 +325,26 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         endTime: m.end_time,
         durationMinutes,
         guestName: m.guest_name,
+        guestEmail: m.guest_email,
+        ...(m.client_message ? { clientMessage: m.client_message } : {}),
         totalAmountCents: session.amount_total ?? 0,
         coachSessionUrl,
         appUrl,
       };
-      console.log('[webhook] Sending confirmation email', {
+      console.log('[webhook] Sending confirmation emails', {
         booking_id: confirmedBooking.id,
         guest_email: m.guest_email,
+        coach_email: coachEmail,
       });
       try {
-        await Promise.all([
-          sendGuestConfirmation(guestEmailParams),
-          sendCoachNotification(coachEmailParams),
-        ]);
+        await sendGuestConfirmation(guestEmailParams);
       } catch (e) {
-        console.error('[webhook] Confirmation email failed:', e);
+        console.error('[webhook] Guest confirmation email failed:', e);
+      }
+      try {
+        await sendCoachNotification(coachEmailParams);
+      } catch (e) {
+        console.error('[webhook] Coach notification email failed:', e);
       }
     } else {
       console.error(
