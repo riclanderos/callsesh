@@ -150,7 +150,7 @@ const pages: PseoPage[] = [
       },
       {
         q: 'Can I offer free or discounted sessions?',
-        a: 'Yes. Set any session type to $0. There is no platform fee on free sessions.',
+        a: 'Yes. You can set any session price—including $0—for free sessions, trials, or promotions. There\'s no platform fee on free sessions. For paid sessions, standard fees apply.',
       },
       {
         q: 'Is payment data stored securely?',

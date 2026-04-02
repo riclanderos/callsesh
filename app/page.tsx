@@ -217,11 +217,29 @@ export default async function Home() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-zinc-800 py-8">
-        <div className="mx-auto max-w-5xl px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">
-          <span>© 2026 CallSesh by Landeros Systems</span>
-          <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
+        <div className="mx-auto max-w-5xl px-6 space-y-6 text-xs text-zinc-600">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <p className="font-medium uppercase tracking-wider text-zinc-500">Product</p>
+              <Link href="/coaching-booking-software" className="block hover:text-zinc-300 transition-colors">Coaching Booking Software</Link>
+              <Link href="/coach-payment-processing" className="block hover:text-zinc-300 transition-colors">Coach Payment Processing</Link>
+              <Link href="/video-coaching-platform" className="block hover:text-zinc-300 transition-colors">Video Coaching Platform</Link>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium uppercase tracking-wider text-zinc-500">Compare</p>
+              <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-300 transition-colors">Calendly for Coaches</Link>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium uppercase tracking-wider text-zinc-500">Use Cases</p>
+              <Link href="/for/business-coaches" className="block hover:text-zinc-300 transition-colors">Business Coaches</Link>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-800 pt-6">
+            <span>© 2026 CallSesh by Landeros Systems</span>
+            <div className="flex gap-4">
+              <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
+            </div>
           </div>
         </div>
       </footer>
