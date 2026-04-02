@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import Link from 'next/link'
 import CreateSessionTypeForm from './create-form'
 import DeleteSessionTypeButton from './delete-button'
+import { TrackOnMount } from '@/lib/analytics'
 
 type SessionType = {
   id: string
@@ -16,7 +17,12 @@ type SessionType = {
   created_at: string
 }
 
-export default async function SessionTypesPage() {
+export default async function SessionTypesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ created?: string }>
+}) {
+  const { created } = await searchParams
   const supabase = await createClient()
   const {
     data: { user },
@@ -39,6 +45,7 @@ export default async function SessionTypesPage() {
 
   return (
     <div className="min-h-screen px-6 py-10">
+      {created === '1' && <TrackOnMount event="session_type_created" />}
       <div className="mx-auto max-w-4xl space-y-8">
 
         {/* Header */}

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
-import { getSessionAccess } from '@/lib/session-auth'
+import { getSessionAccess, getJoinWindowState } from '@/lib/session-auth'
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -73,6 +73,13 @@ export default async function SessionPage({
     .single()
 
   const coachTimezone = profile?.timezone ?? 'UTC'
+
+  const { state: windowState, minutesUntilOpen } = getJoinWindowState(
+    booking.booking_date,
+    booking.start_time,
+    booking.end_time,
+    coachTimezone,
+  )
 
   const st = booking.session_types as { title: string } | { title: string }[] | null
   const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? 'Session') : (st?.title ?? 'Session')
@@ -156,8 +163,21 @@ export default async function SessionPage({
           </div>
         </div>
 
-        {/* Join button */}
-        <JoinButton bookingId={bookingId} guestToken={guestToken} />
+        {/* Join button / time-gate */}
+        {windowState === 'too_early' ? (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-1 text-center">
+            <p className="text-sm font-medium text-zinc-200">Session hasn't started yet</p>
+            <p className="text-sm text-zinc-400">
+              You can join in {minutesUntilOpen} minute{minutesUntilOpen === 1 ? '' : 's'}. Come back closer to the start time.
+            </p>
+          </div>
+        ) : windowState === 'ended' ? (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-center">
+            <p className="text-sm font-medium text-zinc-400">This session has already ended.</p>
+          </div>
+        ) : (
+          <JoinButton bookingId={bookingId} guestToken={guestToken} />
+        )}
 
       </div>
     </div>

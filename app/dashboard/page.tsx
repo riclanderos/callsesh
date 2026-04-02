@@ -45,9 +45,9 @@ function formatTime(t: string): string {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ upgraded?: string; payout_refresh?: string; payout_connected?: string }>;
+  searchParams: Promise<{ upgraded?: string; payout_refresh?: string; payout_connected?: string; signup?: string }>;
 }) {
-  const { upgraded, payout_refresh, payout_connected } = await searchParams;
+  const { upgraded, payout_refresh, payout_connected, signup } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -211,6 +211,7 @@ export default async function DashboardPage({
     <div className="min-h-screen px-6 py-10">
       <TimezoneAutoDetect currentTimezone={coachTimezone} />
       <TrackOnMount event="dashboard_viewed" />
+      {signup === '1' && <TrackOnMount event="signup_completed" />}
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Upgrade success banner */}
         {upgraded === '1' && (

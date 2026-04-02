@@ -5,6 +5,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { sendGuestConfirmation, sendCoachNotification, type CoachNotificationParams } from '@/lib/email';
 import { provisionDailyRoom } from '@/lib/daily';
 import Stripe from 'stripe';
+import { PostHog } from 'posthog-node';
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.text();
@@ -71,9 +72,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             },
             { onConflict: 'user_id' },
           );
-        if (error)
+        if (error) {
           console.error('[webhook] subscription upsert error:', error.message);
-        else console.log('[webhook] subscription upserted for user:', userId);
+        } else {
+          console.log('[webhook] subscription upserted for user:', userId);
+          const ph = new PostHog(process.env.POSTHOG_API_KEY!, {
+            host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com',
+          });
+          ph.capture({ distinctId: userId, event: 'subscription_started', properties: { plan: planKey } });
+          await ph.shutdown();
+        }
       } else {
         console.error(
           '[webhook] subscription checkout missing ids — skipping upsert',

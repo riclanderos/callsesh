@@ -58,7 +58,7 @@ export async function createSessionType(
 
   if (error) return error.message
 
-  redirect('/dashboard/session-types')
+  redirect('/dashboard/session-types?created=1')
 }
 
 export async function deleteSessionType(

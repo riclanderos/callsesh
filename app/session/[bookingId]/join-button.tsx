@@ -24,7 +24,12 @@ export default function JoinButton({
       })
 
       if (!res.ok) {
-        setError('Could not start the session. Please try again.')
+        if (res.status === 423) {
+          const body = await res.json().catch(() => ({})) as { error?: string }
+          setError(body.error ?? 'The session is not available right now.')
+        } else {
+          setError('Could not start the session. Please try again.')
+        }
         return
       }
 

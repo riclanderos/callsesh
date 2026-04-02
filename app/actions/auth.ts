@@ -46,7 +46,7 @@ export async function signup(
     }
   }
 
-  redirect('/dashboard')
+  redirect('/dashboard?signup=1')
 }
 
 export async function logout() {
