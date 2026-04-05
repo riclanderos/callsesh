@@ -66,6 +66,7 @@ export default function RecapCopy({
   }
 
   function openMailto() {
+    if (!clientEmail) return
     const body = buildEmailText(clientName, summary, keyPoints, actionSteps)
     window.location.href =
       `mailto:${clientEmail}?subject=${encodeURIComponent('Session Recap')}&body=${encodeURIComponent(body)}`
@@ -87,7 +88,9 @@ export default function RecapCopy({
       </button>
       <button
         onClick={openMailto}
-        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+        disabled={!clientEmail}
+        title={!clientEmail ? 'Client email not available' : undefined}
+        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         Email Recap
       </button>
