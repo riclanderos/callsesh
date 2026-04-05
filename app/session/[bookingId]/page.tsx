@@ -92,9 +92,8 @@ export default async function SessionPage({
         session_completed_at: new Date().toISOString(),
       })
       .eq('id', bookingId)
-      .then(({ error }) => {
-        if (error) console.error('[session] failed to mark session completed:', error.message)
-      })
+      .then(() => {})
+      .catch(() => {})
   }
 
   const st = booking.session_types as { title: string } | { title: string }[] | null
