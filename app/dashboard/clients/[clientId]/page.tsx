@@ -54,7 +54,7 @@ export default async function ClientDetailPage({
   const { data: bookings, error } = await supabase
     .from('bookings')
     .select(
-      'id, guest_name, booking_date, start_time, end_time, status, client_message, coach_notes, recap_summary, recap_key_points, recap_action_steps, session_types(title)'
+      'id, guest_name, booking_date, start_time, end_time, status, session_status, client_message, coach_notes, recap_summary, recap_key_points, recap_action_steps, session_types(title)'
     )
     .eq('coach_client_id', clientId)
     .eq('coach_id', user.id)
@@ -62,6 +62,23 @@ export default async function ClientDetailPage({
     .order('start_time', { ascending: false })
 
   if (error) throw new Error(error.message)
+
+  const today = new Intl.DateTimeFormat('en-CA').format(new Date())
+
+  // bookings are newest-first, so first match is most recent.
+  const lastCompleted = (bookings ?? []).find(
+    (b) => (b.session_status as string) === 'completed'
+  ) ?? null
+
+  let nextUpcoming = null
+  const _bookings = bookings ?? []
+  for (let i = _bookings.length - 1; i >= 0; i--) {
+    const b = _bookings[i]
+    if (b.session_status !== 'completed' && b.booking_date >= today) {
+      nextUpcoming = b
+      break
+    }
+  }
 
   // Prefer the stored name on the client record; fall back to latest booking guest_name.
   const displayName =
@@ -85,6 +102,22 @@ export default async function ClientDetailPage({
           >
             ← Clients
           </Link>
+        </div>
+
+        {/* Session stats */}
+        <div className="flex gap-6 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4">
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Last Session</p>
+            <p className="text-sm text-zinc-200">
+              {lastCompleted ? formatDate(lastCompleted.booking_date as string) : 'None yet'}
+            </p>
+          </div>
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Next Session</p>
+            <p className="text-sm text-zinc-200">
+              {nextUpcoming ? formatDate(nextUpcoming.booking_date as string) : 'None scheduled'}
+            </p>
+          </div>
         </div>
 
         {(!bookings || bookings.length === 0) && (
