@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { saveBookingNotes, saveBookingRecap } from '@/app/actions/bookings'
 import SaveButton from './save-button'
+import TranscriptToggle from './transcript-toggle'
 
 function formatDate(d: string): string {
   const [year, month, day] = d.split('-').map(Number)
@@ -35,7 +36,7 @@ export default async function BookingDetailPage({
   const { data: booking } = await supabase
     .from('bookings')
     .select(
-      'id, guest_name, guest_email, booking_date, start_time, end_time, status, client_message, coach_notes, recap_summary, recap_key_points, recap_action_steps, recap_created_at, session_types(title)'
+      'id, guest_name, guest_email, booking_date, start_time, end_time, status, client_message, coach_notes, recap_summary, recap_key_points, recap_action_steps, recap_created_at, transcript_enabled, transcript_consent_status, session_types(title)'
     )
     .eq('id', id)
     .eq('coach_id', user.id)
@@ -94,6 +95,13 @@ export default async function BookingDetailPage({
             </p>
           )}
         </div>
+
+        {/* Transcript */}
+        <TranscriptToggle
+          bookingId={booking.id}
+          transcriptEnabled={booking.transcript_enabled as boolean ?? false}
+          consentStatus={booking.transcript_consent_status as string ?? 'not_requested'}
+        />
 
         {/* Session Notes */}
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-3">

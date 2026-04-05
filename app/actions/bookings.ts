@@ -406,3 +406,119 @@ export async function saveBookingRecap(formData: FormData): Promise<void> {
   if (error) throw new Error(`Failed to save recap: ${error.message}`)
   revalidatePath(`/dashboard/bookings/${bookingId}`)
 }
+
+/**
+ * Coach toggles transcript on/off for a booking.
+ * ON:  transcript_enabled = true; consent_status 'not_requested' → 'pending'
+ * OFF: transcript_enabled = false; consent_status reset to 'not_requested'; consent_at = null
+ */
+export async function toggleTranscript(formData: FormData): Promise<void> {
+  const bookingId = formData.get('booking_id') as string
+  const enable = formData.get('transcript_enabled') === 'true'
+
+  if (!bookingId) throw new Error('Missing booking_id.')
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  // Read current consent status to decide the transition.
+  const { data: current } = await supabase
+    .from('bookings')
+    .select('transcript_consent_status')
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+    .single()
+
+  if (!current) throw new Error('Booking not found.')
+
+  const update = enable
+    ? {
+        transcript_enabled: true,
+        // Only advance to 'pending' if no consent decision has been made yet.
+        transcript_consent_status:
+          current.transcript_consent_status === 'not_requested'
+            ? 'pending'
+            : current.transcript_consent_status,
+      }
+    : {
+        transcript_enabled: false,
+        transcript_consent_status: 'not_requested',
+        transcript_consent_at: null,
+      }
+
+  const { error } = await supabase
+    .from('bookings')
+    .update(update)
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+
+  if (error) throw new Error(`Failed to update transcript setting: ${error.message}`)
+  revalidatePath(`/dashboard/bookings/${bookingId}`)
+}
+
+/**
+ * Guest records their transcript consent decision.
+ * Authorized via authenticated session (guest email match) or guest_access_token.
+ * Only transitions from 'pending' — idempotent if already decided.
+ */
+export async function recordTranscriptConsent(formData: FormData): Promise<void> {
+  const bookingId = formData.get('booking_id') as string
+  const guestToken = (formData.get('guest_token') as string) ?? ''
+  const decision = formData.get('decision') as string
+
+  if (!bookingId) throw new Error('Missing booking_id.')
+  if (!['consented', 'declined'].includes(decision)) throw new Error('Invalid decision.')
+
+  const serviceClient = createServiceClient()
+
+  const { data: booking } = await serviceClient
+    .from('bookings')
+    .select('id, guest_email, guest_access_token, transcript_consent_status')
+    .eq('id', bookingId)
+    .single()
+
+  if (!booking) throw new Error('Booking not found.')
+
+  // Validate caller: authenticated guest email match OR valid guest_access_token.
+  let authorized = false
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user && user.email === booking.guest_email) {
+    authorized = true
+  }
+
+  if (!authorized && guestToken && booking.guest_access_token) {
+    try {
+      const provided = Buffer.from(guestToken, 'hex')
+      const stored = Buffer.from(booking.guest_access_token as string, 'hex')
+      if (provided.length === stored.length) {
+        authorized = timingSafeEqual(provided, stored)
+      }
+    } catch {
+      // Malformed hex — treat as mismatch.
+    }
+  }
+
+  if (!authorized) throw new Error('Unauthorized.')
+
+  // Already decided — no-op (idempotent).
+  if (booking.transcript_consent_status !== 'pending') return
+
+  const { error } = await serviceClient
+    .from('bookings')
+    .update({
+      transcript_consent_status: decision,
+      transcript_consent_at: new Date().toISOString(),
+    })
+    .eq('id', bookingId)
+
+  if (error) throw new Error(`Failed to record consent: ${error.message}`)
+  revalidatePath(`/session/${bookingId}`)
+}

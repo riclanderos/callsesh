@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import JoinButton from './join-button'
+import { recordTranscriptConsent } from '@/app/actions/bookings'
 
 function formatDate(d: string): string {
   const [year, month, day] = d.split('-').map(Number)
@@ -174,6 +175,39 @@ export default async function SessionPage({
         ) : windowState === 'ended' ? (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-center">
             <p className="text-sm font-medium text-zinc-400">This session has already ended.</p>
+          </div>
+        ) : !isCoach && booking.transcript_enabled && booking.transcript_consent_status === 'pending' ? (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-4">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-zinc-100">Transcript consent</p>
+              <p className="text-sm text-zinc-400">
+                Your coach has enabled session transcript. Do you consent to this session being transcribed?
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <form action={recordTranscriptConsent}>
+                <input type="hidden" name="booking_id" value={bookingId} />
+                <input type="hidden" name="guest_token" value={guestToken ?? ''} />
+                <input type="hidden" name="decision" value="consented" />
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-white py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
+                >
+                  Allow transcript
+                </button>
+              </form>
+              <form action={recordTranscriptConsent}>
+                <input type="hidden" name="booking_id" value={bookingId} />
+                <input type="hidden" name="guest_token" value={guestToken ?? ''} />
+                <input type="hidden" name="decision" value="declined" />
+                <button
+                  type="submit"
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 py-3 text-center text-sm font-medium text-zinc-300 hover:border-zinc-600 hover:text-white transition-colors"
+                >
+                  Continue without transcript
+                </button>
+              </form>
+            </div>
           </div>
         ) : (
           <JoinButton bookingId={bookingId} guestToken={guestToken} />
