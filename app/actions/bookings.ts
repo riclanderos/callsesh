@@ -438,11 +438,11 @@ export async function toggleTranscript(formData: FormData): Promise<void> {
   const update = enable
     ? {
         transcript_enabled: true,
-        // Only advance to 'pending' if no consent decision has been made yet.
+        // Prompt again if not yet decided or previously declined; leave 'consented' unchanged.
         transcript_consent_status:
-          current.transcript_consent_status === 'not_requested'
-            ? 'pending'
-            : current.transcript_consent_status,
+          current.transcript_consent_status === 'consented'
+            ? 'consented'
+            : 'pending',
       }
     : {
         transcript_enabled: false,
