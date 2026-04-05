@@ -58,13 +58,13 @@ export default async function Home() {
       <section className="relative mx-auto max-w-5xl px-6 pt-12 pb-24 text-center space-y-8">
         <div className="space-y-4 max-w-2xl mx-auto">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
-            Run your coaching business from one link
+            Run the full coaching workflow — before, during, and after every session
           </h1>
           <p className="text-lg text-zinc-300 leading-relaxed">
-            Set your availability, accept payments, and run sessions — all in one place.
+            Booking, payments, video, session notes, recaps, and client history — all in one place.
           </p>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            Perfect for career coaches, fitness coaches, and consultants running paid sessions.
+            Built for career coaches, fitness coaches, and consultants running paid sessions.
           </p>
           {offerAvailable && (
             <p className="text-sm text-zinc-200 leading-relaxed max-w-md mx-auto text-center">
@@ -88,7 +88,7 @@ export default async function Home() {
       </div>
 
       {/* ── Trust line ── */}
-      <p className="text-center text-sm text-zinc-400 pb-4">Trusted by coaches to run paid sessions</p>
+      <p className="text-center text-sm text-zinc-400 pb-4">From booking to recap — your entire coaching workflow in one place.</p>
 
       {/* ── Testimonial ── */}
       <section className="mx-auto max-w-5xl px-6 py-24 text-center space-y-6">
@@ -126,29 +126,44 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Comparison ── */}
+      {/* ── Post-session workflow ── */}
       <section className="mx-auto max-w-6xl px-6 py-24">
-        <h2 className="text-2xl font-semibold text-center mb-16">Stop juggling multiple tools</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="text-center mb-16 space-y-3">
+          <h2 className="text-2xl font-semibold">The session doesn&apos;t end when the call does</h2>
+          <p className="text-sm text-zinc-400 max-w-xl mx-auto">
+            Most coaching tools stop at the call. CallSesh keeps working after — so nothing falls through the cracks.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             {
-              title: 'Before',
-              description: 'Scheduling tools, video apps, and payment platforms — all separate.',
+              title: 'Session Notes',
+              description: 'Write private notes during or after every session. Stays linked to the booking.',
             },
             {
-              title: 'With CallSesh',
-              description: 'Everything in one place. Booking, payments, and sessions together.',
+              title: 'Recaps & Action Steps',
+              description: 'Document what happened, key takeaways, and exactly what the client should do next.',
             },
             {
-              title: 'Result',
-              description: 'Less setup, fewer headaches. More time focusing on your clients.',
+              title: 'Client History',
+              description: 'Every session, note, and recap for each client — in one place. No digging required.',
+            },
+            {
+              title: 'Previous Session Context',
+              description: 'See the last recap before a session starts. Walk in prepared, not scrambling.',
+            },
+            {
+              title: 'One-click recap sharing',
+              description: 'Copy a formatted recap or open a pre-filled email to the client in seconds.',
+            },
+            {
+              title: 'Full workflow, one tool',
+              description: 'From booking to follow-up — without switching between apps or losing track.',
             },
           ].map(({ title, description }) => (
-            <div key={title} className="flex flex-col items-center text-center">
-              <div className="w-full rounded-xl border border-white/10 shadow-lg shadow-black/40 mb-3 bg-zinc-900 px-6 py-8">
-                <p className="text-lg font-semibold text-white mb-1">{title}</p>
-                <p className="text-sm text-zinc-300">{description}</p>
-              </div>
+            <div key={title} className="rounded-xl border border-white/10 shadow-lg shadow-black/40 bg-zinc-900 px-6 py-8">
+              <p className="text-base font-semibold text-white mb-1">{title}</p>
+              <p className="text-sm text-zinc-300">{description}</p>
             </div>
           ))}
         </div>
@@ -198,20 +213,20 @@ export default async function Home() {
           </div>
 
         </div>
-        <p className="text-xs text-zinc-500 text-center mt-8">Upgrade only when you start getting clients. No contracts. Cancel anytime.</p>
+        <p className="text-xs text-zinc-500 text-center mt-8">Start free. Upgrade only when you need it.</p>
       </section>
 
       {/* ── Final CTA ── */}
       <section className="mx-auto max-w-5xl px-6 py-24 text-center space-y-6">
-        <h2 className="text-3xl font-bold tracking-tight">Start booking paid sessions today</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Run your full coaching workflow from one link</h2>
         <p className="text-zinc-300 text-base">
-          Set up your coaching page in minutes and share your link.
+          Booking, payments, video, notes, recaps, and client history — set up in minutes.
         </p>
         <Link
           href="/signup"
           className="inline-block rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20"
         >
-          Create your coaching page and start getting paid
+          Create your coaching page
         </Link>
       </section>
 
