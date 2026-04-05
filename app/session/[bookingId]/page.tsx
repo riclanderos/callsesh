@@ -96,6 +96,26 @@ export default async function SessionPage({
       .catch(() => {})
   }
 
+  // Fetch previous completed session for context — coach only, non-blocking.
+  let prevSession: {
+    recap_summary: string | null
+    recap_action_steps: string[] | null
+  } | null = null
+
+  if (isCoach && booking.coach_client_id) {
+    const { data } = await createServiceClient()
+      .from('bookings')
+      .select('recap_summary, recap_action_steps')
+      .eq('coach_id', booking.coach_id)
+      .eq('coach_client_id', booking.coach_client_id)
+      .eq('session_status', 'completed')
+      .neq('id', bookingId)
+      .order('session_completed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    prevSession = data ?? null
+  }
+
   const st = booking.session_types as { title: string } | { title: string }[] | null
   const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? 'Session') : (st?.title ?? 'Session')
 
@@ -177,6 +197,22 @@ export default async function SessionPage({
             <p className="text-xs text-zinc-500 font-mono">{coachTimezone}</p>
           </div>
         </div>
+
+        {/* Previous session snapshot — coach only */}
+        {isCoach && prevSession && (prevSession.recap_summary || (prevSession.recap_action_steps ?? []).length > 0) && (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-2">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Last Session Summary</p>
+            {prevSession.recap_summary && (
+              <p className="text-sm text-zinc-300">{prevSession.recap_summary}</p>
+            )}
+            {(prevSession.recap_action_steps ?? []).slice(0, 2).map((step, i) => (
+              <p key={i} className="text-sm text-zinc-400 flex gap-2">
+                <span className="text-zinc-600 shrink-0">{i + 1}.</span>
+                {step}
+              </p>
+            ))}
+          </div>
+        )}
 
         {/* Join button / time-gate */}
         {windowState === 'too_early' ? (

@@ -72,6 +72,7 @@ export type SessionBooking = {
   transcript_consent_status: string
   session_status: string
   session_completed_at: string | null
+  coach_client_id: string | null
 }
 
 export type SessionAccess = {
@@ -105,7 +106,7 @@ export async function getSessionAccess(
   const { data } = await createServiceClient()
     .from('bookings')
     .select(
-      'id, coach_id, guest_name, guest_email, booking_date, start_time, end_time, status, daily_room_name, daily_room_url, guest_access_token, transcript_enabled, transcript_consent_status, session_status, session_completed_at, session_types(title)'
+      'id, coach_id, guest_name, guest_email, booking_date, start_time, end_time, status, daily_room_name, daily_room_url, guest_access_token, transcript_enabled, transcript_consent_status, session_status, session_completed_at, coach_client_id, session_types(title)'
     )
     .eq('id', bookingId)
     .single()
