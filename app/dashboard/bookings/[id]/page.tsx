@@ -137,6 +137,7 @@ export default async function BookingDetailPage({
             </div>
             <RecapCopy
               clientName={booking.guest_name}
+              clientEmail={booking.guest_email}
               summary={booking.recap_summary ?? ''}
               keyPoints={((booking.recap_key_points as string[] | null) ?? [])}
               actionSteps={((booking.recap_action_steps as string[] | null) ?? [])}

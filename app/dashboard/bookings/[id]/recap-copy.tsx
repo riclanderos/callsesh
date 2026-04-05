@@ -39,11 +39,13 @@ function buildEmailText(
 
 export default function RecapCopy({
   clientName,
+  clientEmail,
   summary,
   keyPoints,
   actionSteps,
 }: {
   clientName: string
+  clientEmail: string
   summary: string
   keyPoints: string[]
   actionSteps: string[]
@@ -63,8 +65,14 @@ export default function RecapCopy({
     setTimeout(() => setCopied(null), 2000)
   }
 
+  function openMailto() {
+    const body = buildEmailText(clientName, summary, keyPoints, actionSteps)
+    window.location.href =
+      `mailto:${clientEmail}?subject=${encodeURIComponent('Session Recap')}&body=${encodeURIComponent(body)}`
+  }
+
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap">
       <button
         onClick={() => copy('recap')}
         className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
@@ -76,6 +84,12 @@ export default function RecapCopy({
         className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
       >
         {copied === 'email' ? 'Copied' : 'Copy Email Version'}
+      </button>
+      <button
+        onClick={openMailto}
+        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+      >
+        Email Recap
       </button>
     </div>
   )
