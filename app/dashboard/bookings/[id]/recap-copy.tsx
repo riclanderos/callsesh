@@ -1,0 +1,82 @@
+'use client'
+
+import { useState } from 'react'
+
+function buildRecapText(
+  summary: string,
+  keyPoints: string[],
+  actionSteps: string[],
+): string {
+  const parts: string[] = []
+  if (summary) parts.push(summary)
+  if (keyPoints.length) {
+    parts.push('Key Points:\n' + keyPoints.map((p) => `• ${p}`).join('\n'))
+  }
+  if (actionSteps.length) {
+    parts.push('Action Steps:\n' + actionSteps.map((s) => `• ${s}`).join('\n'))
+  }
+  return parts.join('\n\n')
+}
+
+function buildEmailText(
+  clientName: string,
+  summary: string,
+  keyPoints: string[],
+  actionSteps: string[],
+): string {
+  const safeName = clientName?.trim() || 'there'
+  const parts: string[] = [`Hi ${safeName},`]
+  if (summary) parts.push(`Summary:\n${summary}`)
+  if (keyPoints.length) {
+    parts.push('Key Points:\n' + keyPoints.map((p) => `- ${p}`).join('\n'))
+  }
+  if (actionSteps.length) {
+    parts.push('Action Steps:\n' + actionSteps.map((s) => `- ${s}`).join('\n'))
+  }
+  parts.push('Let me know if you have any questions.')
+  return parts.join('\n\n')
+}
+
+export default function RecapCopy({
+  clientName,
+  summary,
+  keyPoints,
+  actionSteps,
+}: {
+  clientName: string
+  summary: string
+  keyPoints: string[]
+  actionSteps: string[]
+}) {
+  const [copied, setCopied] = useState<'recap' | 'email' | null>(null)
+
+  const hasContent = summary || keyPoints.length > 0 || actionSteps.length > 0
+  if (!hasContent) return null
+
+  async function copy(type: 'recap' | 'email') {
+    const text =
+      type === 'recap'
+        ? buildRecapText(summary, keyPoints, actionSteps)
+        : buildEmailText(clientName, summary, keyPoints, actionSteps)
+    await navigator.clipboard.writeText(text)
+    setCopied(type)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  return (
+    <div className="flex gap-2">
+      <button
+        onClick={() => copy('recap')}
+        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+      >
+        {copied === 'recap' ? 'Copied' : 'Copy Recap'}
+      </button>
+      <button
+        onClick={() => copy('email')}
+        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+      >
+        {copied === 'email' ? 'Copied' : 'Copy Email Version'}
+      </button>
+    </div>
+  )
+}

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { saveBookingNotes, saveBookingRecap } from '@/app/actions/bookings'
 import SaveButton from './save-button'
 import TranscriptToggle from './transcript-toggle'
+import RecapCopy from './recap-copy'
 
 function formatDate(d: string): string {
   const [year, month, day] = d.split('-').map(Number)
@@ -123,15 +124,23 @@ export default async function BookingDetailPage({
 
         {/* Session Recap */}
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-4">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold text-zinc-100">Session Recap</h2>
-            {booking.recap_created_at && (
-              <span className="text-xs text-zinc-500">
-                Saved {new Date(booking.recap_created_at as string).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                })}
-              </span>
-            )}
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex items-baseline gap-3">
+              <h2 className="text-sm font-semibold text-zinc-100">Session Recap</h2>
+              {booking.recap_created_at && (
+                <span className="text-xs text-zinc-500">
+                  Saved {new Date(booking.recap_created_at as string).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  })}
+                </span>
+              )}
+            </div>
+            <RecapCopy
+              clientName={booking.guest_name}
+              summary={booking.recap_summary ?? ''}
+              keyPoints={((booking.recap_key_points as string[] | null) ?? [])}
+              actionSteps={((booking.recap_action_steps as string[] | null) ?? [])}
+            />
           </div>
           <form action={saveBookingRecap} className="space-y-4">
             <input type="hidden" name="booking_id" value={booking.id} />
