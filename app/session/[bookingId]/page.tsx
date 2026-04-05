@@ -85,15 +85,13 @@ export default async function SessionPage({
   // Mark session as completed on first join within the open window.
   // Fire-and-forget: a failed update must never block the participant from joining.
   if (windowState === 'open' && booking.session_status !== 'completed') {
-    createServiceClient()
+    void createServiceClient()
       .from('bookings')
       .update({
         session_status: 'completed',
         session_completed_at: new Date().toISOString(),
       })
       .eq('id', bookingId)
-      .then(() => {})
-      .catch(() => {})
   }
 
   // Fetch previous completed session for context — coach only, non-blocking.
