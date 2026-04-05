@@ -195,6 +195,12 @@ function BookingRow({ booking: b, isUpcoming = false }: { booking: Booking; isUp
             formattedStartTime={formatTime(b.start_time)}
           />
         )}
+        <Link
+          href={`/dashboard/bookings/${b.id}`}
+          className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
+        >
+          Notes / Recap
+        </Link>
         {isCancellable && (
           <form action={cancelBooking}>
             <input type="hidden" name="booking_id" value={b.id} />

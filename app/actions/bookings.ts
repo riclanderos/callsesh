@@ -337,3 +337,72 @@ export async function cancelBooking(formData: FormData): Promise<void> {
 
   revalidatePath('/dashboard/bookings')
 }
+
+export async function saveBookingNotes(formData: FormData): Promise<void> {
+  const bookingId = formData.get('booking_id') as string
+  const coachNotes = ((formData.get('coach_notes') as string) ?? '').trim()
+
+  if (!bookingId) throw new Error('Missing booking_id.')
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('bookings')
+    .update({ coach_notes: coachNotes || null })
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+
+  if (error) throw new Error(`Failed to save notes: ${error.message}`)
+  revalidatePath(`/dashboard/bookings/${bookingId}`)
+}
+
+export async function saveBookingRecap(formData: FormData): Promise<void> {
+  const bookingId = formData.get('booking_id') as string
+  const summary = ((formData.get('recap_summary') as string) ?? '').trim()
+  const keyPointsRaw = ((formData.get('recap_key_points') as string) ?? '').trim()
+  const actionStepsRaw = ((formData.get('recap_action_steps') as string) ?? '').trim()
+
+  if (!bookingId) throw new Error('Missing booking_id.')
+
+  const keyPoints = keyPointsRaw.split('\n').map((s) => s.trim()).filter(Boolean)
+  const actionSteps = actionStepsRaw.split('\n').map((s) => s.trim()).filter(Boolean)
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  // Read current recap_created_at so we only stamp it on first save.
+  const { data: existing } = await supabase
+    .from('bookings')
+    .select('recap_created_at')
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+    .single()
+
+  if (!existing) throw new Error('Booking not found.')
+
+  const hasContent = summary || keyPoints.length > 0 || actionSteps.length > 0
+  const createdAt = existing.recap_created_at ?? (hasContent ? new Date().toISOString() : null)
+
+  const { error } = await supabase
+    .from('bookings')
+    .update({
+      recap_summary:      summary || null,
+      recap_key_points:   keyPoints.length ? keyPoints : null,
+      recap_action_steps: actionSteps.length ? actionSteps : null,
+      recap_created_at:   createdAt,
+    })
+    .eq('id', bookingId)
+    .eq('coach_id', user.id)
+
+  if (error) throw new Error(`Failed to save recap: ${error.message}`)
+  revalidatePath(`/dashboard/bookings/${bookingId}`)
+}
