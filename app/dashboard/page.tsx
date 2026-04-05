@@ -483,6 +483,7 @@ export default async function DashboardPage({
             {[
               { title: 'Session Types', href: '/dashboard/session-types' },
               { title: 'Bookings', href: '/dashboard/bookings' },
+              { title: 'Clients', href: '/dashboard/clients' },
               { title: 'Availability', href: '/dashboard/availability' },
             ].map((item) => (
               <Link

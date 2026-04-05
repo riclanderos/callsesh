@@ -115,17 +115,41 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       generatedToken.length,
     );
 
+    // Upsert the stable client identity before inserting the booking.
+    // On conflict (coach already has a row for this email) we update name so it
+    // reflects the latest value the guest used without changing the UUID.
+    const normalizedEmail = m.guest_email.toLowerCase().trim();
+    const { data: clientRow, error: clientError } = await serviceClient
+      .from('coach_clients')
+      .upsert(
+        {
+          coach_id:         m.coach_id,
+          email:            m.guest_email,
+          normalized_email: normalizedEmail,
+          name:             m.guest_name || null,
+        },
+        { onConflict: 'coach_id,normalized_email' },
+      )
+      .select('id')
+      .single();
+
+    if (clientError) {
+      console.error('[webhook] coach_clients upsert error:', clientError.message);
+      return NextResponse.json({ error: clientError.message }, { status: 500 });
+    }
+
     const { error: insertError } = await serviceClient.from('bookings').insert({
-      coach_id: m.coach_id,
-      session_type_id: m.session_type_id,
-      guest_name: m.guest_name,
-      guest_email: m.guest_email,
-      booking_date: m.booking_date,
-      start_time: m.start_time,
-      end_time: m.end_time,
-      status: 'confirmed',
+      coach_id:         m.coach_id,
+      session_type_id:  m.session_type_id,
+      guest_name:       m.guest_name,
+      guest_email:      m.guest_email,
+      booking_date:     m.booking_date,
+      start_time:       m.start_time,
+      end_time:         m.end_time,
+      status:           'confirmed',
       stripe_checkout_session_id: session.id,
-      guest_access_token: generatedToken,
+      guest_access_token:         generatedToken,
+      coach_client_id:  clientRow.id,
       ...(m.client_message ? { client_message: m.client_message } : {}),
     });
 
