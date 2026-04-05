@@ -82,6 +82,21 @@ export default async function SessionPage({
     coachTimezone,
   )
 
+  // Mark session as completed on first join within the open window.
+  // Fire-and-forget: a failed update must never block the participant from joining.
+  if (windowState === 'open' && booking.session_status !== 'completed') {
+    createServiceClient()
+      .from('bookings')
+      .update({
+        session_status: 'completed',
+        session_completed_at: new Date().toISOString(),
+      })
+      .eq('id', bookingId)
+      .then(({ error }) => {
+        if (error) console.error('[session] failed to mark session completed:', error.message)
+      })
+  }
+
   const st = booking.session_types as { title: string } | { title: string }[] | null
   const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? 'Session') : (st?.title ?? 'Session')
 
