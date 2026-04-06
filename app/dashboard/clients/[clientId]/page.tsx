@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { saveClientNotes } from '@/app/actions/clients'
-import SaveButton from './save-button'
+import ClientNotesForm from './client-notes-form'
 import ClientSummaryCopy from './client-summary-copy'
 
 function formatDate(d: string): string {
@@ -134,19 +133,10 @@ export default async function ClientDetailPage({
         {/* Client Notes */}
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 space-y-3">
           <h2 className="text-sm font-semibold text-zinc-100">Client Notes</h2>
-          <form action={saveClientNotes} className="space-y-3">
-            <input type="hidden" name="client_id" value={clientId} />
-            <textarea
-              name="notes"
-              defaultValue={(client.notes as string | null) ?? ''}
-              rows={4}
-              placeholder="Long-term notes about this client…"
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none resize-y"
-            />
-            <div className="flex justify-end">
-              <SaveButton label="Save Notes" />
-            </div>
-          </form>
+          <ClientNotesForm
+            clientId={clientId}
+            defaultValue={(client.notes as string | null) ?? ''}
+          />
         </section>
 
         {(!bookings || bookings.length === 0) && (
