@@ -254,6 +254,7 @@ export default async function Home() {
             <div className="flex gap-4">
               <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
               <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
+              <Link href="/contact" className="hover:text-zinc-300 transition-colors">Contact</Link>
             </div>
           </div>
         </div>
