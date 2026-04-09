@@ -22,6 +22,7 @@ export type PseoPage = {
   ctaHeading: string
   ctaBody: string
   related: { label: string; href: string }[]
+  contextualNote?: { prefix: string; linkText: string; href: string; suffix: string }
 }
 
 const pages: PseoPage[] = [
@@ -91,6 +92,12 @@ const pages: PseoPage[] = [
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
       { label: 'For business coaches', href: '/for/business-coaches' },
     ],
+    contextualNote: {
+      prefix: 'CallSesh also includes a built-in ',
+      linkText: 'video coaching platform',
+      href: '/video-coaching-platform',
+      suffix: ' — no third-party video tool required.',
+    },
   },
 
   {

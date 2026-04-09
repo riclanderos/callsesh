@@ -37,6 +37,15 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
       <section className="mx-auto max-w-3xl px-6 pt-16 pb-20 text-center space-y-5">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">{page.h1}</h1>
         <p className="text-lg text-zinc-300 leading-relaxed">{page.intro}</p>
+        {page.contextualNote && (
+          <p className="text-sm text-zinc-400 leading-relaxed">
+            {page.contextualNote.prefix}
+            <Link href={page.contextualNote.href} className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">
+              {page.contextualNote.linkText}
+            </Link>
+            {page.contextualNote.suffix}
+          </p>
+        )}
         <div className="pt-2">
           <Link
             href="/signup"

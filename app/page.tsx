@@ -86,6 +86,18 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── SEO blurb + internal links ── */}
+      <section className="mx-auto max-w-3xl px-6 pb-10 text-center space-y-4">
+        <p className="text-sm text-zinc-600 leading-relaxed">
+          CallSesh is an all-in-one platform for coaches to run 1-on-1 video coaching sessions. Clients can book, pay, and join sessions in one place without needing multiple tools.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <Link href="/coaching-booking-software" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coaching booking software</Link>
+          <Link href="/coach-payment-processing" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coach payment processing</Link>
+          <Link href="/video-coaching-platform" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Video coaching platform</Link>
+        </div>
+      </section>
+
       {/* ── Workflow cards ── */}
       <section id="how-it-works" className="mx-auto max-w-5xl px-6 pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
