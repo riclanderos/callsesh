@@ -24,16 +24,9 @@ export default function ToolsPage() {
             Free Tools for Coaches
           </h1>
           <p className="text-zinc-700 leading-relaxed">
-            Simple, free tools for coaches who want to evaluate their current software stack and make smarter decisions about the platforms they use. Trying to understand how much your current coaching tools cost? Start with{" "}
-            <Link href="/tools/coach-tool-cost-calculator" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">
-              our calculator
-            </Link>.
+            Simple, free tools for coaches to evaluate their software stack, understand costs, and make smarter decisions.
           </p>
         </div>
-
-        <p className="text-zinc-700 leading-relaxed mb-8">
-          Practical, free tools for coaches who want to understand costs, reduce lost revenue, and improve their booking setup.
-        </p>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
