@@ -57,7 +57,7 @@ export default function Calculator() {
             Compare the cost of coaching booking software, scheduling tools, and payment platforms you use today.
           </p>
           <p className="text-zinc-700 leading-relaxed">
-            Most coaches cobble together multiple tools — coaching booking software like Calendly, scheduling software for coaches, video platforms, and coaching payment processing through Stripe or similar services. This calculator helps you see exactly what you spend across your full stack.
+            Most coaches cobble together multiple tools — coaching booking software like Calendly, scheduling software for coaches, video platforms, and coaching payment processing through Stripe or similar services. This calculator helps you see exactly what you spend across your full stack. Many coaches compare tools like Calendly, Zoom, and Stripe separately, but rarely see their combined monthly cost in one place.
           </p>
         </div>
 
