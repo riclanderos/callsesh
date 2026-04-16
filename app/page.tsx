@@ -298,7 +298,8 @@ export default async function Home() {
           Ready to get paid for your expertise?
         </h2>
         <p className="text-zinc-700 text-base">
-          Set up your booking page in minutes and start accepting paid sessions today.
+          Set up your booking page in minutes and start accepting paid sessions today. Wondering how much missed sessions are costing you? Try our{" "}
+          <Link href="/tools/no-show-cost-calculator" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">no-show cost calculator</Link>.
         </p>
         <div className="pt-2">
           <Link
