@@ -12,6 +12,12 @@ export default function ToolsPage() {
     <div className="min-h-screen bg-white text-zinc-900">
       <div className="max-w-2xl mx-auto px-6 py-12">
 
+        <div className="mb-10">
+          <Link href="/" className="text-sm font-semibold text-zinc-900 hover:text-zinc-700 transition-colors">
+            CallSesh
+          </Link>
+        </div>
+
         <div className="mb-10 space-y-4">
           <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Free Tools</span>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight text-zinc-900">

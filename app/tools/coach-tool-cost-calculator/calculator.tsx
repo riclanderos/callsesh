@@ -42,6 +42,13 @@ export default function Calculator() {
     <div className="min-h-screen bg-white text-zinc-900">
       <div className="max-w-2xl mx-auto px-6 py-12">
 
+        {/* Home nav */}
+        <div className="mb-10">
+          <Link href="/" className="text-sm font-semibold text-zinc-900 hover:text-zinc-700 transition-colors">
+            CallSesh
+          </Link>
+        </div>
+
         {/* Breadcrumb */}
         <Link href="/tools" className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors inline-block mb-8">
           ← Back to Free Tools
