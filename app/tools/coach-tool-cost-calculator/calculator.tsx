@@ -114,6 +114,36 @@ export default function Calculator() {
         </Link>
       </div>
 
+      <div className="mb-10">
+        <h2 className="text-xl font-semibold mb-6">Frequently Asked Questions</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">How much does coaching software cost?</h3>
+            <p className="text-sm text-gray-600">
+              The monthly cost varies depending on which tools you use. Coaches often pay for coaching booking software, a video meeting tool, and payment processing separately. Combined, these subscriptions typically range from $30 to $100 or more per month — which adds up to $360–$1,200 or more on a yearly basis.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">What tools do online coaches usually pay for?</h3>
+            <p className="text-sm text-gray-600">
+              Most online coaches pay for at least three categories of tools: coaching booking software or scheduling tools (like Calendly), a video meeting platform (like Zoom), and payment processing (like Stripe). Many also pay for note-taking or client management tools on top of that.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">Why do coaching software costs add up?</h3>
+            <p className="text-sm text-gray-600">
+              Each tool solves one part of the problem. Scheduling tools handle availability, video meeting tools handle the session itself, and payment processing handles getting paid. Because no single tool covers everything, coaches end up paying multiple monthly subscription fees — and that total monthly cost can quietly grow over time.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">Can an all-in-one coaching platform reduce software costs?</h3>
+            <p className="text-sm text-gray-600">
+              Yes. Replacing separate coaching booking software, scheduling tools, and payment processing with a single platform can significantly lower your monthly and yearly cost. An all-in-one platform also removes the friction of managing multiple accounts and integrations.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-6 text-center">
         <h2 className="text-xl font-semibold mb-2">
           Replace your coaching booking software stack with one platform
