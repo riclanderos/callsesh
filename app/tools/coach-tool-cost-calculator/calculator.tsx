@@ -158,7 +158,8 @@ export default function Calculator() {
             <div>
               <h3 className="text-sm font-semibold text-zinc-900 mb-1.5">Can an all-in-one coaching platform reduce software costs?</h3>
               <p className="text-sm text-zinc-700 leading-relaxed">
-                Yes. Replacing separate coaching booking software, scheduling tools, and payment processing with a single platform can significantly lower your monthly and yearly cost. An all-in-one platform also removes the friction of managing multiple accounts and integrations.
+                Yes. Replacing separate coaching booking software, scheduling tools, and payment processing with a single platform can significantly lower your monthly and yearly cost. An all-in-one platform also removes the friction of managing multiple accounts and integrations. If you're evaluating what an all-in-one platform should include, read our{" "}
+              <Link href="/tools/coaching-booking-software" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">coaching booking software guide</Link>.
               </p>
             </div>
           </div>
