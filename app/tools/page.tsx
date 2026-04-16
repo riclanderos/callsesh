@@ -31,6 +31,10 @@ export default function ToolsPage() {
           </p>
         </div>
 
+        <p className="text-zinc-700 leading-relaxed mb-8">
+          Practical, free tools for coaches who want to understand costs, reduce lost revenue, and improve their booking setup.
+        </p>
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
