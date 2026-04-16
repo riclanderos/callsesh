@@ -34,7 +34,10 @@ export default function ToolsPage() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-xs font-medium text-zinc-500">Free Tool</span>
+              <span className="text-xs font-medium text-indigo-600">Most Popular</span>
+            </div>
             <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
               Coaching Booking Software Cost Calculator
             </h2>
