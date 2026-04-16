@@ -34,5 +34,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "https://callsesh.com/tools/coach-tool-cost-calculator",
       lastModified: new Date(),
     },
+    {
+      url: "https://callsesh.com/tools/no-show-cost-calculator",
+      lastModified: new Date(),
+    },
   ];
 }
