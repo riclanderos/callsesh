@@ -89,7 +89,8 @@ export default async function Home() {
       {/* ── SEO blurb + internal links ── */}
       <section className="mx-auto max-w-3xl px-6 pb-10 text-center space-y-4">
         <p className="text-sm text-zinc-600 leading-relaxed">
-          CallSesh is an all-in-one platform for coaches to run 1-on-1 video coaching sessions. Clients can book, pay, and join sessions in one place without needing multiple tools.
+          CallSesh is an all-in-one platform for coaches to run 1-on-1 video coaching sessions. Clients can book, pay, and join sessions in one place without needing multiple tools. Want to understand what coaching booking software should handle?{" "}
+          <Link href="/tools/coaching-booking-software" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">Read our guide</Link>.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
           <Link href="/coaching-booking-software" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coaching booking software</Link>
