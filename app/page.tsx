@@ -195,7 +195,7 @@ export default async function Home() {
               Accept paid bookings automatically
             </h2>
             <p className="text-zinc-700 leading-relaxed">
-              Set your rate, share your link, and start earning. Stripe handles the payments and you get paid after each session — no invoicing, no chasing.
+              Set your rate, share your link, and start earning. Stripe handles the payments and you get paid after each session — no invoicing, no chasing. Curious how much you're currently paying across tools? Try our <Link href="/tools/coach-tool-cost-calculator" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">coaching booking software cost calculator</Link>.
             </p>
             <Link
               href="/signup"
