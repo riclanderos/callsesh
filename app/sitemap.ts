@@ -26,5 +26,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "https://callsesh.com/for/business-coaches",
       lastModified: new Date(),
     },
+    {
+      url: "https://callsesh.com/tools",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://callsesh.com/tools/coach-tool-cost-calculator",
+      lastModified: new Date(),
+    },
   ];
 }
