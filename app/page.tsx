@@ -98,6 +98,33 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── Free Tools ── */}
+      <section className="mx-auto max-w-3xl px-6 pb-16">
+        <div className="border border-zinc-200 rounded-2xl p-6 bg-zinc-50 space-y-4">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-900">Free Tools for Coaches</h2>
+              <p className="text-sm text-zinc-600 mt-0.5">Simple tools to help you evaluate and improve your coaching business setup.</p>
+            </div>
+            <Link href="/tools" className="text-xs text-zinc-500 hover:text-zinc-700 underline underline-offset-2 transition-colors whitespace-nowrap">
+              View all free tools
+            </Link>
+          </div>
+          <div className="bg-white border border-zinc-200 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap shadow-sm">
+            <div>
+              <p className="text-sm font-medium text-zinc-900">Coaching Booking Software Cost Calculator</p>
+              <p className="text-xs text-zinc-600 mt-0.5">See how much you're paying across scheduling, video, and payment tools.</p>
+            </div>
+            <Link
+              href="/tools/coach-tool-cost-calculator"
+              className="rounded-lg border border-zinc-200 px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors whitespace-nowrap"
+            >
+              Open tool
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Workflow cards ── */}
       <section id="how-it-works" className="mx-auto max-w-5xl px-6 pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
