@@ -313,7 +313,7 @@ export default async function Home() {
       {/* ── Footer ── */}
       <footer className="border-t border-zinc-100 bg-zinc-50 py-10">
         <div className="mx-auto max-w-5xl px-6 space-y-8 text-xs text-zinc-600">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Product</p>
               <Link href="/coaching-booking-software" className="block hover:text-zinc-600 transition-colors">Coaching Booking Software</Link>
@@ -327,6 +327,11 @@ export default async function Home() {
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Use Cases</p>
               <Link href="/for/business-coaches" className="block hover:text-zinc-600 transition-colors">Business Coaches</Link>
+            </div>
+            <div className="space-y-2.5">
+              <p className="font-semibold uppercase tracking-widest text-zinc-500">Resources</p>
+              <Link href="/tools" className="block hover:text-zinc-600 transition-colors">Free Tools</Link>
+              <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-600 transition-colors">Coaching Booking Software Cost Calculator</Link>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 pt-6">
