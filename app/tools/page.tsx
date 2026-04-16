@@ -31,20 +31,40 @@ export default function ToolsPage() {
           </p>
         </div>
 
-        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
-          <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
-          <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
-            Coaching Booking Software Cost Calculator
-          </h2>
-          <p className="text-sm text-zinc-700 leading-relaxed mb-5">
-            Estimate how much you spend on scheduling, video, payments, and other coaching tools.
-          </p>
-          <Link
-            href="/tools/coach-tool-cost-calculator"
-            className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
-          >
-            Open tool
-          </Link>
+        <div className="space-y-4">
+
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
+              Coaching Booking Software Cost Calculator
+            </h2>
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5">
+              Estimate how much you spend on scheduling, video, payments, and other coaching tools.
+            </p>
+            <Link
+              href="/tools/coach-tool-cost-calculator"
+              className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+            >
+              Open tool
+            </Link>
+          </div>
+
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Guide</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
+              Coaching Booking Software
+            </h2>
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5">
+              Learn what coaching booking software should handle across scheduling, payments, and client bookings.
+            </p>
+            <Link
+              href="/tools/coaching-booking-software"
+              className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+            >
+              Read guide
+            </Link>
+          </div>
+
         </div>
 
       </div>
