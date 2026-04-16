@@ -297,7 +297,10 @@ export default function Generator() {
               {template}
             </pre>
             <p className="text-xs text-zinc-500">
-              Use this as a starting point and adapt it to your coaching style.
+              Use this as a starting point and adapt it to your coaching style. Want to understand your full tool setup? Try our{" "}
+              <Link href="/tools/coach-tool-cost-calculator" className="underline underline-offset-2 hover:text-zinc-700 transition-colors">
+                coaching booking software cost calculator
+              </Link>.
             </p>
           </div>
 
