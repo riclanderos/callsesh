@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ToolsPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-900">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+      <div className="max-w-5xl mx-auto px-6 py-12">
 
         <div className="mb-10">
           <Link href="/" className="text-sm font-semibold text-zinc-900 hover:text-zinc-700 transition-colors">
@@ -31,14 +31,14 @@ export default function ToolsPage() {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
             <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
             <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
               Coaching Booking Software Cost Calculator
             </h2>
-            <p className="text-sm text-zinc-700 leading-relaxed mb-5">
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
               Estimate how much you spend on scheduling, video, payments, and other coaching tools.
             </p>
             <Link
@@ -49,12 +49,12 @@ export default function ToolsPage() {
             </Link>
           </div>
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
             <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Guide</span>
             <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
               Coaching Booking Software
             </h2>
-            <p className="text-sm text-zinc-700 leading-relaxed mb-5">
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
               Learn what coaching booking software should handle across scheduling, payments, and client bookings.
             </p>
             <Link
@@ -65,12 +65,12 @@ export default function ToolsPage() {
             </Link>
           </div>
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
             <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
             <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
               No-Show Cost Calculator
             </h2>
-            <p className="text-sm text-zinc-700 leading-relaxed mb-5">
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
               See how much missed sessions are costing your coaching business.
             </p>
             <Link
