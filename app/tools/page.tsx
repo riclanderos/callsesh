@@ -3,7 +3,8 @@ import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Free Tools for Coaches | CallSesh",
-  description: "Free tools to help coaches evaluate their software stack, estimate costs, and find better solutions.",
+  description: "Free tools for coaches to evaluate their software stack, including a coaching booking software cost calculator.",
+  alternates: { canonical: "/tools" },
 }
 
 export default function ToolsPage() {
