@@ -20,6 +20,11 @@ export default function CoachingBookingSoftwarePage() {
           </Link>
         </div>
 
+        {/* Breadcrumb */}
+        <Link href="/tools" className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors inline-block mb-8">
+          ← Back to Free Tools
+        </Link>
+
         {/* Header */}
         <div className="mb-12 space-y-4">
           <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Guide</span>
