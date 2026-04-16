@@ -40,6 +40,9 @@ export default function Calculator() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      <Link href="/tools" className="text-sm text-gray-500 hover:text-gray-700 inline-block mb-4">
+        ← Back to Free Tools
+      </Link>
       <h1 className="text-3xl font-bold mb-3">
         Coaching Booking Software Cost Calculator
       </h1>
