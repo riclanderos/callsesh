@@ -38,5 +38,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "https://callsesh.com/tools/no-show-cost-calculator",
       lastModified: new Date(),
     },
+    {
+      url: "https://callsesh.com/tools/session-notes-template-generator",
+      lastModified: new Date(),
+    },
   ];
 }

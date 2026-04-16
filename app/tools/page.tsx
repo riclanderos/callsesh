@@ -88,6 +88,22 @@ export default function ToolsPage() {
             </Link>
           </div>
 
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
+              Session Notes Template Generator
+            </h2>
+            <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
+              Generate a simple coaching session notes template for common coaching session types.
+            </p>
+            <Link
+              href="/tools/session-notes-template-generator"
+              className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+            >
+              Open tool
+            </Link>
+          </div>
+
         </div>
 
       </div>
