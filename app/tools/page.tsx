@@ -33,9 +33,9 @@ export default function ToolsPage() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
-            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
-            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
               Coaching Booking Software Cost Calculator
             </h2>
             <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
@@ -49,9 +49,9 @@ export default function ToolsPage() {
             </Link>
           </div>
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
-            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Guide</span>
-            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
               Coaching Booking Software
             </h2>
             <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
@@ -65,9 +65,9 @@ export default function ToolsPage() {
             </Link>
           </div>
 
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col h-full">
-            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Calculator</span>
-            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mt-2 mb-1.5">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
               No-Show Cost Calculator
             </h2>
             <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
