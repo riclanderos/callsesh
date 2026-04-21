@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CallSesh",
   description: "Run paid coaching calls in one link",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
