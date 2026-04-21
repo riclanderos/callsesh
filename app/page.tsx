@@ -55,7 +55,7 @@ export default async function Home() {
       <section className="mx-auto max-w-3xl px-6 pt-24 pb-20 text-center">
         <div className="space-y-6">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight text-zinc-900">
-            Run your coaching business in one place
+            Coaching Booking Software for Paid 1-on-1 Sessions
           </h1>
           <p className="text-lg text-zinc-700 leading-relaxed max-w-xl mx-auto">
             Booking, payments, video, session notes, recaps, and client history — without stitching together 5 different tools.
@@ -86,16 +86,23 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── SEO blurb + internal links ── */}
-      <section className="mx-auto max-w-3xl px-6 pb-10 text-center space-y-4">
-        <p className="text-sm text-zinc-600 leading-relaxed">
-          CallSesh is an all-in-one platform for coaches to run 1-on-1 video coaching sessions. Clients can book, pay, and join sessions in one place without needing multiple tools. Want to understand what coaching booking software should handle?{" "}
-          <Link href="/tools/coaching-booking-software" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">Read our guide</Link>.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
-          <Link href="/coaching-booking-software" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coaching booking software</Link>
-          <Link href="/coach-payment-processing" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coach payment processing</Link>
-          <Link href="/video-coaching-platform" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Video coaching platform</Link>
+      {/* ── What is coaching booking software ── */}
+      <section className="mx-auto max-w-3xl px-6 pb-16">
+        <div className="border border-zinc-200 rounded-2xl p-8 bg-zinc-50 space-y-4">
+          <h2 className="text-lg font-semibold text-zinc-900">What is coaching booking software?</h2>
+          <p className="text-sm text-zinc-700 leading-relaxed">
+            Coaching booking software lets clients schedule and pay for sessions directly — no email back-and-forth, no separate invoices, no manual video link coordination. The right tool handles all three in one flow: scheduling, upfront payment, and session delivery.
+          </p>
+          <p className="text-sm text-zinc-700 leading-relaxed">
+            Most coaches piece this together with Calendly for scheduling, Zoom for video, and Stripe for payments. That works until an integration breaks, a client pays without booking, or the wrong Zoom link goes out. CallSesh is{' '}
+            <Link href="/all-in-one-coaching-platform" className="underline underline-offset-2 hover:text-zinc-900 transition-colors">all-in-one coaching platform software</Link>{' '}
+            that replaces all three — one link, one flow, one dashboard.
+          </p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1 text-sm">
+            <Link href="/coaching-booking-software" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coaching booking software guide</Link>
+            <Link href="/coaching-business-software" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Coaching business software</Link>
+            <Link href="/tools-for-coaching-business" className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">Tools for coaching business</Link>
+          </div>
         </div>
       </section>
 
@@ -234,6 +241,52 @@ export default async function Home() {
 
       </section>
 
+      {/* ── Comparison positioning ── */}
+      <section className="bg-zinc-50 border-y border-zinc-100">
+        <div className="mx-auto max-w-5xl px-6 py-16 space-y-10">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+              Replace Calendly, Zoom, and Stripe with one tool
+            </h2>
+            <p className="text-zinc-700 max-w-xl mx-auto text-sm">
+              Most coaches maintain three separate subscriptions to do what CallSesh handles end-to-end.
+            </p>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-zinc-200">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 bg-white">
+                  <th className="px-5 py-3 text-left font-medium text-zinc-500 w-1/3">Feature</th>
+                  <th className="px-5 py-3 text-left font-medium text-zinc-500 w-1/3">Calendly + Zoom + Stripe</th>
+                  <th className="px-5 py-3 text-left font-semibold text-zinc-900 w-1/3">CallSesh</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-zinc-100">
+                {([
+                  ['Scheduling', 'Calendly', '✓ Built in'],
+                  ['Payment at booking', 'Stripe + manual integration', '✓ Required by default'],
+                  ['Video sessions', 'Zoom — manual link per session', '✓ Auto-generated on booking'],
+                  ['Session notes', 'Not included', '✓ Tied to each client'],
+                  ['Single dashboard', 'Three separate apps', '✓ Everything in one place'],
+                  ['Monthly cost', '$35–60+ across tools', 'From $19.99/mo'],
+                ] as const).map(([feature, them, us]) => (
+                  <tr key={feature}>
+                    <td className="px-5 py-3.5 font-medium text-zinc-700">{feature}</td>
+                    <td className="px-5 py-3.5 text-zinc-500">{them}</td>
+                    <td className="px-5 py-3.5 text-zinc-900 font-medium">{us}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm">
+            <Link href="/alternatives/calendly-alternative-for-coaches" className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900 transition-colors">Calendly alternative for coaches</Link>
+            <Link href="/alternatives/zoom-alternative-for-coaching" className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900 transition-colors">Zoom alternative for coaching</Link>
+            <Link href="/alternatives/stripe-alternative-for-coaches" className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900 transition-colors">Stripe alternative for coaches</Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Pricing ── */}
       <section id="pricing" className="bg-zinc-50 border-y border-zinc-100">
         <div className="mx-auto max-w-5xl px-6 py-24">
@@ -321,19 +374,30 @@ export default async function Home() {
               <Link href="/coaching-booking-software" className="block hover:text-zinc-600 transition-colors">Coaching Booking Software</Link>
               <Link href="/coach-payment-processing" className="block hover:text-zinc-600 transition-colors">Coach Payment Processing</Link>
               <Link href="/video-coaching-platform" className="block hover:text-zinc-600 transition-colors">Video Coaching Platform</Link>
+              <Link href="/all-in-one-coaching-platform" className="block hover:text-zinc-600 transition-colors">All-in-One Coaching Platform</Link>
+              <Link href="/coaching-business-software" className="block hover:text-zinc-600 transition-colors">Coaching Business Software</Link>
+              <Link href="/simple-coaching-booking-system" className="block hover:text-zinc-600 transition-colors">Simple Coaching Booking System</Link>
             </div>
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Compare</p>
               <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-600 transition-colors">Calendly for Coaches</Link>
+              <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-600 transition-colors">Calendly Alternative</Link>
+              <Link href="/alternatives/zoom-alternative-for-coaching" className="block hover:text-zinc-600 transition-colors">Zoom Alternative for Coaching</Link>
+              <Link href="/alternatives/stripe-alternative-for-coaches" className="block hover:text-zinc-600 transition-colors">Stripe Alternative for Coaches</Link>
             </div>
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Use Cases</p>
               <Link href="/for/business-coaches" className="block hover:text-zinc-600 transition-colors">Business Coaches</Link>
+              <Link href="/for/life-coaches" className="block hover:text-zinc-600 transition-colors">Life Coaches</Link>
+              <Link href="/for/fitness-coaches" className="block hover:text-zinc-600 transition-colors">Fitness Coaches</Link>
+              <Link href="/tools-for-coaching-business" className="block hover:text-zinc-600 transition-colors">Tools for Coaching Business</Link>
             </div>
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Resources</p>
               <Link href="/tools" className="block hover:text-zinc-600 transition-colors">Free Tools</Link>
-              <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-600 transition-colors">Coaching Booking Software Cost Calculator</Link>
+              <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-600 transition-colors">Coaching Cost Calculator</Link>
+              <Link href="/tools/session-notes-template-generator" className="block hover:text-zinc-600 transition-colors">Session Notes Generator</Link>
+              <Link href="/tools/no-show-cost-calculator" className="block hover:text-zinc-600 transition-colors">No-Show Cost Calculator</Link>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 pt-6">
