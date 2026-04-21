@@ -90,7 +90,7 @@ const pages: PseoPage[] = [
     related: [
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
-      { label: 'For business coaches', href: '/for/business-coaches' },
+      { label: 'Booking software for business coaches', href: '/for/business-coaches' },
     ],
     contextualNote: {
       prefix: 'CallSesh also includes a built-in ',
@@ -167,9 +167,9 @@ const pages: PseoPage[] = [
     ctaHeading: 'Stop Chasing Payments—Get Paid at Booking',
     ctaBody: 'Clients pay when they book—so every session is confirmed and paid upfront.',
     related: [
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Paid session booking software', href: '/coaching-booking-software' },
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
-      { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-for-coaches' },
+      { label: 'Calendly for coaches', href: '/alternatives/calendly-for-coaches' },
     ],
   },
 
@@ -201,7 +201,7 @@ const pages: PseoPage[] = [
         'Your CallSesh booking page handles scheduling, payment collection, and video room creation in a single flow.',
         'Each booking automatically generates a private video room. The room link is included in the confirmation email — no separate calendar invite needed.',
         'Video runs in the browser using Daily.co. Clients don\'t install anything. You don\'t generate or share Zoom links manually.',
-        'Sessions are tracked in your dashboard. You see upcoming sessions, past sessions, and earnings in one place.',
+        'Sessions, earnings, and upcoming bookings live in a single dashboard — no spreadsheet, no context switching.',
       ],
     },
     workflow: [
@@ -239,9 +239,9 @@ const pages: PseoPage[] = [
     ctaHeading: 'Replace your video + booking + payment stack with one link',
     ctaBody: 'Get started free. First 10 sessions included at no cost.',
     related: [
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Booking software for coaches', href: '/coaching-booking-software' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
-      { label: 'For business coaches', href: '/for/business-coaches' },
+      { label: 'Software for business coaches', href: '/for/business-coaches' },
     ],
   },
 
@@ -317,7 +317,7 @@ const pages: PseoPage[] = [
     ctaHeading: 'Switch from Calendly to a tool built for paid coaching',
     ctaBody: 'Set up in under five minutes. First 10 sessions are free.',
     related: [
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Booking software guide for coaches', href: '/coaching-booking-software' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
     ],
@@ -351,7 +351,7 @@ const pages: PseoPage[] = [
         'Clients book a session type — strategy call, advisory session, review meeting — and pay by card immediately. The slot is confirmed only after payment.',
         'A branded, professional booking page with your session types and availability. Share a single link on LinkedIn, in email, or on your website.',
         'Video sessions are private and browser-based. No Zoom account required. Clients receive their session link in a confirmation email.',
-        'Your dashboard shows upcoming sessions, past sessions, and cumulative earnings. Everything in one place.',
+        'Your full session schedule, client history, and cumulative earnings are all tracked in the CallSesh dashboard.',
       ],
     },
     workflow: [
@@ -472,8 +472,8 @@ const pages: PseoPage[] = [
     ctaBody: 'No credit card required to start. First 10 sessions are free.',
     related: [
       { label: 'Zoom alternative for coaching', href: '/alternatives/zoom-alternative-for-coaching' },
-      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Complete coaching platform', href: '/all-in-one-coaching-platform' },
+      { label: 'Booking software built for paid coaching', href: '/coaching-booking-software' },
     ],
     contextualNote: {
       prefix: 'CallSesh is ',
@@ -641,8 +641,8 @@ const pages: PseoPage[] = [
     ctaHeading: 'Get paid at booking without configuring payment yourself',
     ctaBody: 'Connect Stripe once. Every session is paid before it starts.',
     related: [
-      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
-      { label: 'Simple coaching booking system', href: '/simple-coaching-booking-system' },
+      { label: 'One platform for booking, payments, and video', href: '/all-in-one-coaching-platform' },
+      { label: 'Simple booking system for coaches', href: '/simple-coaching-booking-system' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
     ],
     contextualNote: {
@@ -755,7 +755,7 @@ const pages: PseoPage[] = [
       heading: 'The operational layer your coaching business needs',
       points: [
         'Clients book and pay in a single step. Confirmation is automatic, payment is collected upfront, and a video room is created immediately.',
-        'Your dashboard is the single source of truth: upcoming sessions, past session notes, client history, and earnings all in one place.',
+        'Your dashboard is the single source of truth: upcoming sessions, past session notes, and client history — without switching between apps.',
         'No-shows are significantly reduced because clients have already paid. Their financial commitment is made at booking time.',
         'The setup is professional by default. Your booking page looks like a real business, not a DIY scheduling link.',
       ],
@@ -791,7 +791,7 @@ const pages: PseoPage[] = [
     ctaHeading: 'Run your coaching business from one dashboard',
     ctaBody: 'Booking, payment, client notes, and video. No spreadsheets required.',
     related: [
-      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+      { label: 'One platform for all coaching tools', href: '/all-in-one-coaching-platform' },
       { label: 'Tools for coaching business', href: '/tools-for-coaching-business' },
       { label: 'Coaching booking software', href: '/coaching-booking-software' },
     ],
@@ -868,7 +868,7 @@ const pages: PseoPage[] = [
     related: [
       { label: 'Coaching business software', href: '/coaching-business-software' },
       { label: 'Simple coaching booking system', href: '/simple-coaching-booking-system' },
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Scheduling and payment software for coaches', href: '/coaching-booking-software' },
     ],
     contextualNote: {
       prefix: 'CallSesh is ',
@@ -906,7 +906,7 @@ const pages: PseoPage[] = [
       points: [
         'Clients book and pay in a single step. The session slot is held only after payment clears — no unpaid bookings.',
         'A private video room is created automatically for each booking. The link arrives in the client\'s confirmation email. You don\'t generate or share it manually.',
-        'Your CallSesh dashboard shows upcoming sessions, past client notes, and session history. Everything in one place.',
+        'Upcoming sessions, past client notes, and session history all live in your CallSesh dashboard.',
         'The setup takes under five minutes. Share your booking link on social profiles, in your email signature, or on your website.',
       ],
     },
@@ -1016,9 +1016,9 @@ const pages: PseoPage[] = [
     ctaHeading: 'Set up your fitness coaching booking page today',
     ctaBody: 'Clients book, pay, and join your session automatically. First 10 sessions free.',
     related: [
-      { label: 'Simple coaching booking system', href: '/simple-coaching-booking-system' },
+      { label: 'Simple booking system for coaches', href: '/simple-coaching-booking-system' },
       { label: 'Booking software for life coaches', href: '/for/life-coaches' },
-      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Online session booking software', href: '/coaching-booking-software' },
     ],
     contextualNote: {
       prefix: 'CallSesh is ',
@@ -1093,7 +1093,7 @@ const pages: PseoPage[] = [
     related: [
       { label: 'Booking software for life coaches', href: '/for/life-coaches' },
       { label: 'Booking software for fitness coaches', href: '/for/fitness-coaches' },
-      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+      { label: 'Full-featured coaching platform', href: '/all-in-one-coaching-platform' },
     ],
     contextualNote: {
       prefix: 'CallSesh is the ',

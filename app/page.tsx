@@ -381,7 +381,7 @@ export default async function Home() {
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Compare</p>
               <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-600 transition-colors">Calendly for Coaches</Link>
-              <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-600 transition-colors">Calendly Alternative</Link>
+              <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-600 transition-colors">Calendly Alternative for Coaches</Link>
               <Link href="/alternatives/zoom-alternative-for-coaching" className="block hover:text-zinc-600 transition-colors">Zoom Alternative for Coaching</Link>
               <Link href="/alternatives/stripe-alternative-for-coaches" className="block hover:text-zinc-600 transition-colors">Stripe Alternative for Coaches</Link>
             </div>
@@ -390,11 +390,11 @@ export default async function Home() {
               <Link href="/for/business-coaches" className="block hover:text-zinc-600 transition-colors">Business Coaches</Link>
               <Link href="/for/life-coaches" className="block hover:text-zinc-600 transition-colors">Life Coaches</Link>
               <Link href="/for/fitness-coaches" className="block hover:text-zinc-600 transition-colors">Fitness Coaches</Link>
-              <Link href="/tools-for-coaching-business" className="block hover:text-zinc-600 transition-colors">Tools for Coaching Business</Link>
             </div>
             <div className="space-y-2.5">
               <p className="font-semibold uppercase tracking-widest text-zinc-500">Resources</p>
               <Link href="/tools" className="block hover:text-zinc-600 transition-colors">Free Tools</Link>
+              <Link href="/tools-for-coaching-business" className="block hover:text-zinc-600 transition-colors">Tools for Coaching Business</Link>
               <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-600 transition-colors">Coaching Cost Calculator</Link>
               <Link href="/tools/session-notes-template-generator" className="block hover:text-zinc-600 transition-colors">Session Notes Generator</Link>
               <Link href="/tools/no-show-cost-calculator" className="block hover:text-zinc-600 transition-colors">No-Show Cost Calculator</Link>
