@@ -195,20 +195,35 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
       {/* Footer */}
       <footer className="border-t border-zinc-800 py-8">
         <div className="mx-auto max-w-5xl px-6 space-y-6 text-xs text-zinc-600">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             <div className="space-y-2">
               <p className="font-medium uppercase tracking-wider text-zinc-500">Product</p>
               <Link href="/coaching-booking-software" className="block hover:text-zinc-300 transition-colors">Coaching Booking Software</Link>
               <Link href="/coach-payment-processing" className="block hover:text-zinc-300 transition-colors">Coach Payment Processing</Link>
               <Link href="/video-coaching-platform" className="block hover:text-zinc-300 transition-colors">Video Coaching Platform</Link>
+              <Link href="/all-in-one-coaching-platform" className="block hover:text-zinc-300 transition-colors">All-in-One Platform</Link>
+              <Link href="/coaching-business-software" className="block hover:text-zinc-300 transition-colors">Coaching Business Software</Link>
+              <Link href="/tools-for-coaching-business" className="block hover:text-zinc-300 transition-colors">Tools for Coaches</Link>
+              <Link href="/simple-coaching-booking-system" className="block hover:text-zinc-300 transition-colors">Simple Booking System</Link>
             </div>
             <div className="space-y-2">
               <p className="font-medium uppercase tracking-wider text-zinc-500">Compare</p>
               <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-300 transition-colors">Calendly for Coaches</Link>
+              <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-300 transition-colors">Calendly Alternative</Link>
+              <Link href="/alternatives/zoom-alternative-for-coaching" className="block hover:text-zinc-300 transition-colors">Zoom Alternative</Link>
+              <Link href="/alternatives/stripe-alternative-for-coaches" className="block hover:text-zinc-300 transition-colors">Stripe Alternative</Link>
             </div>
             <div className="space-y-2">
               <p className="font-medium uppercase tracking-wider text-zinc-500">Use Cases</p>
               <Link href="/for/business-coaches" className="block hover:text-zinc-300 transition-colors">Business Coaches</Link>
+              <Link href="/for/life-coaches" className="block hover:text-zinc-300 transition-colors">Life Coaches</Link>
+              <Link href="/for/fitness-coaches" className="block hover:text-zinc-300 transition-colors">Fitness Coaches</Link>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium uppercase tracking-wider text-zinc-500">Free Tools</p>
+              <Link href="/tools" className="block hover:text-zinc-300 transition-colors">All Tools</Link>
+              <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-300 transition-colors">Cost Calculator</Link>
+              <Link href="/tools/session-notes-template-generator" className="block hover:text-zinc-300 transition-colors">Notes Generator</Link>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-800 pt-6">
