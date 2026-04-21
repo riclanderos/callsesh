@@ -1,46 +1,30 @@
 import { MetadataRoute } from "next";
+import { getPagesByPrefix } from "@/lib/pseo";
+
+const BASE = "https://callsesh.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: "https://callsesh.com",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/coaching-booking-software",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/coach-payment-processing",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/video-coaching-platform",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/alternatives/calendly-for-coaches",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/for/business-coaches",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/tools",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/tools/coach-tool-cost-calculator",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/tools/no-show-cost-calculator",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://callsesh.com/tools/session-notes-template-generator",
-      lastModified: new Date(),
-    },
+  const lastModified = new Date();
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: BASE, lastModified },
+    { url: `${BASE}/coaching-booking-software`, lastModified },
+    { url: `${BASE}/coach-payment-processing`, lastModified },
+    { url: `${BASE}/video-coaching-platform`, lastModified },
+    { url: `${BASE}/all-in-one-coaching-platform`, lastModified },
+    { url: `${BASE}/coaching-business-software`, lastModified },
+    { url: `${BASE}/tools-for-coaching-business`, lastModified },
+    { url: `${BASE}/simple-coaching-booking-system`, lastModified },
+    { url: `${BASE}/tools`, lastModified },
+    { url: `${BASE}/tools/coach-tool-cost-calculator`, lastModified },
+    { url: `${BASE}/tools/no-show-cost-calculator`, lastModified },
+    { url: `${BASE}/tools/session-notes-template-generator`, lastModified },
   ];
+
+  const dynamicRoutes: MetadataRoute.Sitemap = [
+    ...getPagesByPrefix("/alternatives/"),
+    ...getPagesByPrefix("/for/"),
+  ].map(({ path }) => ({ url: `${BASE}${path}`, lastModified }));
+
+  return [...staticRoutes, ...dynamicRoutes];
 }
