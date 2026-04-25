@@ -20,9 +20,9 @@ function formatTime(t: string): string {
 export default async function BookingSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string; slug?: string; ctz?: string }>
+  searchParams: Promise<{ session_id?: string; booking_id?: string; slug?: string; ctz?: string }>
 }) {
-  const { session_id, slug, ctz } = await searchParams
+  const { session_id, booking_id, slug, ctz } = await searchParams
 
   const svc = createServiceClient()
 
@@ -37,6 +37,7 @@ export default async function BookingSuccessPage({
 
   let confirmed = false
   let booking: BookingRow | null = null
+  let isFree = false
 
   if (session_id) {
     const { data } = await svc
@@ -48,6 +49,19 @@ export default async function BookingSuccessPage({
 
     if (data) {
       confirmed = true
+      booking = data as BookingRow
+    }
+  } else if (booking_id) {
+    const { data } = await svc
+      .from('bookings')
+      .select('id, booking_date, start_time, end_time, coach_id, session_types(title)')
+      .eq('id', booking_id)
+      .eq('status', 'confirmed')
+      .maybeSingle()
+
+    if (data) {
+      confirmed = true
+      isFree = true
       booking = data as BookingRow
     }
   }
@@ -158,7 +172,9 @@ export default async function BookingSuccessPage({
           <div className="text-center space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">You&apos;re booked!</h1>
             <p className="text-sm text-zinc-400">
-              Payment confirmed. Check your email for session details and a secure join link.
+              {isFree
+                ? 'Session confirmed. Check your email for details and a secure join link.'
+                : 'Payment confirmed. Check your email for session details and a secure join link.'}
             </p>
           </div>
 

@@ -1,17 +1,21 @@
 'use server'
 
-import { timingSafeEqual } from 'crypto'
+import { timingSafeEqual, randomBytes } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { getUserPlan } from '@/lib/plan'
 import { generateSlots } from '@/lib/slots'
 import { stripe } from '@/lib/stripe'
 import {
+  sendGuestConfirmation,
+  sendCoachNotification,
+  type CoachNotificationParams,
   sendGuestCancelledByGuest,
   sendCoachGuestCancelled,
   sendGuestCancelledByCoach,
   type CancellationEmailParams,
 } from '@/lib/email'
+import { provisionDailyRoom } from '@/lib/daily'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
@@ -90,11 +94,11 @@ export async function startCheckout(
     .eq('id', sessionType.coach_id)
     .single()
 
-  if (!profile?.stripe_account_id)
+  if (sessionType.price_cents > 0 && !profile?.stripe_account_id)
     return { ok: false, error: 'This coach has not connected a payment account and cannot accept bookings at this time.' }
 
-  const coachTimezone = profile.timezone ?? 'UTC'
-  const coachStripeAccountId = profile.stripe_account_id
+  const coachTimezone = profile?.timezone ?? 'UTC'
+  const coachStripeAccountId = profile?.stripe_account_id ?? ''
 
   // Validate that the submitted start_time is a real slot for this coach/day.
   const { data: rules } = await supabase
@@ -156,6 +160,134 @@ export async function startCheckout(
   const proto =
     host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https'
   const appUrl = `${proto}://${host}`
+
+  // Free session — skip Stripe and create the booking directly.
+  if (sessionType.price_cents === 0) {
+    const svc = createServiceClient()
+    const generatedToken = randomBytes(32).toString('hex')
+    const normalizedEmail = guestEmail.toLowerCase().trim()
+
+    const { data: clientRow, error: clientError } = await svc
+      .from('coach_clients')
+      .upsert(
+        { coach_id: sessionType.coach_id, email: guestEmail, normalized_email: normalizedEmail, name: guestName || null },
+        { onConflict: 'coach_id,normalized_email' },
+      )
+      .select('id')
+      .single()
+
+    if (clientError) return { ok: false, error: 'Booking failed. Please try again.' }
+
+    const { error: insertError } = await svc.from('bookings').insert({
+      coach_id:          sessionType.coach_id,
+      session_type_id:   sessionType.id,
+      guest_name:        guestName,
+      guest_email:       guestEmail,
+      booking_date:      bookingDate,
+      start_time:        startTime,
+      end_time:          endTime,
+      status:            'confirmed',
+      guest_access_token: generatedToken,
+      coach_client_id:   clientRow.id,
+      ...(clientMessage ? { client_message: clientMessage } : {}),
+    })
+
+    if (insertError) {
+      if ((insertError as { code?: string }).code === '23505')
+        return { ok: false, error: 'This time slot is no longer available.' }
+      return { ok: false, error: 'Booking failed. Please try again.' }
+    }
+
+    const { data: newBooking } = await svc
+      .from('bookings')
+      .select('id, guest_access_token')
+      .eq('coach_id', sessionType.coach_id)
+      .eq('booking_date', bookingDate)
+      .eq('start_time', startTime)
+      .eq('status', 'confirmed')
+      .single()
+
+    if (!newBooking) return { ok: false, error: 'Booking failed. Please try again.' }
+
+    try {
+      await provisionDailyRoom(newBooking.id)
+    } catch (e) {
+      console.error('[free booking] Daily room provisioning failed:', e)
+    }
+
+    const { data: confirmedBooking } = await svc
+      .from('bookings')
+      .select('id, guest_access_token, daily_room_url')
+      .eq('id', newBooking.id)
+      .single()
+
+    // Send confirmation emails (best-effort).
+    try {
+      const [{ data: coachUser }] = await Promise.all([
+        svc.auth.admin.getUserById(sessionType.coach_id),
+      ])
+      const coachEmail = coachUser.user?.email
+      if (coachEmail) {
+        const guestSessionUrl =
+          confirmedBooking?.daily_room_url ??
+          `${appUrl}/session/${newBooking.id}?guestToken=${generatedToken}`
+        const guestCancelUrl = `${appUrl}/cancel/${newBooking.id}?guestToken=${generatedToken}`
+        const [startH, startM] = startTime.split(':').map(Number)
+        const [endHr, endMin] = endTime.split(':').map(Number)
+        const durationMinutes = endHr * 60 + endMin - (startH * 60 + startM)
+        const coachName =
+          coachUser.user?.user_metadata?.full_name ?? coachEmail.split('@')[0]
+        const coachSessionUrl =
+          confirmedBooking?.daily_room_url ??
+          `${appUrl}/session/${newBooking.id}`
+        try {
+          await sendGuestConfirmation({
+            sessionTitle: sessionType.title,
+            bookingDate,
+            startTime,
+            endTime,
+            guestName,
+            guestEmail,
+            coachEmail,
+            coachTimezone,
+            guestTimezone: guestTimezone || undefined,
+            guestSessionUrl,
+            guestCancelUrl,
+          })
+        } catch (e) {
+          console.error('[free booking] Guest confirmation email failed:', e)
+        }
+        const coachParams: CoachNotificationParams = {
+          coachName,
+          coachEmail,
+          coachTimezone,
+          sessionTitle: sessionType.title,
+          bookingDate,
+          startTime,
+          endTime,
+          durationMinutes,
+          guestName,
+          guestEmail,
+          ...(clientMessage ? { clientMessage } : {}),
+          totalAmountCents: 0,
+          coachSessionUrl,
+          appUrl,
+        }
+        try {
+          await sendCoachNotification(coachParams)
+        } catch (e) {
+          console.error('[free booking] Coach notification email failed:', e)
+        }
+      }
+    } catch (e) {
+      console.error('[free booking] Email dispatch failed:', e)
+    }
+
+    const successUrl =
+      `${appUrl}/book/success?booking_id=${newBooking.id}&slug=${sessionType.slug}` +
+      `${guestTimezone ? `&ctz=${encodeURIComponent(guestTimezone)}` : ''}`
+    return { ok: true, checkoutUrl: successUrl }
+  }
 
   // Create the Stripe Checkout session.
   // All booking data is passed as metadata so the webhook can create the

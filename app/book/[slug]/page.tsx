@@ -147,7 +147,8 @@ export default async function BookingPage({
     return { date, day, slots: [...new Set(allSlots)].sort() }
   })
 
-  const priceFormatted = `$${(session.price_cents / 100).toFixed(2)}`
+  const isFree = session.price_cents === 0
+  const priceFormatted = isFree ? 'Free' : `$${(session.price_cents / 100).toFixed(2)}`
 
   return (
     <div className="min-h-screen bg-zinc-950 px-4 py-12">
@@ -181,7 +182,9 @@ export default async function BookingPage({
             <span className="inline-flex items-center rounded-full border border-zinc-600 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-100">
               {session.duration_minutes} min
             </span>
-            <span className="text-xl font-semibold text-zinc-100">{priceFormatted}</span>
+            <span className={`text-xl font-semibold ${isFree ? 'text-emerald-400' : 'text-zinc-100'}`}>
+              {priceFormatted}
+            </span>
           </div>
         </div>
 
@@ -225,6 +228,7 @@ export default async function BookingPage({
                 dateSlots={dateSlots}
                 coachTimezone={coachTimezone}
                 isCoachOwner={isCoachOwner}
+                isFree={isFree}
               />
             </>
           )}

@@ -102,7 +102,8 @@ export default async function SessionTypesPage({
                         <p className="text-sm text-zinc-400">{st.description}</p>
                       )}
                       <p className="text-sm text-zinc-400">
-                        {st.duration_minutes} min &middot; ${(st.price_cents / 100).toFixed(2)}
+                        {st.duration_minutes} min &middot;{' '}
+                        {st.price_cents === 0 ? 'Free' : `$${(st.price_cents / 100).toFixed(2)}`}
                       </p>
                       <p className="text-sm text-zinc-500 font-mono truncate">
                         <Link

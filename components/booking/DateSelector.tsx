@@ -30,6 +30,7 @@ function GuestForm({
   coachTimezone,
   clientTimezone,
   isCoachOwner,
+  isFree,
 }: {
   action: (payload: FormData) => void
   pending: boolean
@@ -40,6 +41,7 @@ function GuestForm({
   coachTimezone: string
   clientTimezone: string
   isCoachOwner: boolean
+  isFree: boolean
 }) {
   const [messageLength, setMessageLength] = useState(0)
   const messageId = useId()
@@ -154,7 +156,9 @@ function GuestForm({
             disabled={pending}
             className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors"
           >
-            {pending ? 'Securing your session…' : 'Confirm & pay'}
+            {pending
+              ? (isFree ? 'Confirming your booking…' : 'Securing your session…')
+              : (isFree ? 'Book free session' : 'Confirm & pay')}
           </button>
         )}
       </div>
@@ -167,11 +171,13 @@ export default function DateSelector({
   dateSlots,
   coachTimezone,
   isCoachOwner = false,
+  isFree = false,
 }: {
   sessionTypeId: string
   dateSlots: DateSlots[]
   coachTimezone: string
   isCoachOwner?: boolean
+  isFree?: boolean
 }) {
   const firstAvailable = dateSlots.find((ds) => ds.slots.length > 0)?.date ?? dateSlots[0]?.date ?? ''
   const [activeDate, setActiveDate] = useState(firstAvailable)
@@ -211,9 +217,13 @@ export default function DateSelector({
   if (state?.ok) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center space-y-2">
-        <p className="font-medium text-zinc-100">Redirecting to payment…</p>
+        <p className="font-medium text-zinc-100">
+          {isFree ? 'Confirming your booking…' : 'Redirecting to payment…'}
+        </p>
         <p className="text-sm text-zinc-500">
-          You&apos;re being taken to Stripe to complete your booking.
+          {isFree
+            ? 'Your session is being confirmed. You\'ll receive a confirmation email shortly.'
+            : 'You\'re being taken to Stripe to complete your booking.'}
         </p>
       </div>
     )
@@ -324,6 +334,7 @@ export default function DateSelector({
                 coachTimezone={coachTimezone}
                 clientTimezone={clientTimezone}
                 isCoachOwner={isCoachOwner}
+                isFree={isFree}
               />
             </div>
           )}
