@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/service'
+
+export const metadata: Metadata = {
+  title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+  description:
+    'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
+}
 
 export default async function Home() {
   let grantsUsed = 0
@@ -236,6 +243,39 @@ export default async function Home() {
             >
               See how it works
             </Link>
+          </div>
+        </div>
+
+        {/* Row 3: text left, visual right — Discovery calls */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-5">
+            <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Discovery Calls</span>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 leading-snug">
+              Turn free intro calls into paid sessions
+            </h2>
+            <p className="text-zinc-700 leading-relaxed">
+              Offer a free discovery call, let clients book instantly, then keep session notes and follow up with a paid booking link.
+            </p>
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+            >
+              Start with a free call
+            </Link>
+          </div>
+          <div className="w-full aspect-[4/3] rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col items-center justify-center gap-4 p-8">
+            <div className="flex items-center gap-3 w-full max-w-xs">
+              <div className="flex-1 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm text-center">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-0.5">Discovery</p>
+                <p className="text-sm font-semibold text-zinc-900">Free · 20 min</p>
+              </div>
+              <span className="text-zinc-400 text-lg">→</span>
+              <div className="flex-1 rounded-xl border border-zinc-900 bg-white px-4 py-3 shadow-sm text-center">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-0.5">Paid session</p>
+                <p className="text-sm font-semibold text-zinc-900">$150 · 60 min</p>
+              </div>
+            </div>
+            <p className="text-xs text-zinc-400 text-center">Free discovery call → Paid session</p>
           </div>
         </div>
 
