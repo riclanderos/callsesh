@@ -1,16 +1,20 @@
 import Link from 'next/link'
+import MarketingNav from '@/components/marketing/MarketingNav'
+import MarketingFooter from '@/components/marketing/MarketingFooter'
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white px-6 py-16">
-      <div className="mx-auto max-w-3xl space-y-10">
+    <div className="min-h-screen bg-white text-zinc-900">
+      <MarketingNav />
+
+      <div className="mx-auto max-w-3xl px-6 py-16 space-y-10">
 
         <div className="space-y-4">
-          <Link href="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+          <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-700 transition-colors">
             ← Back to home
           </Link>
           <div className="space-y-2">
-            <h1 className="text-3xl font-semibold text-zinc-100">Privacy Policy</h1>
+            <h1 className="text-3xl font-semibold text-zinc-900">Privacy Policy</h1>
             <p className="text-sm text-zinc-500">Last updated: March 24, 2026</p>
           </div>
         </div>
@@ -33,7 +37,7 @@ export default function PrivacyPage() {
 
         <Section title="3. How We Use Your Information">
           <P>We use collected data to:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>Create and manage your account</li>
             <li>Facilitate bookings between coaches and clients</li>
             <li>Process payments and manage subscriptions through Stripe</li>
@@ -48,7 +52,7 @@ export default function PrivacyPage() {
 
         <Section title="4. Third-Party Services">
           <P>CallSesh relies on the following third-party providers:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li><Strong>Stripe</Strong> — payment processing and subscription billing. Stripe handles all payment data under their own privacy policy and PCI compliance standards.</li>
             <li><Strong>Daily.co</Strong> — video session infrastructure. Session rooms are provisioned and managed by our video provider under their own privacy policy.</li>
             <li><Strong>Supabase</Strong> — database and authentication infrastructure. Data is stored in Supabase-managed infrastructure.</li>
@@ -67,7 +71,7 @@ export default function PrivacyPage() {
 
         <Section title="6. Your Rights">
           <P>Depending on your location, you may have the right to:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>Access the personal data we hold about you</li>
             <li>Request correction of inaccurate data</li>
             <li>Request deletion of your data</li>
@@ -105,6 +109,8 @@ export default function PrivacyPage() {
         </Section>
 
       </div>
+
+      <MarketingFooter />
     </div>
   )
 }
@@ -112,25 +118,25 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-zinc-200">{title}</h2>
+      <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>
       <div className="space-y-3">{children}</div>
     </section>
   )
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-zinc-400 leading-relaxed">{children}</p>
+  return <p className="text-sm text-zinc-700 leading-relaxed">{children}</p>
 }
 
 function Strong({ children }: { children: React.ReactNode }) {
-  return <span className="font-medium text-zinc-300">{children}</span>
+  return <span className="font-medium text-zinc-900">{children}</span>
 }
 
 function Email() {
   return (
     <a
       href="mailto:support@landerossystems.com"
-      className="text-indigo-400 hover:text-indigo-300 transition-colors"
+      className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors"
     >
       support@landerossystems.com
     </a>

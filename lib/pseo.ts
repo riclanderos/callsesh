@@ -401,9 +401,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/alternatives/calendly-alternative-for-coaches',
-    title: 'Calendly Alternative for Coaches — CallSesh',
+    title: 'Calendly Alternative for Coaches (With Payments + Video Built In)',
     description:
-      'Looking for a Calendly alternative built for paid coaching? CallSesh replaces Calendly with one link that handles booking, payment, and video — no integrations required.',
+      'Calendly handles scheduling, but not payments or sessions. See how CallSesh replaces your full coaching stack in one platform.',
     h1: 'The Calendly Alternative Coaches Actually Need',
     intro:
       'Calendly is a scheduling tool. It books meetings. But coaching is a paid service that needs upfront payment, a dedicated video room, and a clear client record. CallSesh was built from scratch for coaches who charge for their time — replacing Calendly, Zoom, and Stripe with one booking link.',
@@ -485,9 +485,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/alternatives/zoom-alternative-for-coaching',
-    title: 'Zoom Alternative for Coaching — CallSesh',
+    title: 'Zoom Alternative for Coaching (With Booking and Payments Included)',
     description:
-      'CallSesh is the Zoom alternative for coaches that connects video directly to booking and payment. No separate links, no installs, no fragile integrations.',
+      'Zoom doesn\'t handle scheduling or payments. CallSesh lets clients book, pay, and join sessions in one place — no extra tools needed.',
     h1: 'A Zoom Alternative for Coaching With Built-in Booking and Payment',
     intro:
       'Zoom is a general-purpose video tool. It doesn\'t know your clients, doesn\'t collect payment, and doesn\'t connect to your booking system. Every session requires manual coordination: generate a link, attach it to a calendar event, send it, and hope the client shows up. CallSesh removes all of that — a video room is created automatically for every booked, paid session.',
@@ -655,9 +655,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/all-in-one-coaching-platform',
-    title: 'All-in-One Coaching Platform — CallSesh',
+    title: 'All-in-One Coaching Platform (Booking, Payments, Video in One Tool)',
     description:
-      'CallSesh replaces Calendly, Zoom, and Stripe with one coaching platform. Booking, payment, and video in a single link — built for solo coaches and small coaching practices.',
+      'Stop juggling multiple apps. CallSesh combines scheduling, payments, and video into one platform built for paid coaching sessions.',
     h1: 'All-in-One Coaching Platform: Booking, Payment, and Video in One Link',
     intro:
       'Most coaches run their practice on a patchwork of tools: Calendly for scheduling, Zoom for video, Stripe or PayPal for payments, and a spreadsheet to hold it together. Every additional tool is another subscription, another login, and another place for something to go wrong. CallSesh is a single platform built to replace all of it. One booking link — clients pick a time, pay, and receive their video room.',
@@ -730,9 +730,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/coaching-business-software',
-    title: 'Coaching Business Software — CallSesh',
+    title: 'Coaching Business Software to Manage Sessions, Clients, and Payments',
     description:
-      'CallSesh is coaching business software that handles the operational side of your practice: booking, payment collection, and video calls in a single platform.',
+      'Everything you need to run a coaching business — booking, payments, video, and client history — without switching between tools.',
     h1: 'Coaching Business Software That Handles Booking, Payments, and Video',
     intro:
       'Running a coaching business means more than delivering sessions. It means managing a calendar, collecting payment, sending video links, and staying organized. Every hour spent on that admin is an hour not spent coaching. CallSesh handles the operational layer of your coaching business — so you can focus on the work that actually earns money.',
@@ -880,9 +880,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/for/life-coaches',
-    title: 'Booking Software for Life Coaches — CallSesh',
+    title: 'Booking Software for Life Coaches (Get Paid Before Every Session)',
     description:
-      'Life coaches need booking software that handles payment upfront and delivers a professional client experience. CallSesh does both — plus built-in video for remote sessions.',
+      'Simple booking software built for life coaches. Let clients schedule, pay, and join sessions without back-and-forth or missed payments.',
     h1: 'Booking Software for Life Coaches That Collects Payment Before Every Session',
     intro:
       'Life coaching is built on trust and transformation — but the business side of it needs to run like a real business. That means clients pay before sessions, not after. It means showing up to coach, not spending your prep time copying Zoom links and chasing invoices. CallSesh gives life coaches a booking page that handles payment, confirmation, and video in a single client flow.',

@@ -1,46 +1,22 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import type { PseoPage } from '@/lib/pseo'
+import MarketingNav from '@/components/marketing/MarketingNav'
+import MarketingFooter from '@/components/marketing/MarketingFooter'
 
 export default function MarketingPage({ page }: { page: PseoPage }) {
   return (
-    <div
-      className="min-h-screen text-white"
-      style={{ background: 'linear-gradient(to bottom, #020617, #09090b 20%, #09090b 80%, #020617)' }}
-    >
-      {/* Nav */}
-      <header className="mx-auto max-w-5xl h-[72px] px-8 flex items-center justify-between">
-        <Link href="/">
-          <Image
-            src="/images/CallSesh.svg"
-            alt="CallSesh logo"
-            width={220}
-            height={60}
-            priority
-            className="h-[42px] w-auto"
-          />
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-zinc-300 hover:text-zinc-100 transition-colors">
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
-          >
-            Get started
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white text-zinc-900">
+
+      <MarketingNav />
 
       {/* Hero */}
       <section className="mx-auto max-w-3xl px-6 pt-16 pb-20 text-center space-y-5">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">{page.h1}</h1>
-        <p className="text-lg text-zinc-300 leading-relaxed">{page.intro}</p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight text-zinc-900">{page.h1}</h1>
+        <p className="text-lg text-zinc-700 leading-relaxed">{page.intro}</p>
         {page.contextualNote && (
-          <p className="text-sm text-zinc-400 leading-relaxed">
+          <p className="text-sm text-zinc-600 leading-relaxed">
             {page.contextualNote.prefix}
-            <Link href={page.contextualNote.href} className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors">
+            <Link href={page.contextualNote.href} className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors">
               {page.contextualNote.linkText}
             </Link>
             {page.contextualNote.suffix}
@@ -49,22 +25,22 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
         <div className="pt-2">
           <Link
             href="/signup"
-            className="inline-block rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20"
+            className="inline-block rounded-lg bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
           >
             Create your booking page
           </Link>
-          <p className="text-xs text-zinc-400 mt-3">No credit card required · First 10 sessions free</p>
+          <p className="text-xs text-zinc-500 mt-3">No credit card required · First 10 sessions free</p>
         </div>
       </section>
 
       {/* Who it's for */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="text-xl font-semibold text-zinc-100 mb-6">Who this is for</h2>
+        <h2 className="text-xl font-semibold text-zinc-900 mb-6">Who this is for</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {page.forWho.map((item) => (
-            <div key={item} className="flex items-start gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4">
-              <span className="mt-0.5 h-4 w-4 flex-shrink-0 rounded-full bg-indigo-600" aria-hidden="true" />
-              <p className="text-sm text-zinc-300">{item}</p>
+            <div key={item} className="flex items-start gap-3 rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm">
+              <span className="mt-0.5 h-4 w-4 flex-shrink-0 rounded-full bg-zinc-200" aria-hidden="true" />
+              <p className="text-sm text-zinc-700">{item}</p>
             </div>
           ))}
         </div>
@@ -72,12 +48,12 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
 
       {/* Problem */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-8 py-10 space-y-5">
-          <h2 className="text-xl font-semibold text-zinc-100">{page.problem.heading}</h2>
+        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-8 py-10 space-y-5">
+          <h2 className="text-xl font-semibold text-zinc-900">{page.problem.heading}</h2>
           <ul className="space-y-4">
             {page.problem.points.map((point) => (
-              <li key={point} className="flex items-start gap-3 text-sm text-zinc-400 leading-relaxed">
-                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-zinc-500" aria-hidden="true" />
+              <li key={point} className="flex items-start gap-3 text-sm text-zinc-700 leading-relaxed">
+                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-zinc-400" aria-hidden="true" />
                 {point}
               </li>
             ))}
@@ -87,12 +63,12 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
 
       {/* Solution */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="rounded-xl border border-indigo-900 bg-zinc-900 px-8 py-10 space-y-5">
-          <h2 className="text-xl font-semibold text-zinc-100">{page.solution.heading}</h2>
+        <div className="rounded-xl border border-zinc-200 bg-white px-8 py-10 space-y-5 shadow-sm">
+          <h2 className="text-xl font-semibold text-zinc-900">{page.solution.heading}</h2>
           <ul className="space-y-4">
             {page.solution.points.map((point) => (
-              <li key={point} className="flex items-start gap-3 text-sm text-zinc-300 leading-relaxed">
-                <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+              <li key={point} className="flex items-start gap-3 text-sm text-zinc-700 leading-relaxed">
+                <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 {point}
@@ -104,45 +80,47 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
 
       {/* Comparison table (optional) */}
       {page.comparison && (
-        <section className="mx-auto max-w-5xl px-6 py-16">
-          <h2 className="text-xl font-semibold text-zinc-100 mb-6">
-            CallSesh vs. {page.comparison.theyLabel}
-          </h2>
-          <div className="rounded-xl border border-zinc-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800 bg-zinc-900">
-                  <th className="px-6 py-3 text-left font-medium text-zinc-400 w-1/3">Feature</th>
-                  <th className="px-6 py-3 text-left font-medium text-zinc-400 w-1/3">{page.comparison.theyLabel}</th>
-                  <th className="px-6 py-3 text-left font-medium text-indigo-400 w-1/3">CallSesh</th>
-                </tr>
-              </thead>
-              <tbody className="bg-zinc-950">
-                {page.comparison.rows.map((row, i) => (
-                  <tr key={row.feature} className={i < page.comparison!.rows.length - 1 ? 'border-b border-zinc-800' : ''}>
-                    <td className="px-6 py-4 text-zinc-300 font-medium">{row.feature}</td>
-                    <td className="px-6 py-4 text-zinc-500">{row.them}</td>
-                    <td className="px-6 py-4 text-zinc-200">{row.us}</td>
+        <section className="bg-zinc-50 border-y border-zinc-100">
+          <div className="mx-auto max-w-5xl px-6 py-16 space-y-6">
+            <h2 className="text-xl font-semibold text-zinc-900">
+              CallSesh vs. {page.comparison.theyLabel}
+            </h2>
+            <div className="rounded-xl border border-zinc-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-200 bg-white">
+                    <th className="px-6 py-3 text-left font-medium text-zinc-500 w-1/3">Feature</th>
+                    <th className="px-6 py-3 text-left font-medium text-zinc-500 w-1/3">{page.comparison.theyLabel}</th>
+                    <th className="px-6 py-3 text-left font-semibold text-zinc-900 w-1/3">CallSesh</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-zinc-100">
+                  {page.comparison.rows.map((row) => (
+                    <tr key={row.feature}>
+                      <td className="px-6 py-4 text-zinc-700 font-medium">{row.feature}</td>
+                      <td className="px-6 py-4 text-zinc-500">{row.them}</td>
+                      <td className="px-6 py-4 text-zinc-900 font-medium">{row.us}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       )}
 
       {/* Workflow */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="text-xl font-semibold text-zinc-100 mb-8">How it works</h2>
+        <h2 className="text-xl font-semibold text-zinc-900 mb-8">How it works</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {page.workflow.map(({ step, detail }, i) => (
             <div key={step} className="flex gap-4">
-              <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-600/40 flex items-center justify-center text-sm font-semibold text-indigo-400">
+              <div className="flex-shrink-0 h-8 w-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-sm font-semibold text-zinc-700">
                 {i + 1}
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-zinc-100">{step}</p>
-                <p className="text-sm text-zinc-400 leading-relaxed">{detail}</p>
+                <p className="text-sm font-semibold text-zinc-900">{step}</p>
+                <p className="text-sm text-zinc-700 leading-relaxed">{detail}</p>
               </div>
             </div>
           ))}
@@ -151,39 +129,41 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
 
       {/* FAQ */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <h2 className="text-xl font-semibold text-zinc-100 mb-8">Frequently asked questions</h2>
+        <h2 className="text-xl font-semibold text-zinc-900 mb-8">Frequently asked questions</h2>
         <div className="space-y-6">
           {page.faq.map(({ q, a }) => (
-            <div key={q} className="border-b border-zinc-800 pb-6 last:border-0">
-              <p className="text-sm font-semibold text-zinc-200 mb-2">{q}</p>
-              <p className="text-sm text-zinc-400 leading-relaxed">{a}</p>
+            <div key={q} className="border-b border-zinc-100 pb-6 last:border-0">
+              <p className="text-sm font-semibold text-zinc-900 mb-2">{q}</p>
+              <p className="text-sm text-zinc-700 leading-relaxed">{a}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-5xl px-6 py-24 text-center space-y-5">
-        <h2 className="text-3xl font-bold tracking-tight">{page.ctaHeading}</h2>
-        <p className="text-zinc-300">{page.ctaBody}</p>
-        <Link
-          href="/signup"
-          className="inline-block rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20"
-        >
-          Create your coaching page →
-        </Link>
+      <section className="bg-zinc-50 border-y border-zinc-100">
+        <div className="mx-auto max-w-3xl px-6 py-24 text-center space-y-5">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900">{page.ctaHeading}</h2>
+          <p className="text-zinc-700">{page.ctaBody}</p>
+          <Link
+            href="/signup"
+            className="inline-block rounded-lg bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+          >
+            Create your coaching page →
+          </Link>
+        </div>
       </section>
 
       {/* Related pages */}
       {page.related.length > 0 && (
-        <section className="mx-auto max-w-5xl px-6 pb-16">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-4">Related</p>
+        <section className="mx-auto max-w-5xl px-6 py-16">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-4">Related</p>
           <div className="flex flex-wrap gap-3">
             {page.related.map(({ label, href }) => (
               <Link
                 key={href}
                 href={href}
-                className="rounded-lg border border-zinc-800 px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 hover:border-zinc-600 transition-colors"
+                className="rounded-lg border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:text-zinc-900 hover:border-zinc-400 transition-colors"
               >
                 {label}
               </Link>
@@ -192,50 +172,7 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
         </section>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-800 py-8">
-        <div className="mx-auto max-w-5xl px-6 space-y-6 text-xs text-zinc-600">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <p className="font-medium uppercase tracking-wider text-zinc-500">Product</p>
-              <Link href="/coaching-booking-software" className="block hover:text-zinc-300 transition-colors">Coaching Booking Software</Link>
-              <Link href="/coach-payment-processing" className="block hover:text-zinc-300 transition-colors">Coach Payment Processing</Link>
-              <Link href="/video-coaching-platform" className="block hover:text-zinc-300 transition-colors">Video Coaching Platform</Link>
-              <Link href="/all-in-one-coaching-platform" className="block hover:text-zinc-300 transition-colors">All-in-One Platform</Link>
-              <Link href="/coaching-business-software" className="block hover:text-zinc-300 transition-colors">Coaching Business Software</Link>
-              <Link href="/tools-for-coaching-business" className="block hover:text-zinc-300 transition-colors">Tools for Coaches</Link>
-              <Link href="/simple-coaching-booking-system" className="block hover:text-zinc-300 transition-colors">Simple Booking System</Link>
-            </div>
-            <div className="space-y-2">
-              <p className="font-medium uppercase tracking-wider text-zinc-500">Compare</p>
-              <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-300 transition-colors">Calendly for Coaches</Link>
-              <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-300 transition-colors">Calendly Alternative</Link>
-              <Link href="/alternatives/zoom-alternative-for-coaching" className="block hover:text-zinc-300 transition-colors">Zoom Alternative</Link>
-              <Link href="/alternatives/stripe-alternative-for-coaches" className="block hover:text-zinc-300 transition-colors">Stripe Alternative</Link>
-            </div>
-            <div className="space-y-2">
-              <p className="font-medium uppercase tracking-wider text-zinc-500">Use Cases</p>
-              <Link href="/for/business-coaches" className="block hover:text-zinc-300 transition-colors">Business Coaches</Link>
-              <Link href="/for/life-coaches" className="block hover:text-zinc-300 transition-colors">Life Coaches</Link>
-              <Link href="/for/fitness-coaches" className="block hover:text-zinc-300 transition-colors">Fitness Coaches</Link>
-            </div>
-            <div className="space-y-2">
-              <p className="font-medium uppercase tracking-wider text-zinc-500">Free Tools</p>
-              <Link href="/tools" className="block hover:text-zinc-300 transition-colors">All Tools</Link>
-              <Link href="/tools/coach-tool-cost-calculator" className="block hover:text-zinc-300 transition-colors">Cost Calculator</Link>
-              <Link href="/tools/session-notes-template-generator" className="block hover:text-zinc-300 transition-colors">Notes Generator</Link>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-zinc-800 pt-6">
-            <span>© 2026 CallSesh by Landeros Systems</span>
-            <div className="flex gap-4">
-              <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
-              <Link href="/contact" className="hover:text-zinc-300 transition-colors">Contact</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }

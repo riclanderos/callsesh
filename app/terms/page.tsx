@@ -1,16 +1,20 @@
 import Link from 'next/link'
+import MarketingNav from '@/components/marketing/MarketingNav'
+import MarketingFooter from '@/components/marketing/MarketingFooter'
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white px-6 py-16">
-      <div className="mx-auto max-w-3xl space-y-10">
+    <div className="min-h-screen bg-white text-zinc-900">
+      <MarketingNav />
+
+      <div className="mx-auto max-w-3xl px-6 py-16 space-y-10">
 
         <div className="space-y-4">
-          <Link href="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+          <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-700 transition-colors">
             ← Back to home
           </Link>
           <div className="space-y-2">
-            <h1 className="text-3xl font-semibold text-zinc-100">Terms of Service</h1>
+            <h1 className="text-3xl font-semibold text-zinc-900">Terms of Service</h1>
             <p className="text-sm text-zinc-500">Last updated: March 24, 2026</p>
           </div>
         </div>
@@ -34,7 +38,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="3. Accounts and Eligibility">
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>You must be at least 18 years old to create an account.</li>
             <li>You are responsible for maintaining the security of your account credentials.</li>
             <li>You agree to provide accurate and current information when registering.</li>
@@ -44,7 +48,7 @@ export default function TermsPage() {
 
         <Section title="4. Coach Responsibilities">
           <P>If you use CallSesh as a Coach, you agree that:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>You are solely responsible for the services you offer, deliver, and represent through your booking links.</li>
             <li>You will not offer illegal, harmful, or fraudulent services.</li>
             <li>You are responsible for any applicable taxes or professional licensing requirements in your jurisdiction.</li>
@@ -56,7 +60,7 @@ export default function TermsPage() {
 
         <Section title="5. Client Responsibilities">
           <P>If you book a session through CallSesh as a Client, you acknowledge that:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>CallSesh facilitates the booking and payment, but the Coach is the service provider.</li>
             <li>CallSesh is not responsible for the quality, accuracy, or outcome of any session.</li>
             <li>You should direct service-related disputes or concerns to the Coach directly.</li>
@@ -80,7 +84,7 @@ export default function TermsPage() {
 
         <Section title="8. Prohibited Use">
           <P>You agree not to:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>Use the platform for any unlawful purpose</li>
             <li>Attempt to gain unauthorized access to any account or system</li>
             <li>Reverse-engineer, scrape, or interfere with the platform</li>
@@ -100,7 +104,7 @@ export default function TermsPage() {
 
         <Section title="10. Limitation of Liability">
           <P>To the maximum extent permitted by law:</P>
-          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-400 leading-relaxed">
+          <ul className="list-disc list-inside space-y-1.5 text-sm text-zinc-700 leading-relaxed">
             <li>CallSesh is provided &ldquo;as is&rdquo; without warranties of any kind.</li>
             <li>We do not guarantee uninterrupted or error-free access to the platform.</li>
             <li>We are not liable for the actions, services, or conduct of any Coach or Client.</li>
@@ -135,6 +139,8 @@ export default function TermsPage() {
         </Section>
 
       </div>
+
+      <MarketingFooter />
     </div>
   )
 }
@@ -142,25 +148,25 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold text-zinc-200">{title}</h2>
+      <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>
       <div className="space-y-3">{children}</div>
     </section>
   )
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-zinc-400 leading-relaxed">{children}</p>
+  return <p className="text-sm text-zinc-700 leading-relaxed">{children}</p>
 }
 
 function Strong({ children }: { children: React.ReactNode }) {
-  return <span className="font-medium text-zinc-300">{children}</span>
+  return <span className="font-medium text-zinc-900">{children}</span>
 }
 
 function Email() {
   return (
     <a
       href="mailto:support@landerossystems.com"
-      className="text-indigo-400 hover:text-indigo-300 transition-colors"
+      className="text-zinc-700 underline underline-offset-2 hover:text-zinc-900 transition-colors"
     >
       support@landerossystems.com
     </a>

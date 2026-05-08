@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import MarketingNav from "@/components/marketing/MarketingNav"
+import MarketingFooter from "@/components/marketing/MarketingFooter"
 
 export default function Calculator() {
   const [sessionPrice, setSessionPrice] = useState<number>(100)
@@ -12,14 +14,8 @@ export default function Calculator() {
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
+      <MarketingNav />
       <div className="max-w-2xl mx-auto px-6 py-12">
-
-        {/* Home nav */}
-        <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-zinc-900 hover:text-zinc-700 transition-colors">
-            CallSesh
-          </Link>
-        </div>
 
         {/* Breadcrumb */}
         <Link href="/tools" className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors inline-block mb-8">
@@ -140,6 +136,7 @@ export default function Calculator() {
         </div>
 
       </div>
+      <MarketingFooter />
     </div>
   )
 }

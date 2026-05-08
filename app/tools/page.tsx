@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import MarketingNav from "@/components/marketing/MarketingNav"
+import MarketingFooter from "@/components/marketing/MarketingFooter"
 
 export const metadata: Metadata = {
   title: "Free Tools for Coaches | CallSesh",
@@ -10,13 +12,8 @@ export const metadata: Metadata = {
 export default function ToolsPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-900">
+      <MarketingNav />
       <div className="max-w-5xl mx-auto px-6 py-12">
-
-        <div className="mb-10">
-          <Link href="/" className="text-sm font-semibold text-zinc-900 hover:text-zinc-700 transition-colors">
-            CallSesh
-          </Link>
-        </div>
 
         <div className="mb-10 space-y-4">
           <span className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Free Tools</span>
@@ -50,9 +47,9 @@ export default function ToolsPage() {
           </div>
 
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-            <span className="text-xs font-medium text-zinc-500 mb-2">Free Tool</span>
+            <span className="text-xs font-medium text-zinc-500 mb-2">Guide</span>
             <h2 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1.5">
-              Coaching Booking Software
+              Coaching Booking Software Guide
             </h2>
             <p className="text-sm text-zinc-700 leading-relaxed mb-5 flex-1">
               Learn what coaching booking software should handle across scheduling, payments, and client bookings.
@@ -100,6 +97,7 @@ export default function ToolsPage() {
         </div>
 
       </div>
+      <MarketingFooter />
     </div>
   )
 }
