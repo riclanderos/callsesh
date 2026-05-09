@@ -1,9 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { PseoPage } from '@/lib/pseo'
+import { fetchHeroImage } from '@/lib/pexels'
 import MarketingNav from '@/components/marketing/MarketingNav'
 import MarketingFooter from '@/components/marketing/MarketingFooter'
 
-export default function MarketingPage({ page }: { page: PseoPage }) {
+export default async function MarketingPage({ page }: { page: PseoPage }) {
+  const heroImage = await fetchHeroImage(page.path)
   const faqSchema =
     page.faq.length > 0
       ? {
@@ -51,6 +54,42 @@ export default function MarketingPage({ page }: { page: PseoPage }) {
           <p className="text-xs text-zinc-500 mt-3">No credit card required · First 10 sessions free</p>
         </div>
       </section>
+
+      {/* Hero image */}
+      {heroImage && (
+        <section className="mx-auto max-w-5xl px-6 pb-8">
+          <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-sm">
+            <Image
+              src={heroImage.url}
+              alt={heroImage.alt}
+              fill
+              priority
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1024px"
+              className="object-cover"
+            />
+          </div>
+          <p className="mt-2 text-right text-xs text-zinc-400">
+            Photo by{' '}
+            <a
+              href={heroImage.photographerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-zinc-600 transition-colors"
+            >
+              {heroImage.photographer}
+            </a>
+            {' '}on{' '}
+            <a
+              href="https://www.pexels.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-zinc-600 transition-colors"
+            >
+              Pexels
+            </a>
+          </p>
+        </section>
+      )}
 
       {/* Who it's for */}
       <section className="mx-auto max-w-5xl px-6 py-16">
