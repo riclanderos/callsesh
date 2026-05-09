@@ -28,9 +28,9 @@ export type PseoPage = {
 const pages: PseoPage[] = [
   {
     path: '/coaching-booking-software',
-    title: 'Coaching Booking Software — CallSesh',
+    title: 'Coaching Booking Software With Built-in Payments | CallSesh',
     description:
-      'Schedule paid coaching sessions, collect payment, and run video calls from one link. CallSesh is booking software built specifically for coaches.',
+      'Stop juggling Calendly and Stripe. CallSesh is coaching booking software that collects payment at booking time — no invoices, no extra tools.',
     h1: 'Coaching Booking Software That Handles Payments and Video Too',
     intro:
       'Most booking tools were built for meetings, not paid coaching. They force you to stitch together a scheduler, a payment processor, and a video app — then manually coordinate all three. CallSesh is different: one link for your clients to book, pay, and join a session.',
@@ -103,9 +103,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/coach-payment-processing',
-    title: 'Get Paid When Clients Book — Coach Payment Processing | CallSesh',
+    title: 'Coach Payment Processing — Get Paid Before Every Session | CallSesh',
     description:
-      'Stop chasing invoices. CallSesh requires payment at booking time so sessions are only confirmed after the client pays. Powered by Stripe.',
+      'Stop chasing invoices. Clients pay when they book — every session is confirmed and paid upfront. Powered by Stripe.',
     h1: 'Stop Chasing Payments—Get Paid When Clients Book Your Sessions',
     intro:
       'Clients pay during booking. Sessions are confirmed only after payment clears. By the time you show up to coach, the money is already collected — no invoices, no follow-ups, no uncertainty.',
@@ -252,7 +252,7 @@ const pages: PseoPage[] = [
     path: '/alternatives/calendly-for-coaches',
     title: 'Is Calendly Good for Coaches? What Paid Coaching Actually Needs | CallSesh',
     description:
-      'Calendly works well for free calls and meeting scheduling. For paid coaching sessions, here\'s where it falls short — and what coaches use instead.',
+      'Calendly works for free calls. For paid coaching, it still needs Stripe, Zoom, and manual follow-up — here\'s why coaches switch and what to use instead.',
     h1: 'Is Calendly Good for Coaches? An Honest Assessment for Paid Sessions',
     intro:
       'Calendly is excellent scheduling software for sales calls, team meetings, and free discovery sessions. If you run a paid coaching practice, the picture is more complicated. Payment collection requires a higher-tier plan and manual Stripe configuration. There is no built-in video room. And clients can technically book a slot without payment completing if the integration fails silently. This page explains where Calendly works well, where it breaks down for paid coaching, and what coaches who charge for their time use instead.',
@@ -667,9 +667,9 @@ const pages: PseoPage[] = [
 
   {
     path: '/all-in-one-coaching-platform',
-    title: 'All-in-One Coaching Platform (Booking, Payments, Video in One Tool)',
+    title: 'All-in-One Coaching Platform — Booking, Payments & Video | CallSesh',
     description:
-      'Stop juggling multiple apps. CallSesh combines scheduling, payments, and video into one platform built for paid coaching sessions.',
+      'Stop juggling Calendly, Zoom, and Stripe. CallSesh is an all-in-one coaching platform — clients book, pay, and join video sessions from a single link.',
     h1: 'All-in-One Coaching Platform: Booking, Payment, and Video in One Link',
     intro:
       'Most coaches run their practice on a patchwork of tools: Calendly for scheduling, Zoom for video, Stripe or PayPal for payments, and a spreadsheet to hold it together. Every additional tool is another subscription, another login, and another place for something to go wrong. CallSesh is a single platform built to replace all of it. One booking link — clients pick a time, pay, and receive their video room.',
