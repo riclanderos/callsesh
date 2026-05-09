@@ -88,9 +88,10 @@ const pages: PseoPage[] = [
     ctaHeading: 'Set up your coaching page in under two minutes',
     ctaBody: 'No credit card required to start. Your first 10 sessions are free.',
     related: [
+      { label: 'Online coaching platform', href: '/online-coaching-platform' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
-      { label: 'Booking software for business coaches', href: '/for/business-coaches' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
     ],
     contextualNote: {
       prefix: 'CallSesh also includes a built-in ',
@@ -167,6 +168,7 @@ const pages: PseoPage[] = [
     ctaHeading: 'Stop Chasing Payments—Get Paid at Booking',
     ctaBody: 'Clients pay when they book—so every session is confirmed and paid upfront.',
     related: [
+      { label: 'Coaching billing software', href: '/coaching-billing-software' },
       { label: 'Paid session booking software', href: '/coaching-booking-software' },
       { label: 'Video coaching platform', href: '/video-coaching-platform' },
       { label: 'Calendly for coaches', href: '/alternatives/calendly-for-coaches' },
@@ -241,38 +243,40 @@ const pages: PseoPage[] = [
     related: [
       { label: 'Booking software for coaches', href: '/coaching-booking-software' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
+      { label: 'Online coaching platform', href: '/online-coaching-platform' },
       { label: 'Software for business coaches', href: '/for/business-coaches' },
     ],
   },
 
   {
     path: '/alternatives/calendly-for-coaches',
-    title: 'Calendly for Coaches — A Better Alternative | CallSesh',
+    title: 'Is Calendly Good for Coaches? What Paid Coaching Actually Needs | CallSesh',
     description:
-      'Calendly is great for meetings but doesn\'t collect payments for coaching. CallSesh is the Calendly alternative that requires payment at booking so you get paid before every session.',
-    h1: 'A Better Calendly for Coaches: Built-in Payments and Video',
+      'Calendly works well for free calls and meeting scheduling. For paid coaching sessions, here\'s where it falls short — and what coaches use instead.',
+    h1: 'Is Calendly Good for Coaches? An Honest Assessment for Paid Sessions',
     intro:
-      'Calendly is excellent at what it does — scheduling meetings. But coaching isn\'t meetings. Coaching is a paid service, and Calendly\'s payment story for coaches is an afterthought. Clients can book without paying, integrations are fragile, and there\'s no video room. CallSesh was built specifically for coaches who need payment collected before the session starts.',
+      'Calendly is excellent scheduling software for sales calls, team meetings, and free discovery sessions. If you run a paid coaching practice, the picture is more complicated. Payment collection requires a higher-tier plan and manual Stripe configuration. There is no built-in video room. And clients can technically book a slot without payment completing if the integration fails silently. This page explains where Calendly works well, where it breaks down for paid coaching, and what coaches who charge for their time use instead.',
     forWho: [
-      'Coaches currently using Calendly who need payment built in',
-      'Coaches running a Calendly + Stripe + Zoom stack they want to simplify',
-      'Coaches who have dealt with no-shows from unpaid bookings',
-      'New coaches who want a professional setup from day one',
+      'Coaches considering Calendly and wondering if it works for paid sessions',
+      'Coaches currently on Calendly who need to add payment collection to their flow',
+      'Coaches comparing scheduling tools before committing to a setup',
+      'New coaches figuring out the right stack for a paid practice from day one',
     ],
     problem: {
-      heading: 'What Calendly gets wrong for coaches',
+      heading: 'Where Calendly works — and where it breaks down for paid coaching',
       points: [
-        'Calendly was designed for B2B sales and internal scheduling — contexts where payment isn\'t part of the flow. Coaching is different. You need payment to hold a slot.',
-        'Calendly\'s Stripe integration requires a paid Calendly plan and manual configuration. Clients can still book without paying if the integration isn\'t set up exactly right.',
-        'There is no video room. After a client books through Calendly, you still have to generate a Zoom link, add it to the event, and hope the client finds it.',
+        'For free discovery calls, internal scheduling, and meeting coordination, Calendly is a genuinely good tool. The limitation is paid sessions specifically.',
+        'Payment integration in Calendly requires a paid plan and a manual Stripe webhook setup. Even when configured correctly, clients can technically hold a slot without payment completing — booking and payment are separate flows.',
+        'There is no video room. After a client books through Calendly, you still need to generate a Zoom or Google Meet link, attach it to the calendar event, and ensure the client receives it before every session.',
       ],
     },
     solution: {
-      heading: 'What CallSesh does instead',
+      heading: 'What paid coaching sessions actually need',
       points: [
-        'Payment is required at booking. Clients cannot hold a time slot without completing card payment. No configuration needed — it\'s how the product works by default.',
-        'A private video room is created automatically for every booking. Clients receive the link in their confirmation email. No Zoom, no Google Meet, no extra steps.',
-        'One flat pricing model — no per-seat fees, no higher-tier requirements to unlock payment. The 10% platform fee covers the cost of the platform.',
+        'Payment required at booking time — not as an optional add-on, but as the default. Slots confirm only when payment clears.',
+        'An automatic video room tied to each booking, sent to the client in the confirmation email. No manual link generation for every session.',
+        'Session history and client records — not just a calendar of upcoming events.',
+        'A single dashboard covering scheduling, payment, and sessions — not three tools configured to talk to each other.',
       ],
     },
     comparison: {
@@ -314,13 +318,19 @@ const pages: PseoPage[] = [
         a: 'Under five minutes. You connect Stripe, set your availability, create a session type, and your booking page is live.',
       },
     ],
-    ctaHeading: 'Switch from Calendly to a tool built for paid coaching',
+    ctaHeading: 'Switch to a tool built for paid coaching sessions',
     ctaBody: 'Set up in under five minutes. First 10 sessions are free.',
     related: [
-      { label: 'Booking software guide for coaches', href: '/coaching-booking-software' },
+      { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-alternative-for-coaches' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
-      { label: 'Video coaching platform', href: '/video-coaching-platform' },
     ],
+    contextualNote: {
+      prefix: 'Ready to switch? See exactly how CallSesh works as a ',
+      linkText: 'Calendly alternative for coaches',
+      href: '/alternatives/calendly-alternative-for-coaches',
+      suffix: ' — built for paid sessions from the ground up.',
+    },
   },
 
   {
@@ -385,6 +395,7 @@ const pages: PseoPage[] = [
     ctaHeading: 'Make your time billable from the first booking',
     ctaBody: 'Set up your coaching page in minutes. First 10 sessions are free.',
     related: [
+      { label: 'Booking software for executive coaches', href: '/for/executive-coaches' },
       { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
       { label: 'Coaching business software', href: '/coaching-business-software' },
       { label: 'Coach payment processing', href: '/coach-payment-processing' },
@@ -472,6 +483,7 @@ const pages: PseoPage[] = [
     ctaBody: 'No credit card required to start. First 10 sessions are free.',
     related: [
       { label: 'Zoom alternative for coaching', href: '/alternatives/zoom-alternative-for-coaching' },
+      { label: 'Acuity alternative for coaches', href: '/alternatives/acuity-alternative-for-coaches' },
       { label: 'Complete coaching platform', href: '/all-in-one-coaching-platform' },
       { label: 'Booking software built for paid coaching', href: '/coaching-booking-software' },
     ],
@@ -716,9 +728,10 @@ const pages: PseoPage[] = [
     ctaHeading: 'Replace your entire coaching tool stack with one platform',
     ctaBody: 'Booking, payment, and video. No integrations needed. First 10 sessions free.',
     related: [
+      { label: 'Online coaching platform', href: '/online-coaching-platform' },
       { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-alternative-for-coaches' },
       { label: 'Zoom alternative for coaching', href: '/alternatives/zoom-alternative-for-coaching' },
-      { label: 'Coaching business software', href: '/coaching-business-software' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
     ],
     contextualNote: {
       prefix: 'CallSesh is the ',
@@ -791,6 +804,7 @@ const pages: PseoPage[] = [
     ctaHeading: 'Run your coaching business from one dashboard',
     ctaBody: 'Booking, payment, client notes, and video. No spreadsheets required.',
     related: [
+      { label: 'Coaching client management software', href: '/coaching-client-management-software' },
       { label: 'One platform for all coaching tools', href: '/all-in-one-coaching-platform' },
       { label: 'Tools for coaching business', href: '/tools-for-coaching-business' },
       { label: 'Coaching booking software', href: '/coaching-booking-software' },
@@ -942,6 +956,7 @@ const pages: PseoPage[] = [
     ctaBody: 'Clients book, pay, and join your session in one flow. First 10 sessions free.',
     related: [
       { label: 'Simple coaching booking system', href: '/simple-coaching-booking-system' },
+      { label: 'Booking software for health coaches', href: '/for/health-coaches' },
       { label: 'Tools for coaching business', href: '/tools-for-coaching-business' },
       { label: 'Booking software for fitness coaches', href: '/for/fitness-coaches' },
     ],
@@ -1017,6 +1032,7 @@ const pages: PseoPage[] = [
     ctaBody: 'Clients book, pay, and join your session automatically. First 10 sessions free.',
     related: [
       { label: 'Simple booking system for coaches', href: '/simple-coaching-booking-system' },
+      { label: 'Booking software for health coaches', href: '/for/health-coaches' },
       { label: 'Booking software for life coaches', href: '/for/life-coaches' },
       { label: 'Online session booking software', href: '/coaching-booking-software' },
     ],
@@ -1100,6 +1116,981 @@ const pages: PseoPage[] = [
       linkText: 'simplest coaching booking system',
       href: 'https://callsesh.com',
       suffix: ' that connects scheduling, payment, and video in one link.',
+    },
+  },
+
+  {
+    path: '/coaching-scheduling-software',
+    title: 'Coaching Scheduling Software — Set Your Hours, Let Clients Book | CallSesh',
+    description:
+      'Stop coordinating session times by email. Set your availability once and let clients self-schedule into paid slots. Coaching scheduling software with built-in payment and video.',
+    h1: 'Coaching Scheduling Software That Eliminates Calendar Back-and-Forth',
+    intro:
+      'Managing your coaching schedule shouldn\'t require email threads, time zone math, or chasing clients to confirm. Coaching scheduling software lets you set your availability once — clients pick a slot that works for them, pay upfront, and receive a video room link automatically. No calendar ping-pong. No unpaid bookings. No manual coordination.',
+    forWho: [
+      'Coaches spending 20+ minutes per new client just coordinating a session time',
+      'Coaches dealing with time zone confusion and accidental double bookings',
+      'Coaches on Calendly who need payment built directly into the scheduling flow',
+      'Coaches who want client-facing scheduling that also handles video and reminders',
+    ],
+    problem: {
+      heading: 'Why manual session scheduling doesn\'t scale',
+      points: [
+        'Coordinating times via email or DM with every new client wastes 15–30 minutes per booking. A scheduling link solves this — but only if payment is collected at the same time, or clients can hold slots without committing.',
+        'Time zone errors are common when coaches and clients are in different regions. Without automatic timezone display, clients show up at the wrong time — or not at all.',
+        'Generic scheduling tools don\'t enforce payment. A client books a slot, something comes up, and they cancel last-minute with nothing on the line. You lose that hour with no compensation.',
+        'Managing a coaching calendar, a payment processor, and a video tool as three separate flows means three places to check before every session.',
+      ],
+    },
+    solution: {
+      heading: 'Set your schedule once — clients book, pay, and confirm automatically',
+      points: [
+        'Define your weekly coaching hours in the dashboard. Clients see only the slots you\'ve opened, displayed in their own timezone automatically.',
+        'Payment is required at the time of scheduling. Confirmed sessions are paid sessions — no unpaid gaps in your calendar.',
+        'Session confirmation emails go to both coach and client the moment payment clears, including the private video room link. No reminders to send manually.',
+        'Manage everything from a single dashboard: upcoming sessions, client history, and earnings. Nothing split across external tools.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Generic Scheduling Software',
+      rows: [
+        { feature: 'Payment at scheduling', them: 'Requires add-on or integration', us: 'Built in by default' },
+        { feature: 'Automatic video room', them: 'No — use Zoom separately', us: 'Yes — created per booking' },
+        { feature: 'Timezone display for clients', them: 'Varies by tool', us: 'Yes, automatic' },
+        { feature: 'No-show protection', them: 'None — free bookings allowed', us: 'Payment required to confirm' },
+        { feature: 'Session history per client', them: 'No', us: 'Yes' },
+        { feature: 'Purpose-built for paid coaching', them: 'No — general use', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Set your weekly coaching hours', detail: 'Define which days and hours clients can schedule. Closed hours are automatically blocked — no double bookings.' },
+      { step: 'Create your session types', detail: 'Name your session, set the duration (30, 60, or 90 min), and set your price. Multiple types can appear on one booking page.' },
+      { step: 'Share your scheduling link', detail: 'Send your CallSesh URL anywhere. Clients pick a slot in their local timezone — no time zone math on either side.' },
+      { step: 'Clients pay and confirm', detail: 'Slots are held only after payment clears. The confirmed session appears in your dashboard immediately with the video link ready.' },
+    ],
+    faq: [
+      {
+        q: 'How does the scheduling handle different time zones?',
+        a: 'Your availability is defined in your local timezone. When clients open your booking page, times are automatically displayed in their local timezone. No manual adjustment needed on either side.',
+      },
+      {
+        q: 'Can I block off time for other commitments?',
+        a: 'Yes. Your availability windows are set by you — hours you are not available simply aren\'t shown to clients. You can update availability from the dashboard at any time.',
+      },
+      {
+        q: 'What happens when a time slot fills up?',
+        a: 'Once a slot is booked, it disappears from the client-facing calendar automatically. No double bookings.',
+      },
+      {
+        q: 'Does CallSesh send session reminders?',
+        a: 'Clients receive a confirmation email with their video room link immediately when they book. Automated pre-session reminders are planned for a future update.',
+      },
+      {
+        q: 'Can I offer multiple session types at different lengths and prices?',
+        a: 'Yes. Create as many session types as you need — a 30-minute check-in and a 90-minute deep dive can both appear on the same booking page, each with their own price.',
+      },
+      {
+        q: 'How is this different from general coaching booking software?',
+        a: 'The focus here is on the scheduling and calendar layer specifically: availability management, self-booking, and timezone handling. CallSesh also handles payment and video in the same flow — but the scheduling piece is what eliminates the back-and-forth.',
+      },
+    ],
+    ctaHeading: 'Stop coordinating times by email — let your schedule do it',
+    ctaBody: 'Set your coaching hours once. Clients book the slots that work for them and pay upfront.',
+    related: [
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coaching session software', href: '/coaching-session-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+      { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-alternative-for-coaches' },
+    ],
+    contextualNote: {
+      prefix: 'CallSesh also handles ',
+      linkText: 'coach payment processing',
+      href: '/coach-payment-processing',
+      suffix: ' — payment is collected at scheduling time, not after the session.',
+    },
+  },
+
+  {
+    path: '/alternatives/acuity-alternative-for-coaches',
+    title: 'Acuity Scheduling Alternative for Coaches — Built-in Payment and Video | CallSesh',
+    description:
+      'Acuity Scheduling handles appointments but lacks built-in video for coaching sessions. CallSesh adds payment-at-booking and automatic video rooms in a single coaching platform.',
+    h1: 'The Acuity Scheduling Alternative Built for Paid Coaching Sessions',
+    intro:
+      'Acuity Scheduling is capable appointment software with solid calendar management and payment options. For coaches running paid 1-on-1 sessions, though, there are still gaps: payment at booking requires configuration, there is no built-in video room, and client session history lives separately from your scheduling tool. CallSesh is built specifically for paid coaching — scheduling, payment, and video in one booking link, with no integration work required.',
+    forWho: [
+      'Coaches using Acuity who still manage Zoom links separately for every session',
+      'Coaches on Acuity who want payment enforced at booking without manual configuration',
+      'Coaches comparing scheduling tools before committing to a multi-tool setup',
+      'New coaches who want everything in one place from day one',
+    ],
+    problem: {
+      heading: 'Where Acuity Scheduling falls short for paid coaching',
+      points: [
+        'Acuity can collect payment at booking, but it requires configuration through intake forms and payment step settings. Mistakes in that setup let bookings through unpaid — and you may not know until the session is about to start.',
+        'There is no built-in video room. After a client books through Acuity, you still need to generate a Zoom or Google Meet link, attach it to the confirmation email, and repeat that process for every single session.',
+        'Acuity is general-purpose appointment software built for salons, photographers, and service businesses broadly. The coaching session workflow — paid slot, private video, session notes, client history — is not what it was designed for.',
+      ],
+    },
+    solution: {
+      heading: 'One booking link — scheduling, payment, and video handled automatically',
+      points: [
+        'Payment is required at booking by default. Clients cannot hold a session slot without completing card payment. No configuration, no optional payment forms — this is how the product works out of the box.',
+        'Every booking automatically generates a private video room. The room link is sent to the client in their confirmation email. No Zoom account, no manual link generation, no extra steps.',
+        'Your entire coaching schedule — availability, session types, client history, session notes, and earnings — lives in one dashboard. No context switching between tools.',
+        'Flat, transparent pricing: 10% platform fee per session. No per-seat fees, no tier locks to unlock key features.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Acuity Scheduling',
+      rows: [
+        { feature: 'Payment required at booking', them: 'Optional — requires configuration', us: 'On by default, always enforced' },
+        { feature: 'Built-in video room', them: 'No — use Zoom or Meet', us: 'Yes — created per booking' },
+        { feature: 'No-show protection', them: 'Depends on payment setup', us: 'Payment required to confirm slot' },
+        { feature: 'Session notes per client', them: 'No', us: 'Yes' },
+        { feature: 'Purpose-built for paid coaching', them: 'No — general appointments', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your CallSesh account', detail: 'Sign up, connect Stripe, and set your availability. Under five minutes.' },
+      { step: 'Define your session types', detail: 'Create 1-on-1 coaching sessions with names, durations, and prices. Your booking page goes live immediately.' },
+      { step: 'Share your link', detail: 'One URL for scheduling, payment, and video. Replace your Acuity link wherever you\'ve shared it.' },
+      { step: 'Clients book, pay, and show up', detail: 'Payment clears, a video room is created, and confirmation is sent automatically. No follow-up required on your end.' },
+    ],
+    faq: [
+      {
+        q: 'Does Acuity require payment at booking?',
+        a: 'Acuity can collect payment at booking, but it is configured through intake forms and payment step settings rather than enforced by default. In CallSesh, payment is the booking — the slot does not confirm until the card clears, with no setup required.',
+      },
+      {
+        q: 'How long does switching from Acuity take?',
+        a: 'Under ten minutes. Create your CallSesh account, connect Stripe, set your availability, and create your first session type. Your booking page is live immediately.',
+      },
+      {
+        q: 'Can I keep Acuity for non-coaching bookings?',
+        a: 'Yes. They are independent platforms. If you use Acuity for other service types, you can keep it running while switching coaching sessions to CallSesh.',
+      },
+      {
+        q: 'Does CallSesh support intake forms?',
+        a: 'Not currently. Session types, pricing, and a simple booking flow are supported. Intake form support is on the roadmap.',
+      },
+      {
+        q: 'What about calendar sync?',
+        a: 'CallSesh manages your coaching schedule internally. Google Calendar sync is on the roadmap.',
+      },
+    ],
+    ctaHeading: 'Switch to a booking tool built specifically for paid coaching',
+    ctaBody: 'Scheduling, payment, and video in one link. First 10 sessions free.',
+    related: [
+      { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-alternative-for-coaches' },
+      { label: 'Practice.do alternative for coaches', href: '/alternatives/practice-alternative-for-coaches' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coach payment processing', href: '/coach-payment-processing' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh compares to other tools in the ',
+      linkText: 'coaching software alternatives',
+      href: '/alternatives',
+      suffix: ' overview.',
+    },
+  },
+
+  {
+    path: '/for/health-coaches',
+    title: 'Booking Software for Health Coaches — CallSesh',
+    description:
+      'Simple booking software for health coaches who run paid 1-on-1 sessions. Let clients schedule, pay upfront, and join video sessions without back-and-forth coordination.',
+    h1: 'Booking Software for Health Coaches Running Paid Online Sessions',
+    intro:
+      'Health coaching is relationship-driven work — accountability check-ins, nutrition reviews, habit-building sessions, and progress calls. The business side of it should stay out of the way. That means clients who book their own slots, pay before sessions start, and can join a video call without downloading anything. CallSesh gives health coaches a booking page that handles scheduling, payment, and video in one client-facing link.',
+    forWho: [
+      'Health and wellness coaches transitioning to paid online 1-on-1 sessions',
+      'Nutrition coaches and lifestyle coaches booking check-ins and consults',
+      'Health coaches currently coordinating sessions through email or DMs',
+      'Coaches who want clients to pay upfront without sending invoices after the fact',
+    ],
+    problem: {
+      heading: 'Why generic booking tools add friction to health coaching sessions',
+      points: [
+        'Coordinating session times via email or social media DMs is slow and unprofessional. Generic scheduling links solve part of this — but only if they also collect payment, otherwise clients book with no financial commitment.',
+        'Invoicing after a session is especially awkward in health coaching. The relationship is built on trust and accountability — following up on a late invoice undermines both.',
+        'Most scheduling tools require a separate Zoom setup for every session. Generating and sharing links manually adds admin before every call and increases the chance something goes wrong right before you start.',
+        'Without upfront payment, no-shows and last-minute cancellations cost health coaches income and calendar slots that could have gone to committed clients.',
+      ],
+    },
+    solution: {
+      heading: 'A booking page that handles scheduling, payment, and video for health coaches',
+      points: [
+        'Clients book and pay in a single step. The session slot is confirmed only after payment clears — no unpaid bookings, no invoices to send.',
+        'A private video room is created automatically for every booking. Clients receive the link in their confirmation email and join with one click from any browser — no app required.',
+        'Set up different session types for different engagements: initial consultations, weekly check-ins, nutrition reviews, or accountability calls — each with its own duration and price.',
+        'Upcoming sessions, past client notes, and session history are all tracked in the CallSesh dashboard.',
+      ],
+    },
+    workflow: [
+      { step: 'Create your session types', detail: 'Set up session types for the services you offer — initial consults, weekly check-ins, or accountability calls. Each gets its own price and duration.' },
+      { step: 'Set your coaching hours', detail: 'Block your available hours in the dashboard. Clients book directly into open slots in their own timezone.' },
+      { step: 'Share your booking link', detail: 'Add your CallSesh URL to your website, Instagram bio, or email signature.' },
+      { step: 'Coach without the admin', detail: 'Payment, confirmation, and video room are all handled automatically. Show up and focus on your client.' },
+    ],
+    faq: [
+      {
+        q: 'Is CallSesh suitable for health coaching conversations?',
+        a: 'CallSesh uses browser-based video powered by Daily.co, which runs over encrypted connections. It is designed for coaching conversations, not medical treatment or clinical care. It is not a HIPAA-compliant medical platform.',
+      },
+      {
+        q: 'Can I offer free discovery calls through CallSesh?',
+        a: 'Yes. Set any session type to $0 and there is no platform fee on free sessions. Discovery calls work alongside paid session types on the same booking page.',
+      },
+      {
+        q: 'Can I create different session types for different services?',
+        a: 'Yes. Create as many session types as you need — a 30-minute check-in and a 60-minute initial consultation can both be available on the same booking page with their own prices.',
+      },
+      {
+        q: 'What do clients need to join a session?',
+        a: 'Just a browser. No app download, no account creation. Clients click the link in their confirmation email and the video room opens.',
+      },
+      {
+        q: 'Can I add session notes for each client?',
+        a: 'Yes. After a session, you can add notes to the client\'s record in the dashboard. Notes are tied to that client and persist across all sessions.',
+      },
+    ],
+    ctaHeading: 'Set up your health coaching booking page today',
+    ctaBody: 'Clients book, pay, and join your session in one flow. First 10 sessions free.',
+    related: [
+      { label: 'Booking software for life coaches', href: '/for/life-coaches' },
+      { label: 'Booking software for fitness coaches', href: '/for/fitness-coaches' },
+      { label: 'Simple coaching booking system', href: '/simple-coaching-booking-system' },
+    ],
+    contextualNote: {
+      prefix: 'CallSesh is ',
+      linkText: 'booking software for coaches',
+      href: '/for',
+      suffix: ' of all types — health, life, fitness, and business.',
+    },
+  },
+
+  {
+    path: '/alternatives/practice-alternative-for-coaches',
+    title: 'Practice.do Alternative for Coaches — Built-in Video and Upfront Payment | CallSesh',
+    description:
+      'Practice.do is a full coaching CRM. If your priority is paid session booking with built-in video and no admin overhead, CallSesh is a more focused alternative.',
+    h1: 'A Practice.do Alternative Built Around Paid Session Delivery',
+    intro:
+      'Practice.do is coaching-specific software with a broad feature set: client portals, contracts, intake forms, and CRM-style client management. That depth is genuinely useful for coaches who need all of it. But if what you need most is a clean way for clients to book, pay upfront, and join a video call — Practice is more complex than the job requires, and still lacks built-in video. CallSesh focuses on exactly that workflow: one booking link, payment required at booking, private video room created automatically.',
+    forWho: [
+      'Coaches evaluating Practice.do who primarily need booking, payment, and video',
+      "Coaches who find Practice's feature set broader than their current needs",
+      'Coaches who want clients booking and paying in a single step without form-heavy onboarding',
+      'New coaches who want a focused, low-overhead tool to start taking paid sessions today',
+    ],
+    problem: {
+      heading: 'When a full coaching CRM is more than you need right now',
+      points: [
+        "Practice.do covers contracts, intake forms, client portals, resource libraries, and CRM-style notes. If you're running a high-volume practice with ongoing client engagements, that depth is valuable. If you're focused on booking and delivering paid sessions, it's overhead.",
+        'Practice.do does not include built-in video. Coaching sessions still run through Zoom or another conferencing tool — meaning you generate and share links manually, separately from each booking.',
+        "The fuller the feature set, the longer the configuration process. Getting Practice.do set up for your specific workflow — intake forms, packages, payment settings — takes meaningful time before your first session.",
+        'Practice.do pricing combined with a separate Zoom subscription can exceed what a simpler, more focused platform charges.',
+      ],
+    },
+    solution: {
+      heading: 'Booking, payment, and video — without the CRM overhead',
+      points: [
+        'CallSesh is purpose-built for paid session delivery. Clients book, pay, and receive a private video room — in one flow, without intake forms, contracts, or portals in the way.',
+        'Built-in video means no Zoom. Every confirmed booking generates a private, browser-based room. The client gets the link in their confirmation email. Nothing to configure, nothing to share manually.',
+        'Payment is required at booking by default. There are no invoices, no payment reminders, and no sessions that start unpaid.',
+        "Session history, client notes, and earnings all live in one dashboard. If that covers your operational needs, you don't need a full CRM on top.",
+      ],
+    },
+    comparison: {
+      theyLabel: 'Practice.do',
+      rows: [
+        { feature: 'Built-in video room', them: 'No — requires Zoom or Meet', us: 'Yes — created per booking' },
+        { feature: 'Payment required at booking', them: 'Invoicing-based by default', us: 'On by default, always enforced' },
+        { feature: 'No-show protection', them: 'Minimal — payment after session', us: 'Payment required to confirm slot' },
+        { feature: 'Client portal and contracts', them: 'Yes — full CRM features', us: 'No — focused on session delivery' },
+        { feature: 'Setup time to first session', them: 'Longer — forms, packages, configuration', us: 'Under five minutes' },
+        { feature: 'Purpose-built for paid session flow', them: 'No — broader coaching CRM', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your CallSesh account', detail: 'Sign up, connect Stripe, and set your availability. Under five minutes from account to live booking page.' },
+      { step: 'Add your session types', detail: 'Create the session types you offer — 30-minute calls, 60-minute deep dives — with their durations and prices.' },
+      { step: 'Share your booking link', detail: 'One URL handles scheduling, payment, and video. Send it in email, add it to your bio, or link to it from your website.' },
+      { step: 'Clients book, pay, and show up', detail: 'Payment clears, a private video room is created, and a confirmation email goes out. You join at session time from the dashboard.' },
+    ],
+    faq: [
+      {
+        q: 'Is CallSesh a CRM like Practice.do?',
+        a: "Not in the traditional sense. CallSesh tracks session history, client records, and session notes — but it does not have intake forms, contracts, resource libraries, or a client portal. If those features are central to your practice, Practice may be a better fit. If your primary need is reliable paid session booking with video included, CallSesh is more focused.",
+      },
+      {
+        q: 'Does Practice.do include built-in video?',
+        a: 'No. Practice.do integrates with Zoom for session delivery. You still need a separate Zoom account and must generate or attach meeting links to sessions manually.',
+      },
+      {
+        q: 'How does pricing compare?',
+        a: "Practice.do pricing varies by plan. Combined with a Zoom subscription, total monthly costs often exceed CallSesh Starter at $19.99/month plus a 10% per-session fee. For coaches focused on session delivery rather than full CRM features, CallSesh is typically more cost-efficient.",
+      },
+      {
+        q: 'Can I switch from Practice.do to CallSesh without losing client history?',
+        a: "CallSesh does not have a migration import tool. You'd re-enter active client session types and start fresh. Historic session notes from Practice would stay in Practice during any transition.",
+      },
+      {
+        q: 'What if I eventually need features Practice.do has — contracts, intake forms?',
+        a: 'CallSesh is built for session delivery. Intake forms are on the roadmap; contracts are not currently planned. If your practice grows to require contract management and a client portal, Practice.do may serve that stage better.',
+      },
+    ],
+    ctaHeading: 'Start taking paid coaching sessions today — no CRM setup required',
+    ctaBody: 'Booking, payment, and video in under five minutes. First 10 sessions free.',
+    related: [
+      { label: 'HoneyBook alternative for coaches', href: '/alternatives/honeybook-alternative-for-coaches' },
+      { label: 'Acuity alternative for coaches', href: '/alternatives/acuity-alternative-for-coaches' },
+      { label: 'Calendly alternative for coaches', href: '/alternatives/calendly-alternative-for-coaches' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh compares to other tools in the ',
+      linkText: 'coaching software alternatives',
+      href: '/alternatives',
+      suffix: ' overview.',
+    },
+  },
+
+  {
+    path: '/for/executive-coaches',
+    title: 'Booking Software for Executive Coaches — CallSesh',
+    description:
+      'Executive coaches need a professional, friction-free booking experience that collects payment upfront and handles video sessions without manual coordination. That is what CallSesh is built for.',
+    h1: 'Booking Software for Executive Coaches Who Bill for High-Value Sessions',
+    intro:
+      'Executive coaching operates at a premium. Your clients are senior leaders with demanding schedules, global time zones, and high expectations for professionalism. Every piece of your client experience — from the first booking to the session itself — should reflect the quality of the work you do. CallSesh gives executive coaches a clean, professional booking page that handles scheduling, payment, and video in a single flow. No invoices. No Zoom link coordination. No scheduling back-and-forth.',
+    forWho: [
+      'Executive and leadership coaches running high-value paid sessions',
+      'Coaches working with C-suite and senior leaders who pay by corporate card',
+      'Executive coaches with global clients across multiple time zones',
+      'Coaches building a solo executive coaching practice and want a professional operational setup from day one',
+    ],
+    problem: {
+      heading: 'Why executive coaching sessions demand a better booking setup',
+      points: [
+        'Scheduling back-and-forth with a senior executive wastes time on both sides. When a client is a VP or CEO, every email asking "does Tuesday at 3pm work?" adds unnecessary friction to a relationship that should feel effortless.',
+        'Invoicing after a session is misaligned with premium professional services. Sending a payment request after coaching a senior leader creates an awkward dynamic that upfront payment eliminates entirely.',
+        "Executive clients are often across multiple time zones — New York, London, Singapore. Generic scheduling tools display times in your local zone and leave the client to do the math. That math fails, and sessions start late or not at all.",
+        'Manually generating and sending a Zoom link for every session is low-status admin that takes time and occasionally goes wrong. A missed link or an expired meeting URL is unprofessional at any level — especially at this one.',
+      ],
+    },
+    solution: {
+      heading: 'A professional booking experience that matches the quality of your work',
+      points: [
+        'Clients see your availability in their own time zone automatically. They pick a slot that works, pay by corporate or personal card, and receive a confirmation with their private video link — all without an email exchange.',
+        'Payment is collected at booking. Sessions are confirmed only when payment clears. No invoices to send, no outstanding balances to manage, no post-session payment conversations.',
+        'Every booking generates a private, browser-based video room. The client clicks a link from their confirmation email and joins — no Zoom account, no app update, no friction right before the call starts.',
+        'Your session schedule, client history, and earnings are all tracked in one dashboard. Nothing to reconcile across separate tools.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Generic scheduling tools',
+      rows: [
+        { feature: 'Payment at booking', them: 'Requires add-on or manual setup', us: 'Built in, always enforced' },
+        { feature: 'Automatic video room', them: 'No — generate and share manually', us: 'Yes — created per booking' },
+        { feature: 'Timezone handling', them: 'Varies — often manual', us: 'Automatic, client-facing' },
+        { feature: 'No-show protection', them: 'None — free bookings allowed', us: 'Payment required to confirm slot' },
+        { feature: 'Professional client experience', them: 'Fragmented across tools', us: 'Single unified booking flow' },
+        { feature: 'Purpose-built for paid coaching', them: 'No — general scheduling', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your session types', detail: 'Define your executive coaching sessions — 60-minute leadership sessions, 90-minute strategy calls, quarterly reviews — each with its own duration and price.' },
+      { step: 'Set your availability', detail: 'Block your coaching hours once. Clients book into the slots you have open, displayed in their local time zone.' },
+      { step: 'Share one link', detail: 'Your CallSesh URL goes in your email signature, LinkedIn profile, or website. Clients book and pay without any coordination required from you.' },
+      { step: 'Join at session time', detail: 'Open the session from your dashboard. Your client joins from the link in their confirmation email. No coordination, no extra steps.' },
+    ],
+    faq: [
+      {
+        q: 'Can clients pay with a corporate card?',
+        a: 'Yes. CallSesh accepts all major credit and debit cards through Stripe — corporate cards included. Clients can use whatever card their company issues for business expenses.',
+      },
+      {
+        q: 'Does CallSesh handle international clients and time zones automatically?',
+        a: "Yes. Your availability is defined in your local time zone and displayed in the client's local time when they view your booking page. No manual conversion needed on either side.",
+      },
+      {
+        q: 'Is the booking experience professional enough for C-suite clients?',
+        a: "The booking page is clean, card-based, and focused. It presents your session types and availability without prominent third-party branding. Clients see your professional booking page, not a generic scheduling tool.",
+      },
+      {
+        q: 'Can I offer different session types for different engagement formats?',
+        a: 'Yes. Create separate session types for each format you offer — a 60-minute coaching session, a 90-minute strategy session, an executive team debrief — each with its own price and duration on the same booking page.',
+      },
+      {
+        q: 'What happens to my income if a client no-shows?',
+        a: "Because clients pay at booking, their session fee is already collected before the call starts. A no-show doesn't cost you income. You can choose to offer a reschedule at your discretion.",
+      },
+      {
+        q: 'Does CallSesh support session notes for ongoing client engagements?',
+        a: 'Yes. After each session, you can add notes to the client record in the dashboard. Notes persist across sessions so you can track progress and context for ongoing executive coaching relationships.',
+      },
+    ],
+    ctaHeading: 'Give your executive coaching practice a professional booking experience',
+    ctaBody: 'Scheduling, payment, and video in one link. Set up in under five minutes. First 10 sessions free.',
+    related: [
+      { label: 'Booking software for business coaches', href: '/for/business-coaches' },
+      { label: 'Booking software for career coaches', href: '/for/career-coaches' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+    ],
+    contextualNote: {
+      prefix: 'CallSesh is ',
+      linkText: 'coaching software for every type of coach',
+      href: '/for',
+      suffix: ' — business, executive, life, health, and fitness.',
+    },
+  },
+
+  {
+    path: '/for/career-coaches',
+    title: 'Booking Software for Career Coaches — CallSesh',
+    description:
+      'Career coaches need a frictionless way for clients to book, pay upfront, and join sessions for interview prep, resume reviews, and career strategy calls. CallSesh handles the entire flow in one link.',
+    h1: 'Booking Software for Career Coaches Running Paid 1-on-1 Sessions',
+    intro:
+      'Career coaching clients are often in motion — actively job searching, prepping for an interview next week, or navigating a career pivot under time pressure. They need to book quickly, pay cleanly, and show up ready to work. CallSesh gives career coaches a professional booking page where clients schedule a session, pay upfront, and receive a private video room link in one flow. No back-and-forth scheduling. No invoices to chase. No manual video link coordination.',
+    forWho: [
+      'Career coaches offering interview prep, resume reviews, and strategy calls',
+      'Career coaches whose clients pay out of pocket and need a simple, professional payment experience',
+      'Coaches with clients across different time zones who need automatic timezone handling',
+      'Career coaches currently coordinating sessions via email, LinkedIn DMs, or social media',
+    ],
+    problem: {
+      heading: 'Why generic booking tools slow down career coaches',
+      points: [
+        'Career coaching clients often need to book quickly — an interview is in three days, a job offer expires this week, or a recruiter call is coming up. Scheduling back-and-forth by email adds delay that your client cannot afford.',
+        'Invoicing after a career coaching session creates awkward follow-up. Clients who have just had their resume reviewed or completed a mock interview have less urgency to pay promptly — and following up damages the professional relationship.',
+        'Career coaches frequently work across time zones. A client in San Francisco booking with a coach in London cannot reliably decode "Tuesday at 2pm" without automatic timezone display. Errors lead to missed sessions.',
+        'Managing a scheduling tool, a payment link, and a Zoom account as three separate systems adds admin overhead before and after every session — time that should go toward session prep and client follow-up.',
+      ],
+    },
+    solution: {
+      heading: 'A booking flow that matches how career coaching clients actually work',
+      points: [
+        'Clients book, pay, and get their video room link in one step. No email ping-pong, no separate payment request, no Zoom link to generate and send.',
+        'Payment is required at booking. Sessions confirm only when payment clears — so every session on your calendar is paid before it starts.',
+        'Timezone is handled automatically. Your availability is shown in the client\'s local time. A client in New York sees your London availability in their own zone without doing any math.',
+        'Create separate session types for each service you offer: mock interview, resume review, LinkedIn profile audit, job search strategy call — each with its own duration and price on the same booking page.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Generic scheduling tools',
+      rows: [
+        { feature: 'Payment at booking', them: 'Requires add-on or manual setup', us: 'Built in, always enforced' },
+        { feature: 'Automatic video room', them: 'No — generate and share manually', us: 'Yes — created per booking' },
+        { feature: 'Timezone display for clients', them: 'Varies — often manual', us: 'Automatic, client-facing' },
+        { feature: 'Multiple session types', them: 'Yes, on most tools', us: 'Yes' },
+        { feature: 'No-show protection', them: 'None — free bookings allowed', us: 'Payment required to confirm slot' },
+        { feature: 'Purpose-built for paid coaching', them: 'No — general scheduling', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your session types', detail: 'Add your career coaching services — mock interview, resume review, career strategy call — each with its own duration and price.' },
+      { step: 'Set your availability', detail: 'Define your coaching hours once. Clients book into open slots displayed in their local time zone.' },
+      { step: 'Share your booking link', detail: 'One URL goes in your LinkedIn bio, email signature, or website. Clients book and pay without any back-and-forth.' },
+      { step: 'Join at session time', detail: 'Open the session from your dashboard. Your client joins from their confirmation email link. No coordination required.' },
+    ],
+    faq: [
+      {
+        q: 'Can I offer different session types for different services?',
+        a: 'Yes. Create a separate session type for each service — a 60-minute mock interview, a 45-minute resume review, a 30-minute career strategy call — each with its own price and duration on the same booking page.',
+      },
+      {
+        q: 'Does CallSesh handle different time zones automatically?',
+        a: "Yes. Your availability is defined in your local time zone and displayed in the client's local time when they view your booking page. No manual conversion or clarification needed.",
+      },
+      {
+        q: 'Can clients pay by card even if their employer isn\'t covering the cost?',
+        a: 'Yes. Clients pay by any major credit or debit card through Stripe. Personal cards, corporate cards, and HSA/FSA cards with a Visa or Mastercard logo all work.',
+      },
+      {
+        q: 'What if a client needs to book urgently — same day or next day?',
+        a: "As long as you have availability open, clients can book any open slot — including short-notice slots. You control what's available; same-day booking works if that window is open.",
+      },
+      {
+        q: 'Can I add notes after a session?',
+        a: 'Yes. After each session, you can add notes to the client record in the dashboard. Notes persist across all sessions with that client — useful for tracking a client through a job search over multiple sessions.',
+      },
+      {
+        q: 'Is there a free plan?',
+        a: 'Yes. Your first 10 sessions are included at no cost, no credit card required. After that, Starter is $19.99/month for up to 40 sessions, or Pro at $49.99/month for unlimited sessions.',
+      },
+    ],
+    ctaHeading: 'Set up your career coaching booking page in under five minutes',
+    ctaBody: 'Clients book, pay, and join your session in one flow. First 10 sessions free.',
+    related: [
+      { label: 'Booking software for executive coaches', href: '/for/executive-coaches' },
+      { label: 'Booking software for business coaches', href: '/for/business-coaches' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+    ],
+    contextualNote: {
+      prefix: 'CallSesh is ',
+      linkText: 'coaching software for every type of coach',
+      href: '/for',
+      suffix: ' — career, executive, business, life, health, and fitness.',
+    },
+  },
+
+  {
+    path: '/alternatives/honeybook-alternative-for-coaches',
+    title: 'HoneyBook Alternative for Coaches — Focused on Paid Sessions, Not Projects | CallSesh',
+    description:
+      'HoneyBook is built for project-based creative businesses. If you run paid 1-on-1 coaching sessions and want booking, payment, and video without contract workflows, CallSesh is a more focused alternative.',
+    h1: 'A HoneyBook Alternative Built for Paid Coaching Sessions',
+    intro:
+      'HoneyBook is capable client management software with a strong feature set: contracts, proposals, questionnaires, automations, and project workflows. It was built for creative freelancers — photographers, event planners, designers — managing complex project engagements with multiple deliverables. Coaches who have adopted it often find it genuinely useful for contracts and intake, but still need Zoom for video and still manage invoicing separately from session scheduling. CallSesh is built for a different, simpler use case: a client books a paid session, pays upfront, and joins a private video room — in one flow, with no project management overhead.',
+    forWho: [
+      'Coaches using HoneyBook for contracts but still managing Zoom and payment separately',
+      'Coaches who find HoneyBook\'s project workflow overhead more than their session-based practice needs',
+      'Coaches evaluating tools and wanting booking, payment, and video in one place without CRM complexity',
+      'New coaches who want to take paid sessions immediately without a lengthy setup process',
+    ],
+    problem: {
+      heading: 'Where HoneyBook works well — and where it adds friction for session-based coaching',
+      points: [
+        'HoneyBook is genuinely good for contract management, project proposals, questionnaires, and automating multi-step client onboarding. If those are central to your practice, that depth has real value.',
+        'For coaching sessions specifically, HoneyBook still requires a separate video tool. Sessions run through Zoom or Google Meet — meaning you generate and share meeting links manually for every booking.',
+        'Payment in HoneyBook is invoice-based. Clients receive an invoice and pay it — before or after the session depending on your setup. That is different from payment enforced at booking time, where a slot cannot be confirmed without a completed card transaction.',
+        'HoneyBook was designed around project-based work: a defined scope, a contract, deliverables, and a project close. Session-based coaching — weekly 1-on-1 calls with no fixed project scope — is a different operating model that does not map cleanly onto that structure.',
+      ],
+    },
+    solution: {
+      heading: 'Booking, payment, and video designed for the coaching session workflow',
+      points: [
+        'Clients book a session type, pay by card, and receive a private video room link in a single flow. No proposal, no contract step, no separate invoice — just a confirmed, paid session.',
+        'Payment is enforced at booking by default. The slot does not confirm until the card clears. No outstanding invoices, no payment follow-up, no sessions that start unpaid.',
+        'Built-in video means no Zoom. Every confirmed booking generates a private, browser-based room sent to the client in their confirmation email.',
+        'Session history, client notes, and earnings are all tracked in one dashboard. If that is what your coaching practice actually needs to run, you do not need project pipelines and contract workflows on top of it.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'HoneyBook',
+      rows: [
+        { feature: 'Payment enforced at booking', them: 'Invoice-based — not enforced at booking', us: 'On by default, slot confirms on payment' },
+        { feature: 'Built-in video room', them: 'No — requires Zoom or Meet', us: 'Yes — created per booking' },
+        { feature: 'No-show protection', them: 'Depends on invoice timing', us: 'Payment required to confirm slot' },
+        { feature: 'Contracts and proposals', them: 'Yes — core feature', us: 'No — focused on session delivery' },
+        { feature: 'Setup time to first session', them: 'Longer — pipeline, contract, invoice config', us: 'Under five minutes' },
+        { feature: 'Purpose-built for paid session flow', them: 'No — project-based client management', us: 'Yes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your CallSesh account', detail: 'Sign up, connect Stripe, and set your availability. Under five minutes from account to live booking page.' },
+      { step: 'Add your session types', detail: 'Create session types for what you offer — strategy sessions, coaching calls, review sessions — each with a duration and price.' },
+      { step: 'Share your booking link', detail: 'One URL handles scheduling, payment, and video. Replace your HoneyBook booking link wherever you have shared it.' },
+      { step: 'Clients book, pay, and show up', detail: 'Payment clears, a video room is created, and a confirmation email goes out automatically. No follow-up required on your end.' },
+    ],
+    faq: [
+      {
+        q: 'Is HoneyBook good for coaching businesses?',
+        a: "HoneyBook has real strengths for coaches who need contract management, intake questionnaires, and client onboarding workflows. If those are central to how you run your practice, it serves that need well. Where it falls short is the session delivery layer — no built-in video, invoice-based payment rather than payment enforced at booking, and a project-centric structure that doesn't map cleanly onto a recurring session-based model.",
+      },
+      {
+        q: 'Does HoneyBook have built-in video for coaching sessions?',
+        a: 'No. HoneyBook does not include a built-in video room. Sessions still require a separate Zoom or Google Meet link that you generate and share manually for each booking.',
+      },
+      {
+        q: 'How does payment work differently in CallSesh vs. HoneyBook?',
+        a: 'HoneyBook uses an invoice-based payment model — you send an invoice and the client pays it, which can happen before or after the session. In CallSesh, payment is required to confirm the booking. The slot does not exist on your calendar until the card transaction completes.',
+      },
+      {
+        q: 'How long does switching take?',
+        a: 'Under ten minutes. Create your CallSesh account, connect Stripe, set your availability, and create your first session type. Your booking page is live immediately. You can keep HoneyBook running for contract-based work while switching session bookings to CallSesh.',
+      },
+      {
+        q: 'Can I keep HoneyBook for contracts and use CallSesh for sessions?',
+        a: "Yes. They are independent platforms. Some coaches use HoneyBook for initial client onboarding and contracts, then switch to CallSesh for ongoing session booking and delivery. There's no conflict.",
+      },
+    ],
+    ctaHeading: 'Take paid coaching sessions today — no project workflows required',
+    ctaBody: 'Booking, payment, and video in one link. Set up in under five minutes. First 10 sessions free.',
+    related: [
+      { label: 'Practice.do alternative for coaches', href: '/alternatives/practice-alternative-for-coaches' },
+      { label: 'Acuity alternative for coaches', href: '/alternatives/acuity-alternative-for-coaches' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh compares to other tools in the ',
+      linkText: 'coaching software alternatives',
+      href: '/alternatives',
+      suffix: ' overview.',
+    },
+  },
+
+  {
+    path: '/coaching-client-management-software',
+    title: 'Coaching Client Management Software — Track Sessions, Notes, and Bookings | CallSesh',
+    description:
+      'Manage your coaching clients without a complex CRM. CallSesh tracks session history, notes, and upcoming bookings in one dashboard — with a built-in booking and payment flow your clients use directly.',
+    h1: 'Coaching Client Management Software Built Around Sessions, Not Pipelines',
+    intro:
+      'Most coaches do not need a CRM. They need to know who their clients are, what sessions they have had, what notes came out of those sessions, and what is coming up next — without switching between a calendar, a notes app, a payment tool, and a spreadsheet. CallSesh gives coaches a session-focused client management layer: every client has a booking history, every session has notes, and clients book their next session directly through your booking page without any coordination required.',
+    forWho: [
+      'Coaches who track client session history across notes apps, emails, and calendars',
+      'Coaches who lose context between sessions and want session notes tied to the right client',
+      'Coaches whose clients have to DM or email to book a follow-up session',
+      'Coaches who want a cleaner operational setup without adopting a full enterprise CRM',
+    ],
+    problem: {
+      heading: 'What coaching client management actually breaks down to',
+      points: [
+        'Most coaches piece together client tracking from memory, a notes app, and whatever their booking tool shows. When a client comes back after six weeks, pulling up context across three places takes time you do not have before the session starts.',
+        'Generic CRM tools are built for sales teams: pipeline stages, deal values, lead scoring, and contact records. None of that maps onto the coaching session model — and configuring a CRM you only need 10% of wastes significant setup time.',
+        'When clients have to email or message to book a follow-up, the rebooking rate drops. Friction between sessions is where coaching relationships stall. A self-serve booking link keeps the momentum going.',
+        'Without session notes tied to a client record, insights from one session disappear before the next. You start rebuilding context every time instead of building on it.',
+      ],
+    },
+    solution: {
+      heading: 'Session history, notes, and booking — in one place, without CRM complexity',
+      points: [
+        'Every client in your CallSesh dashboard has a session history: past sessions, upcoming bookings, and notes you have added after each call — all tied to that client record.',
+        'After each session, add notes directly to the client record. They persist across every future session with that client. No separate notes app, no searching email threads.',
+        'Clients self-book their next session through your booking page. Payment is collected at booking — so the follow-up session is confirmed and paid before you even think about it.',
+        'Your full schedule — upcoming sessions, past clients, earnings — is visible in one dashboard. No reconciliation across separate tools.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Generic CRM software',
+      rows: [
+        { feature: 'Session history per client', them: 'Not designed for it', us: 'Yes — every session tied to client' },
+        { feature: 'Session notes per client', them: 'Custom fields or workarounds', us: 'Yes — native after each session' },
+        { feature: 'Client self-booking', them: 'Requires separate scheduling tool', us: 'Built in — booking page included' },
+        { feature: 'Payment at booking', them: 'Not included', us: 'Yes — enforced by default' },
+        { feature: 'Built-in video room', them: 'Not included', us: 'Yes — created per booking' },
+        { feature: 'Setup time', them: 'Days — pipeline config, fields, workflows', us: 'Under five minutes' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your client-facing booking page', detail: 'Set your availability, add session types with prices, and share your booking URL. Clients book and pay without involving you.' },
+      { step: 'Manage upcoming sessions from the dashboard', detail: 'All confirmed, paid sessions appear in your dashboard. Click to join a session at the scheduled time.' },
+      { step: 'Add session notes after each call', detail: 'After the session, add notes to the client record. They stay attached to that client across all future sessions.' },
+      { step: 'Let clients rebook themselves', detail: 'Your booking link is always live. Clients who want a follow-up session book and pay directly — no coordination required from you.' },
+    ],
+    faq: [
+      {
+        q: 'Does CallSesh replace a CRM?',
+        a: "For session-based coaching practices, it covers the client management layer you actually need: session history, notes per client, and a booking flow clients use themselves. It does not replace a CRM for coaches who need lead pipelines, deal tracking, or contact databases — that is a different tool for a different workflow.",
+      },
+      {
+        q: 'Can I see the full history of sessions with a specific client?',
+        a: 'Yes. Each client record in the dashboard shows past sessions, upcoming bookings, and any notes you have added. The full session history is tied to that client.',
+      },
+      {
+        q: 'Can I add notes after every session?',
+        a: 'Yes. After a session, you can add notes to the client record from the dashboard. Notes are saved to that client and remain accessible for every future session.',
+      },
+      {
+        q: 'Can clients book their own follow-up sessions?',
+        a: 'Yes. Your CallSesh booking page is always live. Clients visit the link, pick an available slot, and pay — no scheduling back-and-forth, no message thread required.',
+      },
+      {
+        q: 'Does CallSesh send reminders to clients?',
+        a: 'Clients receive a confirmation email with their session details and video room link when they book. Automated pre-session reminder emails are on the roadmap.',
+      },
+      {
+        q: 'What is the difference between this and coaching business software?',
+        a: 'Coaching business software covers the full operational layer: booking, payment, earnings tracking, and running the business. Client management software is the session-level layer specifically: client records, session history, notes, and the booking flow clients use to continue working with you.',
+      },
+    ],
+    ctaHeading: 'Manage your coaching clients without a complex CRM',
+    ctaBody: 'Session history, notes, and booking in one dashboard. First 10 sessions free.',
+    related: [
+      { label: 'Coaching session software', href: '/coaching-session-software' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh fits coaches of every type at the ',
+      linkText: 'use cases overview',
+      href: '/for',
+      suffix: ' — career, executive, business, life, health, and fitness coaching.',
+    },
+  },
+
+  {
+    path: '/coaching-billing-software',
+    title: 'Coaching Billing Software — Get Paid at Booking, Track Sessions, Skip Invoices | CallSesh',
+    description:
+      'Stop billing clients after the fact. CallSesh collects payment when clients book, tracks every paid session, and eliminates invoicing from your coaching workflow entirely.',
+    h1: 'Coaching Billing Software That Collects Payment Before Sessions Start',
+    intro:
+      'Billing software for coaches does not need to be accounting infrastructure. It needs to solve one problem cleanly: clients pay for sessions, coaches get paid, and nothing falls through the cracks between booking and payment. CallSesh handles the entire billing flow — clients pay by card at booking, sessions confirm only after payment clears, earnings are tracked in the dashboard, and Stripe handles the bank payout. No invoices to send, no outstanding balances to chase, no manual reconciliation between what was booked and what was paid.',
+    forWho: [
+      'Coaches who invoice clients after sessions and deal with delayed or missed payment',
+      'Coaches who use a payment link disconnected from their booking tool and manually match the two',
+      'Coaches transitioning from informal payment methods — Venmo, PayPal, bank transfer — to a professional billing setup',
+      'New coaches who want a clean billing workflow from their first paid session',
+    ],
+    problem: {
+      heading: 'Why coaching billing breaks down without the right workflow',
+      points: [
+        'Invoicing after a session puts payment at the end of the value exchange. Clients have already received the coaching — the urgency to pay drops immediately after the call ends, and following up on outstanding invoices is awkward in a relationship built on trust.',
+        'Using a separate payment link alongside a booking tool means matching every Stripe transaction to a calendar booking manually. When volumes grow, that matching fails silently — sessions go unpaid and you find out weeks later.',
+        'Informal payment methods create professional friction. Asking for a Venmo or bank transfer before or after a session signals that your practice is not yet set up like a real business — which affects client confidence and willingness to rebook.',
+        'Without a billing record tied to sessions, tracking what you have earned across clients and time periods requires manual work. Your financial picture is always incomplete.',
+      ],
+    },
+    solution: {
+      heading: 'Billing built into the booking flow — payment is required, not requested',
+      points: [
+        'Clients enter card details during booking. The session confirms only when payment clears. There is no invoice step, no follow-up required, and no session that starts unpaid.',
+        'Every paid session is recorded in the CallSesh dashboard with the session date, client, and amount. Your billing history is always current — no manual entry, no spreadsheet to maintain.',
+        'Stripe handles all payment processing and bank payouts. You connect a free Stripe account during setup; Stripe deposits earnings on its standard payout schedule without any action required from you.',
+        'Free sessions work too. Set any session type to $0 for discovery calls, trials, or comped sessions. The billing workflow handles both paid and free sessions in the same flow.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Invoice-based billing',
+      rows: [
+        { feature: 'When payment is collected', them: 'After the session — on invoice', us: 'At booking — before the session' },
+        { feature: 'No-show financial risk', them: 'High — unpaid booking, lost slot', us: 'None — payment confirms the slot' },
+        { feature: 'Invoice follow-up required', them: 'Yes — for every session', us: 'No — payment is automatic' },
+        { feature: 'Billing tied to session record', them: 'Manual matching required', us: 'Yes — linked automatically' },
+        { feature: 'Earnings dashboard', them: 'Separate tool or spreadsheet', us: 'Yes — in the coaching dashboard' },
+        { feature: 'Setup time', them: 'Invoicing tool + booking tool + reconciliation', us: 'Under five minutes' },
+      ],
+    },
+    workflow: [
+      { step: 'Connect Stripe during setup', detail: 'Link a free Stripe account. Stripe handles card processing, PCI compliance, and bank payouts on its standard schedule.' },
+      { step: 'Set your session prices', detail: 'Price each session type — 30-minute calls, 60-minute sessions, different service tiers. Prices display on your booking page.' },
+      { step: 'Client books and pays', detail: 'Client selects a slot and enters card details. Payment clears before the session is confirmed. No invoice sent.' },
+      { step: 'Track earnings in the dashboard', detail: 'Every paid session appears in your billing history with client, date, and amount. Stripe handles the bank payout automatically.' },
+    ],
+    faq: [
+      {
+        q: 'Does CallSesh replace invoicing software?',
+        a: 'For session-based coaching, yes — because CallSesh eliminates the need to invoice at all. Payment is collected during booking, so there are no outstanding invoices to manage. If your practice includes project-based work that requires formal invoices, you would still need a separate invoicing tool for that work.',
+      },
+      {
+        q: 'When do I get paid?',
+        a: "Payments are processed by Stripe and follow Stripe's standard payout schedule — typically two business days after a payment is captured. CallSesh tracks your earnings but does not manage payout timing; that is handled entirely by Stripe.",
+      },
+      {
+        q: 'What fees are involved?',
+        a: 'CallSesh charges a 10% platform fee per session. Stripe charges approximately 2.9% + 30¢ per transaction. Both are deducted automatically from each session payment — no manual calculation.',
+      },
+      {
+        q: 'Can I see a billing history for each client?',
+        a: 'Yes. Each client record in the dashboard includes session history with dates and amounts paid. Your overall earnings history is also visible in the dashboard.',
+      },
+      {
+        q: 'Does CallSesh handle refunds?',
+        a: 'Refunds can be issued through Stripe directly. CallSesh does not currently have a built-in refund flow in the dashboard — this is on the roadmap.',
+      },
+      {
+        q: 'Is this the same as coach payment processing?',
+        a: 'Coach payment processing refers specifically to how card transactions are handled at booking time. Coaching billing software is the broader workflow: how billing fits into your practice — collecting payment upfront, tracking what has been paid, avoiding invoicing, and maintaining a billing history across all clients and sessions.',
+      },
+    ],
+    ctaHeading: 'Replace your invoicing workflow with payment at booking',
+    ctaBody: 'Clients pay when they book. No invoices. No follow-up. First 10 sessions free.',
+    related: [
+      { label: 'Coach payment processing', href: '/coach-payment-processing' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coaching client management software', href: '/coaching-client-management-software' },
+      { label: 'All-in-one coaching platform', href: '/all-in-one-coaching-platform' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh compares to invoicing tools and payment add-ons in the ',
+      linkText: 'coaching software alternatives',
+      href: '/alternatives',
+      suffix: ' overview.',
+    },
+  },
+
+  {
+    path: '/online-coaching-platform',
+    title: 'Online Coaching Platform for Paid 1-on-1 Sessions — CallSesh',
+    description:
+      'Run a paid online coaching practice from one platform. CallSesh handles booking, payments, scheduling, reminders, and video — no tool switching required.',
+    h1: 'Online Coaching Platform Built for Paid 1-on-1 Sessions',
+    intro:
+      'An online coaching practice has a lot of moving parts: clients need to book a time, pay before the session, receive a reminder, and join a video room — all without confusion. Most coaches handle this across four or five separate tools that barely talk to each other. CallSesh brings the whole workflow into one platform. Clients get a clean booking experience. You get paid before every session. Sessions run in a private video room without a separate app.',
+    forWho: [
+      'Coaches building or scaling a paid online practice',
+      'Coaches replacing a multi-tool stack with one platform',
+      'Online coaches who want a professional, frictionless client experience',
+      'Coaches tired of managing booking, payment, and video in separate systems',
+    ],
+    problem: {
+      heading: 'What breaks when you run online coaching across multiple tools',
+      points: [
+        'Booking tools like Calendly don\'t enforce payment — clients can hold a slot without paying, which means unpaid no-shows are a recurring risk.',
+        'Video platforms like Zoom operate separately from your booking system. You manually generate a meeting link, copy it to a calendar invite, and hope the client finds it.',
+        'Payment tools don\'t connect to your session schedule. You invoice after the session or chase payment after the fact.',
+        'Reminders, confirmations, and session links come from different platforms and land in the client\'s inbox with no consistent format — which looks unprofessional.',
+      ],
+    },
+    solution: {
+      heading: 'One platform for your full online coaching workflow',
+      points: [
+        'Your booking page, payment collection, session video room, and client reminders all live in one system. Nothing needs to be connected manually.',
+        'Clients pay when they book. Every confirmed session has a paid status before it ever appears on your calendar.',
+        'A private video room is created for each booking automatically. Clients receive the room link in their confirmation email — no manual work on your end.',
+        'Automatic reminders go out before each session. Clients show up prepared. You don\'t send anything by hand.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Multi-tool setup',
+      rows: [
+        { feature: 'Payment required to confirm booking', them: 'Optional — requires manual setup', us: 'Built-in, enforced at booking' },
+        { feature: 'Session video room delivery', them: 'Manual — copy/paste link to calendar', us: 'Automatic in confirmation email' },
+        { feature: 'Client session reminders', them: 'Manual or third-party tool', us: 'Automatic before each session' },
+        { feature: 'Booking and payment connected', them: 'Requires Stripe + Calendly integration', us: 'Unified in one flow' },
+        { feature: 'Session history per client', them: 'Spreadsheet or separate CRM', us: 'Built-in dashboard' },
+        { feature: 'Tools required', them: '3 or more', us: '1' },
+      ],
+    },
+    workflow: [
+      { step: 'Create your session types', detail: 'Define what you offer — 30-minute check-ins, 60-minute strategy sessions, intro calls — each with its own price and duration.' },
+      { step: 'Connect Stripe and go live', detail: 'Link your Stripe account for payouts. Your booking page is ready to share in minutes.' },
+      { step: 'Share one booking link', detail: 'Add your CallSesh link to your website, email signature, or social profiles. Clients book and pay without any back-and-forth.' },
+      { step: 'Run sessions from the dashboard', detail: 'Join your video room with one click. Client history, past notes, and upcoming sessions are all in one place.' },
+    ],
+    faq: [
+      {
+        q: 'Is CallSesh a course platform or community platform?',
+        a: 'No. CallSesh is built for live, paid 1-on-1 coaching sessions — not pre-recorded courses, group cohorts, or membership communities. If you run synchronous paid sessions, it\'s designed for your workflow.',
+      },
+      {
+        q: 'How is this different from an all-in-one coaching platform?',
+        a: 'CallSesh is intentionally focused on the session workflow — booking, payment, video, and client records. It does not include CRM pipelines, course builders, or contract management. If you want a lighter tool built for running sessions rather than managing a business suite, CallSesh is the better fit.',
+      },
+      {
+        q: 'Do clients need to create an account to book?',
+        a: 'No. Clients book as guests. They receive their confirmation and video link by email without signing up for anything.',
+      },
+      {
+        q: 'Can I run group sessions or webinars on CallSesh?',
+        a: 'Not currently. CallSesh is built for 1-on-1 sessions. Group sessions and cohort-based formats are not supported at this time.',
+      },
+      {
+        q: 'Does the platform handle scheduling across time zones?',
+        a: 'Yes. Booking pages display your availability in each client\'s local time zone, so you don\'t have to manage time zone conversions manually.',
+      },
+      {
+        q: 'What does it cost to run my online coaching through CallSesh?',
+        a: 'CallSesh Starter is $19.99/month with a 10% per-session fee, replacing the combined cost of a scheduler, video tool, and payment setup. First 10 sessions are free to try the full workflow.',
+      },
+    ],
+    ctaHeading: 'Run your online coaching practice from one platform',
+    ctaBody: 'Booking, payments, video, and reminders — ready in minutes. First 10 sessions free.',
+    related: [
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
+      { label: 'Coaching session software', href: '/coaching-session-software' },
+      { label: 'Video coaching platform', href: '/video-coaching-platform' },
+      { label: 'Coaching billing software', href: '/coaching-billing-software' },
+      { label: 'Coaching client management software', href: '/coaching-client-management-software' },
+    ],
+    contextualNote: {
+      prefix: 'See how CallSesh works for different coaching specialties in the ',
+      linkText: 'coaching verticals hub',
+      href: '/for',
+      suffix: '.',
+    },
+  },
+
+  {
+    path: '/coaching-session-software',
+    title: 'Coaching Session Software — Book, Run, and Track Paid Sessions | CallSesh',
+    description:
+      'Software built around the coaching session: upfront payment, automated reminders, video rooms, and session history in one place. No manual coordination.',
+    h1: 'Coaching Session Software That Handles Everything Around the Session',
+    intro:
+      'Every paid coaching session involves the same set of tasks: the client needs to find a slot, pay to confirm it, receive a reminder before the call, join a video room, and leave with a record of what was covered. Most coaches handle each step with a different tool or a manual workaround. Coaching session software should close that loop — from the moment a client books to the moment the session ends and the record is saved.',
+    forWho: [
+      'Coaches charging hourly for paid 1-on-1 sessions',
+      'Coaches who want payment confirmed before a session goes on the calendar',
+      'Online coaches looking to reduce manual coordination between scheduling, reminders, and video',
+      'New coaches who want a clean session workflow from their first paid client',
+    ],
+    problem: {
+      heading: 'The coordination overhead hidden inside every session',
+      points: [
+        'Booking and payment are disconnected. A client picks a time but pays separately — if payment doesn\'t clear, you\'ve lost the slot to someone who never intended to show.',
+        'Session reminders require manual effort. Without a reminder system, you send messages by hand the day before, or clients forget and no-shows go uncompensated.',
+        'Video links live outside your booking system. You generate a Zoom link separately, copy it into a calendar invite, and hope the client finds the right one for the right session.',
+        'Session notes and history have no home. After the call, notes end up in a Google doc or spreadsheet with no clean tie to the specific session or client.',
+      ],
+    },
+    solution: {
+      heading: 'Session software that covers the whole session lifecycle',
+      points: [
+        'Payment is required at booking. No confirmed slot exists until payment clears — unpaid no-shows are eliminated before they happen.',
+        'Each booking triggers an automatic confirmation with session details and a private video room link. No manual reminder step needed.',
+        'Sessions run in a browser-based video room generated automatically per booking. No Zoom links to create, copy, or manage.',
+        'Session history and notes are stored per client in your dashboard, tied to the session record — not scattered across separate documents.',
+      ],
+    },
+    comparison: {
+      theyLabel: 'Manual session coordination',
+      rows: [
+        { feature: 'Payment to confirm slot', them: 'Separate step, easy to skip', us: 'Required at booking — slot held only when paid' },
+        { feature: 'Pre-session reminder', them: 'Manual or skipped', us: 'Automatic with session details in confirmation' },
+        { feature: 'Video room for the session', them: 'Manually created and shared', us: 'Auto-generated per booking' },
+        { feature: 'Session notes', them: 'External doc or spreadsheet', us: 'Stored per session in dashboard' },
+        { feature: 'Session history per client', them: 'Spreadsheet or memory', us: 'Built-in client session log' },
+        { feature: 'Tools required per session', them: '3–4', us: '1' },
+      ],
+    },
+    workflow: [
+      { step: 'Set up your session types', detail: 'Define 30-minute, 60-minute, or custom session formats with a price for each. Takes a few minutes.' },
+      { step: 'Share your booking link', detail: 'One URL handles scheduling and payment across all your session types.' },
+      { step: 'Client books and pays', detail: 'The slot is confirmed only after payment. Confirmation email includes the client\'s private video room link.' },
+      { step: 'Run the session', detail: 'Join from your dashboard with one click. Past notes and session details are on the same screen.' },
+    ],
+    faq: [
+      {
+        q: 'What is coaching session software?',
+        a: 'Software that manages the lifecycle of a paid coaching session: scheduling, payment, reminders, video delivery, and session records — as opposed to general business tools that handle each step separately.',
+      },
+      {
+        q: 'How is this different from coaching booking software?',
+        a: 'Booking software focuses on the scheduling and payment flow at the moment of booking. Session software covers the full lifecycle — what happens before, during, and after: reminders, the video call itself, and session notes tied to each client record.',
+      },
+      {
+        q: 'Does CallSesh send pre-session reminders?',
+        a: 'Clients receive a confirmation email with their session details and video room link when they book. Automated pre-session reminder emails are on the roadmap.',
+      },
+      {
+        q: 'Can I take notes during or after a session?',
+        a: 'Session notes can be added per session in your client dashboard after the call, and are stored against the session record.',
+      },
+      {
+        q: 'Do I need separate video software?',
+        a: 'No. CallSesh generates a private browser-based video room for each booking automatically. Clients join with one click — no app download required.',
+      },
+      {
+        q: 'Is this software for group coaching?',
+        a: 'No. CallSesh is built for 1-on-1 paid sessions. Group or cohort-based coaching is not currently supported.',
+      },
+    ],
+    ctaHeading: 'Handle every step of your coaching session in one place',
+    ctaBody: 'Book, pay, remind, run, and track — without switching tools. First 10 sessions free.',
+    related: [
+      { label: 'Online coaching platform', href: '/online-coaching-platform' },
+      { label: 'Coaching booking software', href: '/coaching-booking-software' },
+      { label: 'Coaching scheduling software', href: '/coaching-scheduling-software' },
+      { label: 'Coaching billing software', href: '/coaching-billing-software' },
+      { label: 'Video coaching platform', href: '/video-coaching-platform' },
+      { label: 'Coaching client management software', href: '/coaching-client-management-software' },
+    ],
+    contextualNote: {
+      prefix: 'Compare CallSesh to other session management tools in the ',
+      linkText: 'coaching software alternatives',
+      href: '/alternatives',
+      suffix: ' overview.',
     },
   },
 ]

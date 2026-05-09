@@ -4,8 +4,27 @@ import MarketingNav from '@/components/marketing/MarketingNav'
 import MarketingFooter from '@/components/marketing/MarketingFooter'
 
 export default function MarketingPage({ page }: { page: PseoPage }) {
+  const faqSchema =
+    page.faq.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: page.faq.map(({ q, a }) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        }
+      : null
+
   return (
     <div className="min-h-screen bg-white text-zinc-900">
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       <MarketingNav />
 

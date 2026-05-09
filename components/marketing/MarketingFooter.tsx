@@ -8,6 +8,7 @@ export default function MarketingFooter() {
           <div className="space-y-2.5">
             <p className="font-semibold uppercase tracking-widest text-zinc-500">Product</p>
             <Link href="/coaching-booking-software" className="block hover:text-zinc-900 transition-colors">Coaching Booking Software</Link>
+            <Link href="/coaching-scheduling-software" className="block hover:text-zinc-900 transition-colors">Coaching Scheduling Software</Link>
             <Link href="/coach-payment-processing" className="block hover:text-zinc-900 transition-colors">Coach Payment Processing</Link>
             <Link href="/video-coaching-platform" className="block hover:text-zinc-900 transition-colors">Video Coaching Platform</Link>
             <Link href="/all-in-one-coaching-platform" className="block hover:text-zinc-900 transition-colors">All-in-One Coaching Platform</Link>
@@ -15,14 +16,14 @@ export default function MarketingFooter() {
             <Link href="/simple-coaching-booking-system" className="block hover:text-zinc-900 transition-colors">Simple Coaching Booking System</Link>
           </div>
           <div className="space-y-2.5">
-            <p className="font-semibold uppercase tracking-widest text-zinc-500">Compare</p>
+            <Link href="/alternatives" className="font-semibold uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors">Compare</Link>
             <Link href="/alternatives/calendly-for-coaches" className="block hover:text-zinc-900 transition-colors">Calendly for Coaches</Link>
             <Link href="/alternatives/calendly-alternative-for-coaches" className="block hover:text-zinc-900 transition-colors">Calendly Alternative for Coaches</Link>
             <Link href="/alternatives/zoom-alternative-for-coaching" className="block hover:text-zinc-900 transition-colors">Zoom Alternative for Coaching</Link>
             <Link href="/alternatives/stripe-alternative-for-coaches" className="block hover:text-zinc-900 transition-colors">Stripe Alternative for Coaches</Link>
           </div>
           <div className="space-y-2.5">
-            <p className="font-semibold uppercase tracking-widest text-zinc-500">Use Cases</p>
+            <Link href="/for" className="font-semibold uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors">Use Cases</Link>
             <Link href="/for/business-coaches" className="block hover:text-zinc-900 transition-colors">Business Coaches</Link>
             <Link href="/for/life-coaches" className="block hover:text-zinc-900 transition-colors">Life Coaches</Link>
             <Link href="/for/fitness-coaches" className="block hover:text-zinc-900 transition-colors">Fitness Coaches</Link>
