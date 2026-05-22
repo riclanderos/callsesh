@@ -7,6 +7,21 @@ export const metadata: Metadata = {
   title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
   description:
     'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+    description:
+      'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
+    url: '/',
+    type: 'website',
+  },
+  twitter: {
+    title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+    description:
+      'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
+  },
 }
 
 export default async function Home() {

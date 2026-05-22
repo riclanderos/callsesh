@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE, lastModified },
+    { url: `${BASE}/`, lastModified },
     { url: `${BASE}/coaching-booking-software`, lastModified },
     { url: `${BASE}/coach-payment-processing`, lastModified },
     { url: `${BASE}/video-coaching-platform`, lastModified },

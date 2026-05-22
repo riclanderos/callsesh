@@ -14,8 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CallSesh",
+  metadataBase: new URL("https://callsesh.com"),
+  title: {
+    default: "CallSesh",
+    template: "%s | CallSesh",
+  },
   description: "Run paid coaching calls in one link",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "CallSesh",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
   icons: {
     icon: "/icon.png",
   },
