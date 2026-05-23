@@ -63,9 +63,16 @@ export default async function BookingDetailPage({
 
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="space-y-0.5">
-            <h1 className="text-xl font-semibold text-zinc-100">{booking.guest_name}</h1>
-            <p className="text-sm text-zinc-400">{booking.guest_email}</p>
+          <div className="flex items-start gap-3.5">
+            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-zinc-700 border border-zinc-600 flex items-center justify-center mt-0.5">
+              <span className="text-sm font-bold text-zinc-300">
+                {booking.guest_name.trim().split(/\s+/).map((n: string) => n[0]?.toUpperCase() ?? '').slice(0, 2).join('')}
+              </span>
+            </div>
+            <div className="space-y-0.5">
+              <h1 className="text-xl font-semibold text-zinc-100">{booking.guest_name}</h1>
+              <p className="text-sm text-zinc-400">{booking.guest_email}</p>
+            </div>
           </div>
           <Link
             href="/dashboard/bookings"
@@ -87,7 +94,7 @@ export default async function BookingDetailPage({
               {booking.status}
             </span>
           </div>
-          <p className="text-sm text-zinc-400 font-mono">
+          <p className="text-sm text-zinc-400">
             {formatDate(booking.booking_date)} · {formatTime(booking.start_time)} – {formatTime(booking.end_time)}
           </p>
           {booking.client_message && (

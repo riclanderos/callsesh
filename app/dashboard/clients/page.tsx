@@ -91,26 +91,41 @@ export default async function ClientsPage() {
         )}
 
         <div className="space-y-2">
-          {clients.map((c) => (
-            <Link
-              key={c.id}
-              href={`/dashboard/clients/${c.id}`}
-              className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4 hover:border-zinc-700 transition-colors"
-            >
-              <div className="space-y-0.5">
-                <p className="font-medium text-zinc-100">{c.name}</p>
-                <p className="text-sm text-zinc-400">{c.email}</p>
-              </div>
-              <div className="text-right space-y-0.5">
-                <p className="text-sm text-zinc-300">
-                  {c.sessionCount} session{c.sessionCount !== 1 ? 's' : ''}
-                </p>
-                {c.lastDate && (
-                  <p className="text-xs text-zinc-500">Last: {formatDate(c.lastDate)}</p>
-                )}
-              </div>
-            </Link>
-          ))}
+          {clients.map((c) => {
+            const initials = c.name
+              .trim()
+              .split(/\s+/)
+              .map((n) => n[0]?.toUpperCase() ?? '')
+              .slice(0, 2)
+              .join('')
+            return (
+              <Link
+                key={c.id}
+                href={`/dashboard/clients/${c.id}`}
+                className="flex items-center gap-3.5 rounded-xl border border-zinc-800 bg-zinc-900 p-4 hover:border-zinc-700 transition-colors"
+              >
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-zinc-700 border border-zinc-600 flex items-center justify-center">
+                  <span className="text-sm font-bold text-zinc-300">{initials}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-zinc-100 truncate">{c.name}</p>
+                      <p className="text-sm text-zinc-500 truncate">{c.email}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-sm font-medium text-zinc-300">
+                        {c.sessionCount} {c.sessionCount === 1 ? 'session' : 'sessions'}
+                      </p>
+                      {c.lastDate && (
+                        <p className="text-xs text-zinc-500">Last: {formatDate(c.lastDate)}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
 
       </div>

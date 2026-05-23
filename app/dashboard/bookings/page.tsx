@@ -15,6 +15,7 @@ type Booking = {
   end_time: string
   status: string
   sessionTitle: string
+  price_cents: number | null
   client_message: string | null
 }
 
@@ -45,7 +46,7 @@ function statusBadge(status: string) {
   }
   return (
     <span
-      className={`rounded px-1.5 py-0.5 text-xs font-medium capitalize ${
+      className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
         styles[status] ?? 'bg-zinc-800 text-zinc-400 border border-zinc-700'
       }`}
     >
@@ -65,7 +66,7 @@ export default async function BookingsPage() {
   const [{ data: rawData, error }, { data: profile }] = await Promise.all([
     supabase
       .from('bookings')
-      .select('id, guest_name, guest_email, booking_date, start_time, end_time, status, client_message, session_types(title)')
+      .select('id, guest_name, guest_email, booking_date, start_time, end_time, status, client_message, session_types(title, price_cents)')
       .eq('coach_id', user.id)
       .order('booking_date', { ascending: true })
       .order('start_time', { ascending: true }),
@@ -77,11 +78,10 @@ export default async function BookingsPage() {
   const coachTimezone = profile?.timezone ?? 'UTC'
 
   const bookings: Booking[] = (rawData ?? []).map((row) => {
-    const st = row.session_types as { title: string } | { title: string }[] | null
-    const sessionTitle = Array.isArray(st)
-      ? (st[0]?.title ?? '—')
-      : (st?.title ?? '—')
-    return { ...row, sessionTitle }
+    const st = row.session_types as { title: string; price_cents: number | null } | { title: string; price_cents: number | null }[] | null
+    const sessionTitle = Array.isArray(st) ? (st[0]?.title ?? '—') : (st?.title ?? '—')
+    const price_cents = Array.isArray(st) ? (st[0]?.price_cents ?? null) : (st?.price_cents ?? null)
+    return { ...row, sessionTitle, price_cents }
   })
 
   // Current date and time in the coach's timezone — used as the classification
@@ -118,7 +118,7 @@ export default async function BookingsPage() {
           <div className="space-y-0.5">
             <h1 className="text-2xl font-semibold text-zinc-100">Bookings</h1>
             <p className="text-sm text-zinc-400">
-              {coachTimezone} · {tzAbbr(coachTimezone)}
+              {upcoming.length} upcoming · {past.length} past · {tzAbbr(coachTimezone)}
             </p>
           </div>
           <Link
@@ -168,45 +168,68 @@ function BookingRow({ booking: b, isUpcoming = false }: { booking: Booking; isUp
   const isCancellable = b.status !== 'cancelled'
   const showJoin = isUpcoming && b.status === 'confirmed'
 
-  return (
-    <div className="flex items-start justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-zinc-100">{b.guest_name}</span>
-          {statusBadge(b.status)}
-        </div>
-        <p className="text-sm text-zinc-400">{b.sessionTitle}</p>
-        {b.client_message && (
-          <p className="text-sm text-zinc-300">&ldquo;{b.client_message}&rdquo;</p>
-        )}
-        <p className="text-sm text-zinc-400">{b.guest_email}</p>
-        <p className="text-sm text-zinc-400 font-mono">
-          {formatDate(b.booking_date)} · {formatTime(b.start_time)} – {formatTime(b.end_time)}
-        </p>
-      </div>
+  const initials = b.guest_name
+    .trim()
+    .split(/\s+/)
+    .map((n) => n[0]?.toUpperCase() ?? '')
+    .slice(0, 2)
+    .join('')
 
-      <div className="flex flex-col items-end gap-2">
-        {showJoin && (
-          <JoinSessionButton
-            bookingId={b.id}
-            bookingDate={b.booking_date}
-            startTime={b.start_time}
-            endTime={b.end_time}
-            formattedStartTime={formatTime(b.start_time)}
-          />
-        )}
-        <Link
-          href={`/dashboard/bookings/${b.id}`}
-          className="text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
-        >
-          Notes / Recap
-        </Link>
-        {isCancellable && (
-          <form action={cancelBooking}>
-            <input type="hidden" name="booking_id" value={b.id} />
-            <CancelButton />
-          </form>
-        )}
+  const formattedPrice = b.price_cents != null
+    ? `$${(b.price_cents / 100).toFixed(0)}`
+    : null
+
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:p-5">
+      <div className="flex items-start gap-3.5">
+        <div className="flex-shrink-0 h-9 w-9 rounded-full bg-zinc-700 border border-zinc-600 flex items-center justify-center mt-0.5">
+          <span className="text-xs font-bold text-zinc-300">{initials}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-zinc-100">{b.guest_name}</span>
+                {statusBadge(b.status)}
+              </div>
+              <p className="text-sm text-zinc-400">
+                {b.sessionTitle}
+                {formattedPrice && <span className="text-zinc-700 mx-1.5">·</span>}
+                {formattedPrice && <span className="text-zinc-400">{formattedPrice}</span>}
+              </p>
+              {b.client_message && (
+                <p className="text-sm text-zinc-500 italic">&ldquo;{b.client_message}&rdquo;</p>
+              )}
+              <p className="text-sm text-zinc-500">
+                {formatDate(b.booking_date)} · {formatTime(b.start_time)} – {formatTime(b.end_time)}
+              </p>
+              <p className="text-xs text-zinc-600">{b.guest_email}</p>
+            </div>
+            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+              {showJoin && (
+                <JoinSessionButton
+                  bookingId={b.id}
+                  bookingDate={b.booking_date}
+                  startTime={b.start_time}
+                  endTime={b.end_time}
+                  formattedStartTime={formatTime(b.start_time)}
+                />
+              )}
+              <Link
+                href={`/dashboard/bookings/${b.id}`}
+                className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 transition-colors whitespace-nowrap"
+              >
+                Notes & Recap
+              </Link>
+              {isCancellable && (
+                <form action={cancelBooking}>
+                  <input type="hidden" name="booking_id" value={b.id} />
+                  <CancelButton />
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

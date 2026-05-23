@@ -294,6 +294,21 @@ export default async function DashboardPage({
           </form>
         </div>
 
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Upcoming</p>
+            <p className="text-2xl font-bold text-zinc-100">{upcoming.length}</p>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Last 30 days</p>
+            <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netLast30)}</p>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">All time</p>
+            <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netTotal)}</p>
+          </div>
+        </div>
 
         {/* Onboarding checklist — hidden once any booking activity is visible */}
         {upcoming.length === 0 && (
@@ -311,23 +326,30 @@ export default async function DashboardPage({
             Next session
           </p>
           {next ? (
-            <div className="rounded-xl border border-indigo-900 bg-zinc-800/60 p-6">
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900 p-5">
               <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1.5">
-                  <p className="text-lg font-semibold text-zinc-100">
-                    {toTitleCase(next.guest_name)}
-                  </p>
-                  <p className="text-sm text-zinc-300">{next.sessionTitle}</p>
-                  <RelativeTime
-                    bookingDate={next.booking_date}
-                    startTime={next.start_time}
-                    endTime={next.end_time}
-                  />
-                  {(next as { client_message?: string | null }).client_message && (
-                    <p className="text-sm text-zinc-300 pt-1">
-                      &ldquo;{(next as { client_message?: string | null }).client_message}&rdquo;
+                <div className="flex items-start gap-3.5 min-w-0">
+                  <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center mt-0.5">
+                    <span className="text-sm font-bold text-indigo-300">
+                      {toTitleCase(next.guest_name).split(' ').map((n: string) => n[0]).slice(0, 2).join('')}
+                    </span>
+                  </div>
+                  <div className="space-y-1 min-w-0">
+                    <p className="text-base font-semibold text-zinc-100">
+                      {toTitleCase(next.guest_name)}
                     </p>
-                  )}
+                    <p className="text-sm text-zinc-400">{next.sessionTitle}</p>
+                    <RelativeTime
+                      bookingDate={next.booking_date}
+                      startTime={next.start_time}
+                      endTime={next.end_time}
+                    />
+                    {(next as { client_message?: string | null }).client_message && (
+                      <p className="text-sm text-zinc-500 pt-0.5 italic">
+                        &ldquo;{(next as { client_message?: string | null }).client_message}&rdquo;
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <Link
                   href="/dashboard/bookings"
@@ -377,23 +399,25 @@ export default async function DashboardPage({
               {rest.map((b) => (
                 <div
                   key={b.id}
-                  className="flex items-center justify-between px-5 py-3.5 gap-4">
-                  <div className="space-y-0.5 min-w-0">
-                    <p className="text-sm font-medium text-zinc-100">
-                      {toTitleCase(b.guest_name)}
-                    </p>
-                    <p className="text-sm text-zinc-300">
-                      {formatDate(b.booking_date)} · {formatTime(b.start_time)}
-                    </p>
-                    {(b as { client_message?: string | null }).client_message && (
-                      <p className="text-sm text-zinc-300 truncate">
-                        &ldquo;{(b as { client_message?: string | null }).client_message}&rdquo;
-                      </p>
-                    )}
+                  className="flex items-center gap-3.5 px-4 py-3.5">
+                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-zinc-700 flex items-center justify-center">
+                    <span className="text-xs font-semibold text-zinc-300">
+                      {toTitleCase(b.guest_name).split(' ').map((n: string) => n[0]).slice(0, 2).join('')}
+                    </span>
                   </div>
-                  <span className="flex-shrink-0 text-sm text-zinc-300">
-                    {b.sessionTitle}
-                  </span>
+                  <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
+                    <div className="min-w-0 space-y-0.5">
+                      <p className="text-sm font-medium text-zinc-100 truncate">
+                        {toTitleCase(b.guest_name)}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        {formatDate(b.booking_date)} · {formatTime(b.start_time)}
+                      </p>
+                    </div>
+                    <span className="flex-shrink-0 text-xs text-zinc-500 text-right">
+                      {b.sessionTitle}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -479,26 +503,28 @@ export default async function DashboardPage({
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Manage
           </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2">
             {[
-              { title: 'Session Types', href: '/dashboard/session-types' },
-              { title: 'Bookings', href: '/dashboard/bookings' },
-              { title: 'Clients', href: '/dashboard/clients' },
-              { title: 'Availability', href: '/dashboard/availability' },
+              { title: 'Session Types', href: '/dashboard/session-types', desc: 'Manage your offerings' },
+              { title: 'Bookings', href: '/dashboard/bookings', desc: 'View all appointments' },
+              { title: 'Clients', href: '/dashboard/clients', desc: 'Client history & notes' },
+              { title: 'Availability', href: '/dashboard/availability', desc: 'Set your schedule' },
             ].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:border-zinc-700 hover:text-zinc-300 transition-colors">
-                {item.title} →
+                className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 hover:border-zinc-700 hover:bg-zinc-800/50 transition-colors">
+                <p className="text-sm font-medium text-zinc-200">{item.title}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">{item.desc}</p>
               </Link>
             ))}
             {payoutState === 'ready' && (
-              <form action={managePayouts}>
+              <form action={managePayouts} className="col-span-2">
                 <button
                   type="submit"
-                  className="w-full rounded-lg border border-zinc-800 px-4 py-2.5 text-sm text-zinc-400 hover:border-zinc-700 hover:text-zinc-300 transition-colors text-left">
-                  Manage Payments →
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 text-left hover:border-zinc-700 hover:bg-zinc-800/50 transition-colors">
+                  <p className="text-sm font-medium text-zinc-200">Manage Payments</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">Payouts & Stripe dashboard</p>
                 </button>
               </form>
             )}
@@ -510,16 +536,18 @@ export default async function DashboardPage({
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Earnings
           </p>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-zinc-300">Total earned</p>
-              <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netTotal)}</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider">Total earned</p>
+                <p className="text-3xl font-bold text-zinc-100">{formatEarnings(netTotal)}</p>
+              </div>
+              <div className="space-y-1 border-l border-zinc-800 pl-4">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider">Last 30 days</p>
+                <p className="text-3xl font-bold text-zinc-100">{formatEarnings(netLast30)}</p>
+              </div>
             </div>
-            <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
-              <p className="text-sm text-zinc-300">Last 30 days</p>
-              <p className="text-sm font-semibold text-zinc-100">{formatEarnings(netLast30)}</p>
-            </div>
-            <p className="text-sm text-zinc-400">After 10% platform fee. Confirmed sessions only.</p>
+            <p className="text-xs text-zinc-600 mt-4 pt-4 border-t border-zinc-800">Net after 10% platform fee · Confirmed sessions only</p>
           </div>
         </section>
 
