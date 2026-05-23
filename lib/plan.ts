@@ -43,7 +43,7 @@ export async function getUserPlan(
   const [{ data: sub }, { data: profile }] = await Promise.all([
     svc
       .from('subscriptions')
-      .select('plan_key, status')
+      .select('plan_key, status, cancel_at_period_end, current_period_end')
       .eq('user_id', userId)
       .maybeSingle(),
     svc
@@ -53,7 +53,17 @@ export async function getUserPlan(
       .maybeSingle(),
   ])
 
-  const isActivePaid = sub?.status === 'active' || sub?.status === 'trialing'
+  // If cancellation was already scheduled and the billing period has passed on the
+  // server clock, treat the subscription as lapsed immediately — don't wait for
+  // the Stripe webhook to set status = 'canceled'. Guards the window between period
+  // expiry and webhook delivery where status is still 'active' but access has ended.
+  const isExpiredByDate =
+    sub?.cancel_at_period_end === true &&
+    !!sub?.current_period_end &&
+    new Date(sub.current_period_end as string) <= new Date()
+
+  const isActivePaid =
+    (sub?.status === 'active' || sub?.status === 'trialing') && !isExpiredByDate
 
   // ── State 1: active paid plan ─────────────────────────────────────────────
   if (isActivePaid) {

@@ -175,14 +175,28 @@ export default async function DashboardPage({
   const offerSessionsLeft = profileRow?.launch_offer_sessions_remaining ?? 0
   const showOfferCard = offerEligible && offerNotExpired && offerSessionsLeft > 0 && planKey === 'free' && !hasLapsedSubscription
 
-  const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true;
+  const cancelAtPeriodEnd = subscriptionRow?.cancel_at_period_end === true
+
+  // True only when the period end timestamp is still in the future on the server clock.
+  // Prevents "plan access ends on [past date]" from rendering during the window between
+  // period expiry and webhook delivery.
+  const periodEndInFuture =
+    !!subscriptionRow?.current_period_end &&
+    new Date(subscriptionRow.current_period_end) > new Date()
+
+  // Render the "access ends" notice only when all three conditions hold:
+  // cancellation is scheduled, the end date is still upcoming, and the
+  // subscription is not already treated as lapsed (prevents contradictory UI).
+  const showCancelNotice = cancelAtPeriodEnd && periodEndInFuture && !hasLapsedSubscription
 
   const accessEndDateLabel = subscriptionRow?.current_period_end
     ? new Date(subscriptionRow.current_period_end).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
+        year: 'numeric',  // unambiguous across years
+        timeZone: 'UTC',  // server-rendered — pin to UTC to avoid host-tz drift
       })
-    : null;
+    : null
 
   const used = usedCount ?? 0;
   const remaining = sessionLimit - used;
@@ -576,7 +590,7 @@ export default async function DashboardPage({
             planKey={planKey}
             hasLapsed={hasLapsedSubscription}
           />
-          {cancelAtPeriodEnd && (
+          {showCancelNotice && (
             <p className="text-sm text-zinc-300 px-1">
               Your plan access ends{accessEndDateLabel ? ` on ${accessEndDateLabel}` : ' at the end of your billing period'}.
               You&apos;ll need to resubscribe to continue accepting bookings.
