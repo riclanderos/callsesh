@@ -98,6 +98,7 @@ export default async function DashboardPage({
     { sessionLimit, planName, planKey, hasLapsedSubscription },
     { count: availabilityCount },
     { data: earningsRaw },
+    { count: clientCount },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -127,11 +128,17 @@ export default async function DashboardPage({
       .select('id', { count: 'exact', head: true })
       .eq('coach_id', user.id)
       .eq('is_active', true),
+    // Include completed (fulfilled) sessions — confirmed-only was a bug that
+    // excluded all historical revenue from past sessions.
     supabase
       .from('bookings')
       .select('booking_date, session_types(price_cents)')
       .eq('coach_id', user.id)
-      .eq('status', 'confirmed'),
+      .in('status', ['confirmed', 'completed']),
+    supabase
+      .from('coach_clients')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', user.id),
   ]);
 
   const { data: subscriptionRow } = await createServiceClient()
@@ -220,6 +227,54 @@ export default async function DashboardPage({
   );
   const netTotal  = netCents(totalCents);
   const netLast30 = netCents(last30DaysCents);
+
+  // ── Monthly revenue chart ────────────────────────────────────────────────
+  // Use the coach's timezone-aware date so month boundaries match their locale.
+  // `today` is already computed above with coachTimezone.
+  const currentMonthKey = today.slice(0, 7) // 'YYYY-MM'
+
+  // Prior month key without Date arithmetic to avoid month-rollover issues.
+  const [cmY, cmM] = currentMonthKey.split('-').map(Number)
+  const priorMonthKey = cmM === 1
+    ? `${cmY - 1}-12`
+    : `${cmY}-${String(cmM - 1).padStart(2, '0')}`
+
+  // Build ordered array of the last 6 calendar months.
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const offset = 5 - i
+    let y = cmY
+    let m = cmM - offset
+    while (m <= 0) { m += 12; y -= 1 }
+    const key = `${y}-${String(m).padStart(2, '0')}`
+    const label = new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'short' })
+    return { key, label }
+  })
+
+  // Bucket gross cents by 'YYYY-MM' from the corrected earningsRaw.
+  const grossByMonth = new Map<string, number>()
+  for (const b of earningsRaw ?? []) {
+    const monthKey = (b.booking_date as string).slice(0, 7)
+    const st = b.session_types as { price_cents: number } | { price_cents: number }[] | null
+    const price = Array.isArray(st) ? (st[0]?.price_cents ?? 0) : (st?.price_cents ?? 0)
+    grossByMonth.set(monthKey, (grossByMonth.get(monthKey) ?? 0) + price)
+  }
+
+  const monthlyData = last6Months.map(({ key, label }) => ({
+    month: key,
+    label,
+    netCents: netCents(grossByMonth.get(key) ?? 0),
+  }))
+
+  const maxMonthNet    = Math.max(...monthlyData.map((d) => d.netCents), 1)
+  const thisMonthNet   = monthlyData.find((d) => d.month === currentMonthKey)?.netCents ?? 0
+  const priorMonthNet  = monthlyData.find((d) => d.month === priorMonthKey)?.netCents ?? 0
+  const trendPct       = priorMonthNet > 0
+    ? Math.round(((thisMonthNet - priorMonthNet) / priorMonthNet) * 100)
+    : null
+  const thisMonthSessions = (earningsRaw ?? []).filter(
+    (b) => (b.booking_date as string).slice(0, 7) === currentMonthKey
+  ).length
+  const hasAnyRevenue = monthlyData.some((d) => d.netCents > 0)
 
   return (
     <div className="min-h-screen px-6 py-10">
@@ -519,25 +574,103 @@ export default async function DashboardPage({
           </div>
         </section>
 
-        {/* Revenue Overview — placeholder for upcoming analytics (milestones #3 & #4) */}
+        {/* Revenue Overview */}
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Revenue
           </p>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 space-y-3">
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-0.5">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Sessions booked</p>
-                <p className="text-2xl font-bold text-zinc-100">{used}</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 pt-4 pb-5">
+
+            {/* Hero metric + trend */}
+            <div className="flex items-end justify-between gap-4 mb-4">
+              <div>
+                <p className="text-xs text-zinc-500 mb-1">This month</p>
+                <p className="text-2xl font-bold text-zinc-100">{formatEarnings(thisMonthNet)}</p>
               </div>
-              {used > 0 && netTotal > 0 && (
-                <div className="text-right space-y-0.5">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider">Avg per session</p>
-                  <p className="text-2xl font-bold text-zinc-100">{formatEarnings(Math.round(netTotal / used))}</p>
-                </div>
+              {trendPct !== null && (
+                <p className={`text-sm font-medium pb-0.5 ${trendPct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {trendPct >= 0 ? '↑' : '↓'} {Math.abs(trendPct)}% from last month
+                </p>
               )}
             </div>
-            <p className="text-xs text-zinc-600 border-t border-zinc-800 pt-3">Booking trends and session analytics coming soon</p>
+
+            {/* 6-month bar chart — current month is visually dominant */}
+            {hasAnyRevenue ? (
+              <div className="flex items-end gap-1 h-11">
+                {monthlyData.map((d) => {
+                  const isCurrent = d.month === currentMonthKey
+                  // Current month always renders at least a 5% stub so it anchors the eye.
+                  // Past months render at 2% minimum — visible but not distracting.
+                  const heightPct = Math.max(
+                    (d.netCents / maxMonthNet) * 100,
+                    isCurrent ? 5 : 2,
+                  )
+                  return (
+                    <div
+                      key={d.month}
+                      // Current month: 40% wider + small left margin to break the
+                      // uniform rhythm and create a natural "history | now" pause.
+                      className={`flex flex-col items-center gap-1.5 ${
+                        isCurrent ? 'flex-[1.4] ml-1' : 'flex-1'
+                      }`}
+                    >
+                      <div
+                        className={`w-full transition-none ${
+                          isCurrent
+                            ? 'rounded bg-indigo-400'
+                            : 'rounded-sm bg-zinc-700'
+                        }`}
+                        style={{ height: `${heightPct}%` }}
+                        title={`${d.label}: ${formatEarnings(d.netCents)}`}
+                      />
+                      <span
+                        className={`text-[10px] ${
+                          isCurrent
+                            ? 'text-zinc-300 font-medium'
+                            : 'text-zinc-600'
+                        }`}
+                      >
+                        {d.label}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="h-11 flex items-center">
+                <p className="text-xs text-zinc-600">
+                  Revenue chart will appear once you have completed sessions
+                </p>
+              </div>
+            )}
+
+            {/* Supporting metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-4 pt-4 border-t border-zinc-800">
+              <div>
+                <p className="text-xs text-zinc-500">Sessions</p>
+                <p className="text-sm font-semibold text-zinc-100 mt-0.5">{used}</p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-500">Avg / session</p>
+                <p className="text-sm font-semibold text-zinc-100 mt-0.5">
+                  {used > 0 && netTotal > 0 ? formatEarnings(Math.round(netTotal / used)) : '—'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-500">Clients</p>
+                <p className="text-sm font-semibold text-zinc-100 mt-0.5">{clientCount ?? 0}</p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-500">This month</p>
+                <p className="text-sm font-semibold text-zinc-100 mt-0.5">
+                  {thisMonthSessions} {thisMonthSessions === 1 ? 'session' : 'sessions'}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-zinc-600 mt-3">
+              Confirmed &amp; completed sessions · Net after 10% platform fee
+            </p>
           </div>
         </section>
 
