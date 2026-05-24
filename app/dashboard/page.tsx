@@ -256,9 +256,6 @@ export default async function DashboardPage({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold text-zinc-100">
-              Your dashboard
-            </h1>
             <p className="text-sm text-zinc-300">{user.email}</p>
             {hasLapsedSubscription ? (
               <p className="text-sm font-medium text-amber-400">
@@ -309,19 +306,22 @@ export default async function DashboardPage({
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Upcoming</p>
-            <p className="text-2xl font-bold text-zinc-100">{upcoming.length}</p>
+        <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Upcoming</p>
+              <p className="text-2xl font-bold text-zinc-100">{upcoming.length}</p>
+            </div>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Last 30 days</p>
+              <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netLast30)}</p>
+            </div>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">All time</p>
+              <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netTotal)}</p>
+            </div>
           </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Last 30 days</p>
-            <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netLast30)}</p>
-          </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-4 space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">All time</p>
-            <p className="text-2xl font-bold text-zinc-100">{formatEarnings(netTotal)}</p>
-          </div>
+          <p className="text-xs text-zinc-600 px-1">Net after 10% platform fee · Confirmed sessions only</p>
         </div>
 
         {/* Onboarding checklist — hidden once any booking activity is visible */}
@@ -440,16 +440,9 @@ export default async function DashboardPage({
 
         {/* Booking links */}
         <section className="space-y-3">
-          <div className="space-y-0.5">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Share your booking links
-            </p>
-            {sessionTypes && sessionTypes.length > 0 && (
-              <p className="text-sm text-zinc-300">
-                Send these links to clients so they can book a session.
-              </p>
-            )}
-          </div>
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            Share your booking links
+          </p>
           {sessionTypes && sessionTypes.length > 0 ? (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 divide-y divide-zinc-800">
               {sessionTypes.map((st, i) => {
@@ -493,25 +486,6 @@ export default async function DashboardPage({
           )}
         </section>
 
-        {/* Quick actions */}
-        <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
-            Quick actions
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/dashboard/availability"
-              className="rounded-lg border border-zinc-600 bg-zinc-800 px-5 py-2.5 text-sm font-medium text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 transition-colors">
-              + Add availability
-            </Link>
-            <Link
-              href="/dashboard/session-types"
-              className="rounded-lg border border-zinc-600 bg-zinc-800 px-5 py-2.5 text-sm font-medium text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 transition-colors">
-              + New session type
-            </Link>
-          </div>
-        </section>
-
         {/* Manage */}
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -545,23 +519,25 @@ export default async function DashboardPage({
           </div>
         </section>
 
-        {/* Earnings */}
+        {/* Revenue Overview — placeholder for upcoming analytics (milestones #3 & #4) */}
         <section className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
-            Earnings
+            Revenue
           </p>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Total earned</p>
-                <p className="text-3xl font-bold text-zinc-100">{formatEarnings(netTotal)}</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 space-y-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider">Sessions booked</p>
+                <p className="text-2xl font-bold text-zinc-100">{used}</p>
               </div>
-              <div className="space-y-1 border-l border-zinc-800 pl-4">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Last 30 days</p>
-                <p className="text-3xl font-bold text-zinc-100">{formatEarnings(netLast30)}</p>
-              </div>
+              {used > 0 && netTotal > 0 && (
+                <div className="text-right space-y-0.5">
+                  <p className="text-xs text-zinc-500 uppercase tracking-wider">Avg per session</p>
+                  <p className="text-2xl font-bold text-zinc-100">{formatEarnings(Math.round(netTotal / used))}</p>
+                </div>
+              )}
             </div>
-            <p className="text-xs text-zinc-600 mt-4 pt-4 border-t border-zinc-800">Net after 10% platform fee · Confirmed sessions only</p>
+            <p className="text-xs text-zinc-600 border-t border-zinc-800 pt-3">Booking trends and session analytics coming soon</p>
           </div>
         </section>
 
