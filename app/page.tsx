@@ -74,8 +74,8 @@ export default async function Home() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="mx-auto max-w-6xl px-6 pt-14 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-16 items-center">
+      <section className="mx-auto max-w-6xl px-6 pt-14 pb-16 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.55fr] gap-8 lg:gap-12 items-center">
 
           {/* Left: copy */}
           <div className="space-y-6 text-center lg:text-left">
@@ -114,17 +114,17 @@ export default async function Home() {
           </div>
 
           {/* Right: dashboard screenshot + overlay activity cards */}
-          <div className="relative lg:py-12 lg:pr-4 lg:pl-8">
+          <div className="relative lg:py-10 lg:pr-0 lg:pl-4">
 
             {/* Soft glow behind dashboard — desktop only */}
             <div
-              className="hidden lg:block absolute -inset-6 -z-10 rounded-[3rem] blur-3xl opacity-55"
-              style={{ background: 'radial-gradient(ellipse at 58% 42%, #dde5ff 0%, transparent 62%)' }}
+              className="hidden lg:block absolute -inset-8 -z-10 rounded-[3rem] blur-3xl opacity-70"
+              style={{ background: 'radial-gradient(ellipse at 52% 45%, #dde5ff 0%, transparent 58%)' }}
             />
 
-            {/* Dashboard image — perspective tilt on desktop */}
+            {/* Dashboard image — aggressive perspective tilt on desktop */}
             <div
-              className="rounded-2xl overflow-hidden border border-zinc-200/50 shadow-[0_22px_70px_-12px_rgba(0,0,0,0.16)] lg:[transform:perspective(1400px)_rotateX(3deg)_rotateY(-9deg)]"
+              className="rounded-2xl overflow-hidden border border-zinc-300/40 shadow-[0_32px_100px_-8px_rgba(0,0,0,0.22)] lg:[transform:perspective(900px)_rotateX(5deg)_rotateY(-24deg)_scale(1.1)]"
             >
               <Image
                 src="/images/dashboard.png"
@@ -137,7 +137,7 @@ export default async function Home() {
             </div>
 
             {/* Overlay: New booking — top left */}
-            <div className="hidden lg:flex absolute top-5 left-1 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
+            <div className="hidden lg:flex absolute top-2 -left-2 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
               <div className="flex-shrink-0 mt-0.5">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-indigo-500">
                   <rect x="1" y="2" width="12" height="11" rx="1.75" stroke="currentColor" strokeWidth="1.25"/>
@@ -153,7 +153,7 @@ export default async function Home() {
             </div>
 
             {/* Overlay: Payment received — top right */}
-            <div className="hidden lg:flex absolute top-5 right-5 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[172px]">
+            <div className="hidden lg:flex absolute top-2 -right-2 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[172px]">
               <div className="flex-shrink-0 mt-0.5">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-emerald-500">
                   <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.25"/>
@@ -168,7 +168,7 @@ export default async function Home() {
             </div>
 
             {/* Overlay: Returning client — bottom left */}
-            <div className="hidden lg:flex absolute bottom-20 -left-4 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[164px]">
+            <div className="hidden lg:flex absolute bottom-16 -left-6 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[164px]">
               <div className="flex-shrink-0 mt-0.5">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-zinc-500">
                   <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
@@ -183,7 +183,7 @@ export default async function Home() {
             </div>
 
             {/* Overlay: Upcoming session — bottom right */}
-            <div className="hidden lg:flex absolute bottom-10 -right-5 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
+            <div className="hidden lg:flex absolute bottom-4 -right-6 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
               <div className="flex-shrink-0 mt-0.5">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-zinc-400">
                   <rect x="1" y="2" width="12" height="11" rx="1.75" stroke="currentColor" strokeWidth="1.25"/>
