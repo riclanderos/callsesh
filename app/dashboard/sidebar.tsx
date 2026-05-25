@@ -21,10 +21,10 @@ export default function SidebarNav() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-zinc-800/70 flex-shrink-0">
         <Image
-          src="/images/CallSesh-Dark.png"
+          src="/images/CallSesh.svg"
           alt="CallSesh"
           width={120}
-          height={28}
+          height={27}
           priority
           className="h-7 w-auto"
         />
