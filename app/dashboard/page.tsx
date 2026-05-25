@@ -91,6 +91,11 @@ export default async function DashboardPage({
   // upcoming bookings to a UTC date that's already rolled to tomorrow.
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: coachTimezone }).format(new Date())
 
+  // 30-day cutoff string used for the cancelled bookings count query.
+  const last30DaysAgo = new Date()
+  last30DaysAgo.setDate(last30DaysAgo.getDate() - 30)
+  const last30Str = last30DaysAgo.toISOString().split('T')[0]
+
   const [
     { data: upcomingRaw },
     { data: sessionTypes },
@@ -99,6 +104,7 @@ export default async function DashboardPage({
     { count: availabilityCount },
     { data: earningsRaw },
     { count: clientCount },
+    { count: cancelledCount },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -130,15 +136,24 @@ export default async function DashboardPage({
       .eq('is_active', true),
     // Include completed (fulfilled) sessions — confirmed-only was a bug that
     // excluded all historical revenue from past sessions.
+    // coach_client_id and session title are added here so booking metrics
+    // (returning clients, top session type) can be computed from this single fetch.
     supabase
       .from('bookings')
-      .select('booking_date, session_types(price_cents)')
+      .select('booking_date, coach_client_id, session_types(title, price_cents)')
       .eq('coach_id', user.id)
       .in('status', ['confirmed', 'completed']),
     supabase
       .from('coach_clients')
       .select('id', { count: 'exact', head: true })
       .eq('coach_id', user.id),
+    // Cancellations in the last 30 days — head-only count, no rows returned.
+    supabase
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', user.id)
+      .eq('status', 'cancelled')
+      .gte('booking_date', last30Str),
   ]);
 
   const { data: subscriptionRow } = await createServiceClient()
@@ -275,6 +290,61 @@ export default async function DashboardPage({
     (b) => (b.booking_date as string).slice(0, 7) === currentMonthKey
   ).length
   const hasAnyRevenue = monthlyData.some((d) => d.netCents > 0)
+
+  // ── Business activity metrics ────────────────────────────────────────────
+  // Typed view of earningsRaw — adds coach_client_id and title without
+  // disturbing the computeEarnings cast above (which only reads price_cents).
+  type BookingsDataRow = {
+    booking_date: string
+    coach_client_id: string | null
+    session_types: { title: string; price_cents: number } | { title: string; price_cents: number }[] | null
+  }
+  const bookingsData = (earningsRaw ?? []) as BookingsDataRow[]
+
+  // This week: Mon–Sun in the coach's timezone.
+  // Parse `today` (already tz-aware YYYY-MM-DD) without Date arithmetic on months.
+  const [tY, tM, tD] = today.split('-').map(Number)
+  const todayDateObj  = new Date(tY, tM - 1, tD)
+  const dow           = todayDateObj.getDay() // 0=Sun … 6=Sat
+  const daysFromMon   = dow === 0 ? 6 : dow - 1
+  const monDate       = new Date(tY, tM - 1, tD - daysFromMon)
+  const sunDate       = new Date(tY, tM - 1, tD + (6 - daysFromMon))
+  const pad           = (n: number) => String(n).padStart(2, '0')
+  const weekStart     = `${monDate.getFullYear()}-${pad(monDate.getMonth() + 1)}-${pad(monDate.getDate())}`
+  const weekEnd       = `${sunDate.getFullYear()}-${pad(sunDate.getMonth() + 1)}-${pad(sunDate.getDate())}`
+  const thisWeekCount = bookingsData.filter(
+    (b) => b.booking_date >= weekStart && b.booking_date <= weekEnd
+  ).length
+
+  // Returning clients: coach_client_ids that appear more than once.
+  const bookingsByClient = new Map<string, number>()
+  for (const b of bookingsData) {
+    if (b.coach_client_id) {
+      bookingsByClient.set(b.coach_client_id, (bookingsByClient.get(b.coach_client_id) ?? 0) + 1)
+    }
+  }
+  const returningClients = [...bookingsByClient.values()].filter((n) => n > 1).length
+
+  // Top session type: most-booked title across all confirmed + completed sessions.
+  // Only surfaced in the UI when there are 2+ distinct active session types,
+  // so the signal is meaningful (single-type coaches already know their offering).
+  const bookingsByType = new Map<string, number>()
+  for (const b of bookingsData) {
+    const st    = b.session_types
+    const title = Array.isArray(st) ? (st[0]?.title ?? null) : (st?.title ?? null)
+    if (title) bookingsByType.set(title, (bookingsByType.get(title) ?? 0) + 1)
+  }
+  const topSessionType: { title: string; count: number } | null =
+    bookingsByType.size >= 2
+      ? [...bookingsByType.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .map(([title, count]) => ({ title, count }))[0] ?? null
+      : null
+
+  // Cancellation signal: amber when > 20% of last-30-day non-cancelled bookings.
+  const cancelledLast30   = cancelledCount ?? 0
+  const last30Total       = thisMonthSessions + cancelledLast30 // rough denominator
+  const cancellationAmber = last30Total > 0 && cancelledLast30 / last30Total > 0.2
 
   return (
     <div className="min-h-screen px-6 py-10">
@@ -673,6 +743,42 @@ export default async function DashboardPage({
             </p>
           </div>
         </section>
+
+        {/* Business Activity — secondary operational insights, intentionally lighter
+            visual weight than Revenue Overview so the hierarchy remains clear. */}
+        {used > 0 && (
+          <section className="space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              Business Activity
+            </p>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 space-y-3">
+              <div className="grid grid-cols-3 gap-x-4">
+                <div>
+                  <p className="text-xs text-zinc-500">This week</p>
+                  <p className="text-sm font-medium text-zinc-200 mt-0.5">{thisWeekCount}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-500">Cancelled (30d)</p>
+                  <p className={`text-sm font-medium mt-0.5 ${cancellationAmber ? 'text-amber-400' : 'text-zinc-200'}`}>
+                    {cancelledLast30}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-500">Returning clients</p>
+                  <p className="text-sm font-medium text-zinc-200 mt-0.5">{returningClients}</p>
+                </div>
+              </div>
+              {topSessionType && (
+                <p className="text-xs text-zinc-500 pt-2 border-t border-zinc-800">
+                  Most booked:{' '}
+                  <span className="text-zinc-400">{topSessionType.title}</span>
+                  <span className="text-zinc-600 mx-1.5">·</span>
+                  <span className="text-zinc-600">{topSessionType.count} sessions</span>
+                </p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Plan & usage */}
         <section className="space-y-3">
