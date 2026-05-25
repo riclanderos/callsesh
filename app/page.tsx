@@ -74,37 +74,119 @@ export default async function Home() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="mx-auto max-w-3xl px-6 pt-24 pb-20 text-center">
-        <div className="space-y-6">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight text-zinc-900">
-            Coaching Booking Software for Paid 1-on-1 Sessions
-          </h1>
-          <p className="text-lg text-zinc-700 leading-relaxed max-w-xl mx-auto">
-            Booking, payments, video, session notes, recaps, and client history — without stitching together 5 different tools.
-          </p>
-          <p className="text-sm text-zinc-600">
-            Built for coaches who run paid sessions online.
-          </p>
-          {offerAvailable && (
-            <p className="text-sm text-zinc-700 leading-relaxed border border-zinc-200 bg-zinc-50 rounded-xl px-5 py-3.5 max-w-xl mx-auto text-left">
-              <span className="font-medium text-zinc-900">Limited offer:</span> Start free — your first 10 sessions are on us.
+      <section className="mx-auto max-w-6xl px-6 pt-14 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.25fr] gap-12 lg:gap-16 items-center">
+
+          {/* Left: copy */}
+          <div className="space-y-6 text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start">
+              <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600">
+                Built for coaches who run paid 1-on-1 sessions
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight text-zinc-900">
+              Coaching Booking Software for{' '}
+              <span className="text-indigo-600">Paid 1-on-1 Sessions</span>
+            </h1>
+            <p className="text-lg text-zinc-600 leading-relaxed">
+              Booking, payments, video, session notes, recaps, and client history — without stitching together 5 different tools.
             </p>
-          )}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-7 py-3 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
-            >
-              Get started free
-            </Link>
-            <Link
-              href="#pricing"
-              className="inline-flex items-center justify-center rounded-lg border border-zinc-200 px-7 py-3 text-sm font-semibold text-zinc-600 hover:bg-zinc-50 transition-colors"
-            >
-              See pricing
-            </Link>
+            {offerAvailable && (
+              <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 text-left">
+                <span className="font-medium text-zinc-900">Limited offer:</span> Start free — your first 10 sessions are on us.
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-7 py-3 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm w-full sm:w-auto"
+              >
+                Get started free
+              </Link>
+              <Link
+                href="#pricing"
+                className="inline-flex items-center justify-center rounded-lg border border-zinc-200 px-7 py-3 text-sm font-semibold text-zinc-600 hover:bg-zinc-50 transition-colors w-full sm:w-auto"
+              >
+                See pricing
+              </Link>
+            </div>
+            <p className="text-sm text-zinc-400">No credit card required · Set up in under 2 minutes</p>
           </div>
-          <p className="text-sm text-zinc-400">No credit card required · Set up in under 2 minutes</p>
+
+          {/* Right: dashboard screenshot + overlay activity cards */}
+          <div className="relative lg:pt-8 lg:pb-6 lg:px-5">
+            <Image
+              src="/images/dashboard.png"
+              alt="CallSesh coach dashboard"
+              width={900}
+              height={600}
+              priority
+              className="w-full rounded-2xl shadow-2xl border border-zinc-200/60"
+            />
+
+            {/* Overlay: New booking — top left */}
+            <div className="hidden lg:flex absolute -top-4 left-0 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-indigo-500">
+                  <rect x="1" y="2" width="12" height="11" rx="1.75" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M1 5.5h12" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M4.5 1v2.5M9.5 1v2.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-indigo-600 leading-none mb-1">New booking</p>
+                <p className="text-[11px] text-zinc-700 leading-snug">Marcus booked Strategy Call</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Today · 10:24 AM</p>
+              </div>
+            </div>
+
+            {/* Overlay: Payment received — top right */}
+            <div className="hidden lg:flex absolute -top-4 right-0 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[172px]">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-emerald-500">
+                  <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M4.5 7l2 2 3-3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-emerald-600 leading-none mb-1">Payment received</p>
+                <p className="text-[11px] text-zinc-700 leading-snug">$240 from Alex Kim</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Today · 10:25 AM</p>
+              </div>
+            </div>
+
+            {/* Overlay: Returning client — bottom left */}
+            <div className="hidden lg:flex absolute bottom-14 -left-5 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[164px]">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-zinc-500">
+                  <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M2 12c0-2.21 2.239-4 5-4s5 1.79 5 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-zinc-600 leading-none mb-1">Returning client</p>
+                <p className="text-[11px] text-zinc-700 leading-snug">Jordan rebooked</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Today · 9:15 AM</p>
+              </div>
+            </div>
+
+            {/* Overlay: Upcoming session — bottom right */}
+            <div className="hidden lg:flex absolute bottom-4 -right-5 bg-white rounded-xl border border-zinc-200 shadow-lg px-3 py-2.5 items-start gap-2.5 min-w-[184px]">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-zinc-400">
+                  <rect x="1" y="2" width="12" height="11" rx="1.75" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M1 5.5h12" stroke="currentColor" strokeWidth="1.25"/>
+                  <path d="M4.5 1v2.5M9.5 1v2.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-zinc-500 leading-none mb-1">Upcoming session</p>
+                <p className="text-[11px] text-zinc-700 leading-snug">Discovery Call with Sam</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Tomorrow · 11:00 AM</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -198,18 +280,45 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Value strip ── */}
+      {/* ── Feature strip ── */}
       <div className="border-y border-zinc-100 bg-zinc-50">
-        <div className="mx-auto max-w-5xl px-6 py-10">
-          <p className="text-center text-xs uppercase tracking-[0.2em] text-zinc-500 mb-8">Why coaches use CallSesh</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {[
-              'No back-and-forth scheduling',
-              'Get paid before the session',
-              'Booking, payments, and video in one place',
-            ].map((text) => (
-              <p key={text} className="text-sm font-medium text-zinc-700">{text}</p>
-            ))}
+        <div className="mx-auto max-w-5xl px-6 py-7">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <rect x="1.25" y="2.25" width="12.5" height="11.5" rx="1.75" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M1.25 5.75h12.5" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M5 1v2.5M10 1v2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Accept bookings automatically</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <path d="M6 9.5a3.5 3.5 0 0 0 4.95 0l1.77-1.77a3.5 3.5 0 0 0-4.95-4.95l-.88.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M9 5.5a3.5 3.5 0 0 0-4.95 0L2.28 7.27a3.5 3.5 0 0 0 4.95 4.95l.88-.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Run sessions in one link</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Turn free calls into paid sessions</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <rect x="1.25" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="8.75" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="1.25" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="8.75" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Replace Calendly, Zoom, and Stripe</span>
+            </div>
+
           </div>
         </div>
       </div>
