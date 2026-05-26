@@ -4,21 +4,21 @@ import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/service'
 
 export const metadata: Metadata = {
-  title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+  title: 'Coaching Booking Software That Replaces Calendly & Zoom',
   description:
     'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+    title: 'Coaching Booking Software That Replaces Calendly & Zoom',
     description:
       'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
     url: '/',
     type: 'website',
   },
   twitter: {
-    title: 'Coaching Booking Software That Replaces Calendly, Zoom & Stripe',
+    title: 'Coaching Booking Software That Replaces Calendly & Zoom',
     description:
       'Run your coaching business in one place. Let clients book, pay, and join sessions without switching tools. Start free — first 10 sessions covered.',
   },
@@ -238,7 +238,7 @@ export default async function Home() {
                 <rect x="1.25" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
                 <rect x="8.75" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
               </svg>
-              <span className="text-sm text-zinc-600">Replace Calendly, Zoom, and Stripe</span>
+              <span className="text-sm text-zinc-600">Run bookings, payments, and sessions in one place</span>
             </div>
 
           </div>
@@ -422,7 +422,7 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl px-6 py-16 space-y-10">
           <div className="text-center space-y-2">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
-              Replace Calendly, Zoom, and Stripe with one tool
+              Replace Calendly and Zoom with one coaching platform
             </h2>
             <p className="text-zinc-700 max-w-xl mx-auto text-sm">
               Most coaches maintain three separate subscriptions to do what CallSesh handles end-to-end.

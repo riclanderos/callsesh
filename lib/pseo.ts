@@ -672,7 +672,7 @@ const pages: PseoPage[] = [
       'Stop juggling Calendly, Zoom, and Stripe. CallSesh is an all-in-one coaching platform — clients book, pay, and join video sessions from a single link.',
     h1: 'All-in-One Coaching Platform: Booking, Payment, and Video in One Link',
     intro:
-      'Most coaches run their practice on a patchwork of tools: Calendly for scheduling, Zoom for video, Stripe or PayPal for payments, and a spreadsheet to hold it together. Every additional tool is another subscription, another login, and another place for something to go wrong. CallSesh is a single platform built to replace all of it. One booking link — clients pick a time, pay, and receive their video room.',
+      'Most coaches run their practice on a patchwork of tools: Calendly for scheduling, Zoom for video, Stripe or PayPal for payments, and a spreadsheet to hold it together. Every additional tool is another subscription, another login, and another place for something to go wrong. CallSesh is a single platform that brings it all together. One booking link — clients pick a time, pay, and receive their video room.',
     forWho: [
       'Solo coaches replacing a multi-tool stack with one platform',
       'New coaches who want everything set up before their first paid session',
@@ -705,8 +705,8 @@ const pages: PseoPage[] = [
     ],
     faq: [
       {
-        q: 'Does CallSesh replace all three tools — Calendly, Zoom, and Stripe?',
-        a: 'Yes. CallSesh handles booking (replacing Calendly), video sessions (replacing Zoom), and payment collection (integrated with Stripe). You don\'t need separate subscriptions for any of them.',
+        q: 'Does CallSesh replace Calendly and Zoom?',
+        a: 'Yes — for booking and video. CallSesh replaces Calendly with built-in scheduling and replaces Zoom with auto-generated session rooms. Payments run through Stripe, built directly into the booking flow, so you don\'t need a separate Stripe integration or manual configuration.',
       },
       {
         q: 'What does it cost compared to running three separate tools?',
@@ -737,7 +737,7 @@ const pages: PseoPage[] = [
       prefix: 'CallSesh is the ',
       linkText: 'all-in-one platform for paid coaching',
       href: 'https://callsesh.com',
-      suffix: ' — built to replace Calendly, Zoom, and Stripe.',
+      suffix: ' — built to replace Calendly and Zoom for coaching practices.',
     },
   },
 

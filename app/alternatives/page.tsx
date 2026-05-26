@@ -7,7 +7,7 @@ import { getPagesByPrefix } from '@/lib/pseo'
 export const metadata: Metadata = {
   title: 'Coaching Software Alternatives — CallSesh vs. Calendly, Zoom & Stripe',
   description:
-    'See how CallSesh compares to Calendly, Zoom, and Stripe for coaches. One platform that replaces all three with built-in scheduling, payment, and video.',
+    'See how CallSesh compares to Calendly, Zoom, and Stripe for coaches. One platform that consolidates scheduling, payment collection, and video — without the multi-tool stack.',
   alternates: { canonical: '/alternatives' },
 }
 
@@ -36,7 +36,7 @@ export default function AlternativesHubPage() {
         </h1>
         <p className="text-lg text-zinc-700 leading-relaxed">
           Most coaches run their practice on Calendly, Zoom, and Stripe stitched together. CallSesh
-          replaces all three with a single platform built for paid 1-on-1 sessions.
+          brings booking, payment collection, and video into a single platform built for paid 1-on-1 sessions.
         </p>
       </section>
 
