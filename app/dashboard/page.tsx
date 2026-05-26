@@ -593,8 +593,24 @@ export default async function DashboardPage({
                 })}
               </div>
             ) : (
-              <div className="h-16 flex items-center">
-                <p className="text-xs text-zinc-600">Revenue chart will appear once you have completed sessions</p>
+              <div>
+                {/* Ghost bars — decorative chart placeholder, no fake data */}
+                <div className="flex items-end gap-1 h-16">
+                  {[38, 55, 42, 68, 47, 30].map((h, i) => (
+                    <div key={i} className="flex flex-col items-center gap-1.5 flex-1">
+                      <div className="w-full rounded-sm bg-zinc-800/50" style={{ height: `${h}%` }} />
+                      <span className="text-[10px] text-zinc-700">{last6Months[i]?.label ?? ''}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-4">
+                  <p className="text-xs text-zinc-600">Complete your first paid session to see earnings here.</p>
+                  <Link
+                    href="/dashboard/session-types"
+                    className="text-xs text-indigo-400 hover:text-indigo-300 flex-shrink-0 transition-colors">
+                    {sessionTypes && sessionTypes.length > 0 ? 'Share your link →' : 'Set up a session type →'}
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -686,11 +702,22 @@ export default async function DashboardPage({
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center px-5 py-10 text-center">
-                <div className="space-y-1">
-                  <p className="text-sm text-zinc-400">No upcoming bookings yet.</p>
-                  <p className="text-xs text-zinc-600">Share your booking link to start accepting sessions.</p>
+              <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 text-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1.5" y="2.5" width="15" height="13" rx="2" />
+                    <path d="M1.5 7h15M6 1.5v2M12 1.5v2" />
+                  </svg>
                 </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-zinc-300">No upcoming sessions</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed">You&apos;re set up — share your booking link to start accepting clients.</p>
+                </div>
+                <Link
+                  href="/dashboard/session-types"
+                  className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+                  Go to session types →
+                </Link>
               </div>
             )}
           </div>
@@ -740,8 +767,17 @@ export default async function DashboardPage({
                 })}
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center px-5 py-10 text-center">
-                <p className="text-sm text-zinc-500">No activity yet.</p>
+              <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 text-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="9" cy="9" r="7.5" />
+                    <path d="M9 4.5v4.5l2.5 1.5" />
+                  </svg>
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-sm font-medium text-zinc-300">No activity yet</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed max-w-[190px]">New bookings, completed sessions, and cancellations will appear here automatically.</p>
+                </div>
               </div>
             )}
           </div>
@@ -774,10 +810,33 @@ export default async function DashboardPage({
                     ))}
                   </div>
                 </div>
+              ) : sessionTypes && sessionTypes.length === 0 ? (
+                <div className="px-4 py-8 text-center space-y-3">
+                  <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center mx-auto">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1.5 6l7-4 7 4-7 4-7-4z" />
+                      <path d="M1.5 10.5l7 4 7-4" />
+                    </svg>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-zinc-300">No session types yet</p>
+                    <p className="text-xs text-zinc-600">Create your first session type to start accepting paid bookings.</p>
+                  </div>
+                  <Link
+                    href="/dashboard/session-types"
+                    className="inline-block rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors">
+                    Create a session type
+                  </Link>
+                </div>
               ) : (
-                <div className="px-4 py-8 text-center">
-                  <p className="text-sm text-zinc-500">No sessions yet</p>
-                  <p className="text-xs text-zinc-600 mt-1">Session type performance will appear here once you have bookings.</p>
+                <div className="px-4 py-8 text-center space-y-1.5">
+                  <p className="text-sm font-medium text-zinc-300">Your session types are ready</p>
+                  <p className="text-xs text-zinc-600 leading-relaxed">Share your booking link to get your first booking — performance data will appear here automatically.</p>
+                  <div className="pt-1">
+                    <Link href="/dashboard/session-types" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                      Share your link →
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -788,36 +847,57 @@ export default async function DashboardPage({
                 <p className="text-sm font-semibold text-zinc-100">Share your links</p>
               </div>
               {sessionTypes && sessionTypes.length > 0 ? (
-                <div className="divide-y divide-zinc-800">
-                  {sessionTypes.map((st, i) => {
-                    const url = `${baseUrl}/book/${st.slug}`
-                    return (
-                      <div key={st.id} className="flex items-center justify-between px-4 py-3 gap-4">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium text-zinc-200 truncate">{st.title}</p>
-                            {i === 0 && sessionTypes.length > 1 && (
-                              <span className="flex-shrink-0 rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-500">
-                                Latest
-                              </span>
-                            )}
+                <div>
+                  {/* Start-here callout for coaches with no bookings yet */}
+                  {used === 0 && (
+                    <div className="px-4 py-3 bg-indigo-950/30 border-b border-indigo-900/40 flex items-start gap-2.5">
+                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" className="flex-shrink-0 mt-0.5 text-indigo-400" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round">
+                        <circle cx="6.5" cy="6.5" r="5.5" />
+                        <path d="M6.5 4.5v3.5M6.5 9.5v.25" strokeWidth="1.5" />
+                      </svg>
+                      <p className="text-xs text-indigo-300 leading-relaxed">Share this link with potential clients to get your first booking.</p>
+                    </div>
+                  )}
+                  <div className="divide-y divide-zinc-800">
+                    {sessionTypes.map((st, i) => {
+                      const url = `${baseUrl}/book/${st.slug}`
+                      return (
+                        <div key={st.id} className="flex items-center justify-between px-4 py-3 gap-4">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-zinc-200 truncate">{st.title}</p>
+                              {i === 0 && sessionTypes.length > 1 && (
+                                <span className="flex-shrink-0 rounded border border-zinc-700 px-1.5 py-0.5 text-xs text-zinc-500">
+                                  Latest
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-zinc-500 truncate mt-0.5">
+                              {baseUrl.replace(/^https?:\/\//, '')}/book/{st.slug}
+                            </p>
                           </div>
-                          <p className="text-xs text-zinc-500 truncate mt-0.5">
-                            {baseUrl.replace(/^https?:\/\//, '')}/book/{st.slug}
-                          </p>
+                          <CopyButton text={url} />
                         </div>
-                        <CopyButton text={url} />
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
                 </div>
               ) : (
-                <div className="px-4 py-6 text-center space-y-1">
-                  <p className="text-sm text-zinc-500">No active session types yet.</p>
+                <div className="px-5 py-8 text-center space-y-4">
+                  <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center mx-auto">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M7.5 11a4.5 4.5 0 0 0 6.36 0l1.77-1.77a4.5 4.5 0 0 0-6.36-6.36l-1.13 1.13" />
+                      <path d="M10.5 7a4.5 4.5 0 0 0-6.36 0L2.37 8.77a4.5 4.5 0 0 0 6.36 6.36l1.13-1.13" />
+                    </svg>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-zinc-300">Ready to accept bookings?</p>
+                    <p className="text-xs text-zinc-600 leading-relaxed">Create a session type to get your shareable booking link.</p>
+                  </div>
                   <Link
                     href="/dashboard/session-types"
-                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
-                    Create one →
+                    className="inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors">
+                    Create a session type
                   </Link>
                 </div>
               )}
@@ -861,9 +941,24 @@ export default async function DashboardPage({
                   </div>
                 </div>
               ) : (
-                <div className="px-4 py-8 text-center">
-                  <p className="text-sm text-zinc-500">No clients yet</p>
-                  <p className="text-xs text-zinc-600 mt-1">Client spending will appear here once you have bookings.</p>
+                <div className="px-4 py-8 text-center space-y-3">
+                  <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center mx-auto">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="7" cy="6" r="3" />
+                      <path d="M1.5 16c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5" />
+                      <path d="M13.5 9c1.66.33 3 1.84 3 3.5v2" />
+                      <circle cx="13.5" cy="5.5" r="2.5" />
+                    </svg>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-zinc-300">No clients yet</p>
+                    <p className="text-xs text-zinc-600 leading-relaxed max-w-[200px] mx-auto">Clients are added automatically when someone books. Their sessions and spending will appear here.</p>
+                  </div>
+                  {sessionTypes && sessionTypes.length > 0 && (
+                    <Link href="/dashboard/session-types" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                      Share your booking link →
+                    </Link>
+                  )}
                 </div>
               )}
             </div>
