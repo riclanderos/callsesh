@@ -74,7 +74,7 @@ export default async function Home() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="mx-auto max-w-6xl px-6 pt-14 pb-16 overflow-hidden">
+      <section className="mx-auto max-w-6xl px-6 pt-14 pb-10 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.55fr] gap-8 lg:gap-12 items-center">
 
           {/* Left: copy */}
@@ -124,7 +124,7 @@ export default async function Home() {
 
             {/* Dashboard image — aggressive perspective tilt on desktop */}
             <div
-              className="rounded-2xl overflow-hidden border border-zinc-300/40 shadow-[0_32px_100px_-8px_rgba(0,0,0,0.22)] lg:[transform:perspective(900px)_rotateX(5deg)_rotateY(-24deg)_scale(1.1)]"
+              className="rounded-2xl overflow-hidden border border-zinc-300/40 shadow-[0_32px_100px_-8px_rgba(0,0,0,0.22)] lg:[transform:perspective(1200px)_rotateX(3deg)_rotateY(-18deg)_scale(1.04)]"
             >
               <Image
                 src="/images/hero-image.png"
@@ -201,6 +201,49 @@ export default async function Home() {
 
         </div>
       </section>
+
+      {/* ── Feature strip — bridges hero into page content ── */}
+      <div className="border-y border-zinc-100 bg-zinc-50">
+        <div className="mx-auto max-w-5xl px-6 py-7">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <rect x="1.25" y="2.25" width="12.5" height="11.5" rx="1.75" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M1.25 5.75h12.5" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M5 1v2.5M10 1v2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Accept bookings automatically</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <path d="M6 9.5a3.5 3.5 0 0 0 4.95 0l1.77-1.77a3.5 3.5 0 0 0-4.95-4.95l-.88.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M9 5.5a3.5 3.5 0 0 0-4.95 0L2.28 7.27a3.5 3.5 0 0 0 4.95 4.95l.88-.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Run sessions in one link</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Turn free calls into paid sessions</span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
+                <rect x="1.25" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="8.75" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="1.25" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="8.75" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+              </svg>
+              <span className="text-sm text-zinc-600">Replace Calendly, Zoom, and Stripe</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
 
       {/* ── What is coaching booking software ── */}
       <section className="mx-auto max-w-3xl px-6 pb-16">
@@ -291,49 +334,6 @@ export default async function Home() {
           ))}
         </div>
       </section>
-
-      {/* ── Feature strip ── */}
-      <div className="border-y border-zinc-100 bg-zinc-50">
-        <div className="mx-auto max-w-5xl px-6 py-7">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
-
-            <div className="flex items-center gap-2.5">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
-                <rect x="1.25" y="2.25" width="12.5" height="11.5" rx="1.75" stroke="currentColor" strokeWidth="1.2"/>
-                <path d="M1.25 5.75h12.5" stroke="currentColor" strokeWidth="1.2"/>
-                <path d="M5 1v2.5M10 1v2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
-              <span className="text-sm text-zinc-600">Accept bookings automatically</span>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
-                <path d="M6 9.5a3.5 3.5 0 0 0 4.95 0l1.77-1.77a3.5 3.5 0 0 0-4.95-4.95l-.88.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M9 5.5a3.5 3.5 0 0 0-4.95 0L2.28 7.27a3.5 3.5 0 0 0 4.95 4.95l.88-.88" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
-              <span className="text-sm text-zinc-600">Run sessions in one link</span>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
-                <path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="text-sm text-zinc-600">Turn free calls into paid sessions</span>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="flex-shrink-0 text-zinc-400">
-                <rect x="1.25" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-                <rect x="8.75" y="1.25" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-                <rect x="1.25" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-                <rect x="8.75" y="8.75" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
-              </svg>
-              <span className="text-sm text-zinc-600">Replace Calendly, Zoom, and Stripe</span>
-            </div>
-
-          </div>
-        </div>
-      </div>
 
       {/* ── Feature rows ── */}
       <section className="mx-auto max-w-5xl px-6 py-24 space-y-24">
