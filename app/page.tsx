@@ -127,7 +127,7 @@ export default async function Home() {
               className="rounded-2xl overflow-hidden border border-zinc-300/40 shadow-[0_32px_100px_-8px_rgba(0,0,0,0.22)] lg:[transform:perspective(900px)_rotateX(5deg)_rotateY(-24deg)_scale(1.1)]"
             >
               <Image
-                src="/images/dashboard.png"
+                src="/images/hero-image.png"
                 alt="CallSesh coach dashboard"
                 width={900}
                 height={600}
